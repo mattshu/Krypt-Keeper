@@ -55,6 +55,10 @@
             this.chkUseEncryptSettings = new System.Windows.Forms.CheckBox();
             this.cbxDecryptionKeyType = new System.Windows.Forms.ComboBox();
             this.txtDecryptionKey = new System.Windows.Forms.TextBox();
+            this.chkRememberSettings = new System.Windows.Forms.CheckBox();
+            this.btnExit = new System.Windows.Forms.Button();
+            this.btnBrowseDecrypt = new System.Windows.Forms.Button();
+            this.btnBrowseEncrypt = new System.Windows.Forms.Button();
             this.tabMain.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -66,7 +70,9 @@
             // listFiles
             // 
             this.listFiles.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listFiles.FullRowSelect = true;
             this.listFiles.GridLines = true;
+            this.listFiles.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.listFiles.Location = new System.Drawing.Point(3, 3);
             this.listFiles.Name = "listFiles";
             this.listFiles.Size = new System.Drawing.Size(505, 243);
@@ -139,6 +145,7 @@
             this.btnAddFiles.TabIndex = 2;
             this.btnAddFiles.Text = "Add Files...";
             this.btnAddFiles.UseVisualStyleBackColor = true;
+            this.btnAddFiles.Click += new System.EventHandler(this.btnAddFiles_Click);
             // 
             // btnRemoveFiles
             // 
@@ -152,6 +159,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.btnBrowseEncrypt);
             this.groupBox1.Controls.Add(this.cbxEncryptAlgorithms);
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.txtEncryptionKey);
@@ -240,6 +248,9 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.btnBrowseDecrypt);
+            this.groupBox2.Controls.Add(this.btnExit);
+            this.groupBox2.Controls.Add(this.chkRememberSettings);
             this.groupBox2.Controls.Add(this.chkUseEncryptSettings);
             this.groupBox2.Controls.Add(this.label2);
             this.groupBox2.Controls.Add(this.cbxDecryptAlgorithms);
@@ -353,6 +364,46 @@
             this.txtDecryptionKey.Size = new System.Drawing.Size(155, 20);
             this.txtDecryptionKey.TabIndex = 3;
             // 
+            // chkRememberSettings
+            // 
+            this.chkRememberSettings.AutoSize = true;
+            this.chkRememberSettings.Checked = true;
+            this.chkRememberSettings.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkRememberSettings.Location = new System.Drawing.Point(367, 19);
+            this.chkRememberSettings.Name = "chkRememberSettings";
+            this.chkRememberSettings.Size = new System.Drawing.Size(132, 17);
+            this.chkRememberSettings.TabIndex = 6;
+            this.chkRememberSettings.Text = "Remember All Settings";
+            this.chkRememberSettings.UseVisualStyleBackColor = true;
+            // 
+            // btnExit
+            // 
+            this.btnExit.Enabled = false;
+            this.btnExit.Location = new System.Drawing.Point(392, 59);
+            this.btnExit.Name = "btnExit";
+            this.btnExit.Size = new System.Drawing.Size(104, 30);
+            this.btnExit.TabIndex = 7;
+            this.btnExit.Text = "Exit";
+            this.btnExit.UseVisualStyleBackColor = true;
+            // 
+            // btnBrowseDecrypt
+            // 
+            this.btnBrowseDecrypt.Location = new System.Drawing.Point(342, 68);
+            this.btnBrowseDecrypt.Name = "btnBrowseDecrypt";
+            this.btnBrowseDecrypt.Size = new System.Drawing.Size(25, 21);
+            this.btnBrowseDecrypt.TabIndex = 8;
+            this.btnBrowseDecrypt.Text = "...";
+            this.btnBrowseDecrypt.UseVisualStyleBackColor = true;
+            // 
+            // btnBrowseEncrypt
+            // 
+            this.btnBrowseEncrypt.Location = new System.Drawing.Point(342, 93);
+            this.btnBrowseEncrypt.Name = "btnBrowseEncrypt";
+            this.btnBrowseEncrypt.Size = new System.Drawing.Size(25, 21);
+            this.btnBrowseEncrypt.TabIndex = 8;
+            this.btnBrowseEncrypt.Text = "...";
+            this.btnBrowseEncrypt.UseVisualStyleBackColor = true;
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -367,6 +418,7 @@
             this.Name = "MainWindow";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Krypt Keeper - File Security";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainWindow_FormClosed);
             this.tabMain.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage2.ResumeLayout(false);
@@ -408,6 +460,10 @@
         private System.Windows.Forms.TextBox txtDecryptionKey;
         private System.Windows.Forms.ComboBox cbxDecryptionKeyType;
         private System.Windows.Forms.ComboBox cbxEncryptionKeyType;
+        private System.Windows.Forms.CheckBox chkRememberSettings;
+        private System.Windows.Forms.Button btnExit;
+        private System.Windows.Forms.Button btnBrowseDecrypt;
+        private System.Windows.Forms.Button btnBrowseEncrypt;
     }
 }
 

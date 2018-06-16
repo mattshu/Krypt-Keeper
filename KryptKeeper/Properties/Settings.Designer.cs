@@ -8,22 +8,128 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace KryptKeeper.Properties
-{
-
-
+namespace KryptKeeper.Properties {
+    
+    
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "11.0.0.0")]
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase
-    {
-
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.6.0.0")]
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+        
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
-
-        public static Settings Default
-        {
-            get
-            {
+        
+        public static Settings Default {
+            get {
                 return defaultInstance;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int encryptionType {
+            get {
+                return ((int)(this["encryptionType"]));
+            }
+            set {
+                this["encryptionType"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int encryptionKeyType {
+            get {
+                return ((int)(this["encryptionKeyType"]));
+            }
+            set {
+                this["encryptionKeyType"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string decryptionKey {
+            get {
+                return ((string)(this["decryptionKey"]));
+            }
+            set {
+                this["decryptionKey"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int decryptionKeyType {
+            get {
+                return ((int)(this["decryptionKeyType"]));
+            }
+            set {
+                this["decryptionKeyType"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string encryptionKey {
+            get {
+                return ((string)(this["encryptionKey"]));
+            }
+            set {
+                this["encryptionKey"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int decryptionType {
+            get {
+                return ((int)(this["decryptionType"]));
+            }
+            set {
+                this["decryptionType"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute(@"<?xml version=""1.0"" encoding=""utf-16""?>
+<ArrayOfString xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
+  <string>Name</string>
+  <string>Extension</string>
+  <string>Size</string>
+  <string>Path</string>
+  <string>MD5</string>
+</ArrayOfString>")]
+        public global::System.Collections.Specialized.StringCollection fileListColumns {
+            get {
+                return ((global::System.Collections.Specialized.StringCollection)(this["fileListColumns"]));
+            }
+            set {
+                this["fileListColumns"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute(@"<?xml version=""1.0"" encoding=""utf-16""?>
+<ArrayOfString xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
+  <string>60</string>
+  <string>60</string>
+  <string>60</string>
+  <string>60</string>
+  <string>60</string>
+</ArrayOfString>")]
+        public global::System.Collections.Specialized.StringCollection fileListColumnWidths {
+            get {
+                return ((global::System.Collections.Specialized.StringCollection)(this["fileListColumnWidths"]));
+            }
+            set {
+                this["fileListColumnWidths"] = value;
             }
         }
     }

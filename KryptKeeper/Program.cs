@@ -18,5 +18,6 @@ namespace KryptKeeper
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new MainWindow());
         }
+
     }
 }

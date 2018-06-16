@@ -156,6 +156,7 @@
             this.btnRemoveFiles.TabIndex = 2;
             this.btnRemoveFiles.Text = "Remove Selected Files...";
             this.btnRemoveFiles.UseVisualStyleBackColor = true;
+            this.btnRemoveFiles.Click += new System.EventHandler(this.btnRemoveFiles_Click);
             // 
             // groupBox1
             // 
@@ -183,10 +184,12 @@
             this.chkMaskInformation.TabIndex = 0;
             this.chkMaskInformation.Text = "Mask file information:";
             this.chkMaskInformation.UseVisualStyleBackColor = true;
+            this.chkMaskInformation.CheckedChanged += new System.EventHandler(this.chkMaskInformation_CheckedChanged);
             // 
             // cbxMaskInformation
             // 
-            this.cbxMaskInformation.FormattingEnabled = true;
+            this.cbxMaskInformation.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbxMaskInformation.Enabled = false;
             this.cbxMaskInformation.Items.AddRange(new object[] {
             "File name",
             "File dates",
@@ -269,6 +272,7 @@
             this.txtEncryptionKey.Name = "txtEncryptionKey";
             this.txtEncryptionKey.Size = new System.Drawing.Size(155, 20);
             this.txtEncryptionKey.TabIndex = 3;
+            this.txtEncryptionKey.TextChanged += new System.EventHandler(this.txtEncryptionKey_TextChanged);
             // 
             // progressBar
             // 
@@ -288,17 +292,12 @@
             // 
             // cbxEncryptAlgorithms
             // 
-            this.cbxEncryptAlgorithms.FormattingEnabled = true;
-            this.cbxEncryptAlgorithms.Items.AddRange(new object[] {
-            "AES",
-            "Rijndael",
-            "DES",
-            "RC2",
-            "TripleDES"});
+            this.cbxEncryptAlgorithms.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbxEncryptAlgorithms.Location = new System.Drawing.Point(181, 17);
             this.cbxEncryptAlgorithms.Name = "cbxEncryptAlgorithms";
             this.cbxEncryptAlgorithms.Size = new System.Drawing.Size(155, 21);
             this.cbxEncryptAlgorithms.TabIndex = 5;
+            this.cbxEncryptAlgorithms.SelectedIndexChanged += new System.EventHandler(this.cbxEncryptAlgorithms_SelectedIndexChanged);
             // 
             // label2
             // 
@@ -311,13 +310,8 @@
             // 
             // cbxDecryptAlgorithms
             // 
-            this.cbxDecryptAlgorithms.FormattingEnabled = true;
-            this.cbxDecryptAlgorithms.Items.AddRange(new object[] {
-            "AES",
-            "Rijndael",
-            "DES",
-            "RC2",
-            "TripleDES"});
+            this.cbxDecryptAlgorithms.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbxDecryptAlgorithms.Enabled = false;
             this.cbxDecryptAlgorithms.Location = new System.Drawing.Point(181, 42);
             this.cbxDecryptAlgorithms.Name = "cbxDecryptAlgorithms";
             this.cbxDecryptAlgorithms.Size = new System.Drawing.Size(155, 21);
@@ -325,6 +319,7 @@
             // 
             // cbxEncryptionKeyType
             // 
+            this.cbxEncryptionKeyType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbxEncryptionKeyType.FormattingEnabled = true;
             this.cbxEncryptionKeyType.Items.AddRange(new object[] {
             "Plaintext key",
@@ -333,6 +328,7 @@
             this.cbxEncryptionKeyType.Name = "cbxEncryptionKeyType";
             this.cbxEncryptionKeyType.Size = new System.Drawing.Size(121, 21);
             this.cbxEncryptionKeyType.TabIndex = 1;
+            this.cbxEncryptionKeyType.SelectedIndexChanged += new System.EventHandler(this.cbxEncryptionKeyType_SelectedIndexChanged);
             // 
             // chkUseEncryptSettings
             // 
@@ -345,10 +341,12 @@
             this.chkUseEncryptSettings.TabIndex = 6;
             this.chkUseEncryptSettings.Text = "Use encryption settings";
             this.chkUseEncryptSettings.UseVisualStyleBackColor = true;
+            this.chkUseEncryptSettings.CheckedChanged += new System.EventHandler(this.chkUseEncryptSettings_CheckedChanged);
             // 
             // cbxDecryptionKeyType
             // 
-            this.cbxDecryptionKeyType.FormattingEnabled = true;
+            this.cbxDecryptionKeyType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbxDecryptionKeyType.Enabled = false;
             this.cbxDecryptionKeyType.Items.AddRange(new object[] {
             "Plaintext key",
             "Key file"});
@@ -356,19 +354,19 @@
             this.cbxDecryptionKeyType.Name = "cbxDecryptionKeyType";
             this.cbxDecryptionKeyType.Size = new System.Drawing.Size(121, 21);
             this.cbxDecryptionKeyType.TabIndex = 1;
+            this.cbxDecryptionKeyType.SelectedIndexChanged += new System.EventHandler(this.cbxDecryptionKeyType_SelectedIndexChanged);
             // 
             // txtDecryptionKey
             // 
             this.txtDecryptionKey.Location = new System.Drawing.Point(181, 69);
             this.txtDecryptionKey.Name = "txtDecryptionKey";
+            this.txtDecryptionKey.ReadOnly = true;
             this.txtDecryptionKey.Size = new System.Drawing.Size(155, 20);
             this.txtDecryptionKey.TabIndex = 3;
             // 
             // chkRememberSettings
             // 
             this.chkRememberSettings.AutoSize = true;
-            this.chkRememberSettings.Checked = true;
-            this.chkRememberSettings.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkRememberSettings.Location = new System.Drawing.Point(367, 19);
             this.chkRememberSettings.Name = "chkRememberSettings";
             this.chkRememberSettings.Size = new System.Drawing.Size(132, 17);
@@ -378,31 +376,35 @@
             // 
             // btnExit
             // 
-            this.btnExit.Enabled = false;
             this.btnExit.Location = new System.Drawing.Point(392, 59);
             this.btnExit.Name = "btnExit";
             this.btnExit.Size = new System.Drawing.Size(104, 30);
             this.btnExit.TabIndex = 7;
             this.btnExit.Text = "Exit";
             this.btnExit.UseVisualStyleBackColor = true;
+            this.btnExit.Click += new System.EventHandler(this.btnExit_Click);
             // 
             // btnBrowseDecrypt
             // 
+            this.btnBrowseDecrypt.Enabled = false;
             this.btnBrowseDecrypt.Location = new System.Drawing.Point(342, 68);
             this.btnBrowseDecrypt.Name = "btnBrowseDecrypt";
             this.btnBrowseDecrypt.Size = new System.Drawing.Size(25, 21);
             this.btnBrowseDecrypt.TabIndex = 8;
             this.btnBrowseDecrypt.Text = "...";
             this.btnBrowseDecrypt.UseVisualStyleBackColor = true;
+            this.btnBrowseDecrypt.Click += new System.EventHandler(this.btnBrowseDecrypt_Click);
             // 
             // btnBrowseEncrypt
             // 
+            this.btnBrowseEncrypt.Enabled = false;
             this.btnBrowseEncrypt.Location = new System.Drawing.Point(342, 93);
             this.btnBrowseEncrypt.Name = "btnBrowseEncrypt";
             this.btnBrowseEncrypt.Size = new System.Drawing.Size(25, 21);
             this.btnBrowseEncrypt.TabIndex = 8;
             this.btnBrowseEncrypt.Text = "...";
             this.btnBrowseEncrypt.UseVisualStyleBackColor = true;
+            this.btnBrowseEncrypt.Click += new System.EventHandler(this.btnBrowseEncrypt_Click);
             // 
             // MainWindow
             // 
@@ -418,7 +420,8 @@
             this.Name = "MainWindow";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Krypt Keeper - File Security";
-            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainWindow_FormClosed);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainWindow_FormClosing);
+            this.Shown += new System.EventHandler(this.MainWindow_Shown);
             this.tabMain.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage2.ResumeLayout(false);

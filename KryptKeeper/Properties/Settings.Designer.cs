@@ -26,18 +26,6 @@ namespace KryptKeeper.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public int encryptionType {
-            get {
-                return ((int)(this["encryptionType"]));
-            }
-            set {
-                this["encryptionType"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
         public int encryptionKeyType {
             get {
                 return ((int)(this["encryptionKeyType"]));
@@ -85,18 +73,6 @@ namespace KryptKeeper.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public int decryptionType {
-            get {
-                return ((int)(this["decryptionType"]));
-            }
-            set {
-                this["decryptionType"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute(@"<?xml version=""1.0"" encoding=""utf-16""?>
 <ArrayOfString xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
   <string>Name</string>
@@ -130,6 +106,109 @@ namespace KryptKeeper.Properties {
             }
             set {
                 this["fileListColumnWidths"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool rememberSettings {
+            get {
+                return ((bool)(this["rememberSettings"]));
+            }
+            set {
+                this["rememberSettings"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute(@"<?xml version=""1.0"" encoding=""utf-16""?>
+<ArrayOfString xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
+  <string>AES</string>
+  <string>Rijndael</string>
+  <string>DES</string>
+  <string>RC2</string>
+  <string>TripleDES</string>
+</ArrayOfString>")]
+        public global::System.Collections.Specialized.StringCollection algorithms {
+            get {
+                return ((global::System.Collections.Specialized.StringCollection)(this["algorithms"]));
+            }
+            set {
+                this["algorithms"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int decryptionAlgorithm {
+            get {
+                return ((int)(this["decryptionAlgorithm"]));
+            }
+            set {
+                this["decryptionAlgorithm"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int encryptionAlgorithm {
+            get {
+                return ((int)(this["encryptionAlgorithm"]));
+            }
+            set {
+                this["encryptionAlgorithm"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool useEncryptionSettings {
+            get {
+                return ((bool)(this["useEncryptionSettings"]));
+            }
+            set {
+                this["useEncryptionSettings"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool encryptionMaskInformation {
+            get {
+                return ((bool)(this["encryptionMaskInformation"]));
+            }
+            set {
+                this["encryptionMaskInformation"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int encryptionMaskInfoType {
+            get {
+                return ((int)(this["encryptionMaskInfoType"]));
+            }
+            set {
+                this["encryptionMaskInfoType"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool encryptionRemoveAfterEncrypt {
+            get {
+                return ((bool)(this["encryptionRemoveAfterEncrypt"]));
+            }
+            set {
+                this["encryptionRemoveAfterEncrypt"] = value;
             }
         }
     }

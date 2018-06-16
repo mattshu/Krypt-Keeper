@@ -34,5 +34,15 @@ namespace KryptKeeper
             var headers = GenerateHeader(names);
             listFiles.Columns.AddRange(headers);
         }
+
+        private void btnDecrypt_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnEncrypt_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

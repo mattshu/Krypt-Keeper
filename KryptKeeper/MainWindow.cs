@@ -17,10 +17,13 @@ namespace KryptKeeper
     public partial class MainWindow : Form
     {
 
+        private Status status;
+
         public MainWindow()
         {
             InitializeComponent();
             AddFileListColumns();
+            status = new Status(txtStatus);
         }
         
         private void AddFileListColumns()
@@ -34,9 +37,6 @@ namespace KryptKeeper
             var columns = Properties.Settings.Default.fileListColumns;
             var columnWidths = Properties.Settings.Default.fileListColumnWidths;
             var length = columns.Count;
-            if (length <= 0 || columns.Count != columnWidths.Count)
-                return new DataGridViewColumn[0];
-
             var headers = new DataGridViewColumn[length];
             for (int i = 0; i < headers.Length; i++)
             {
@@ -106,9 +106,10 @@ namespace KryptKeeper
         {
             var openFileDialog = new OpenFileDialog { Multiselect = true };
             var openResult = openFileDialog.ShowDialog();
-            if (openResult != DialogResult.OK || openFileDialog.FileNames.Length <= 0) return;
+            if (openResult != DialogResult.OK) return;
             foreach (var path in openFileDialog.FileNames)
             {
+                status.WriteLine($"Adding this path: {path}");
             }
             //listFiles.DataSource =
         }

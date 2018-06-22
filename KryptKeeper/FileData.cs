@@ -12,7 +12,7 @@ namespace KryptKeeper
             Extension = fileInfo.Extension;
             Size = BytesToString(fileInfo.Length);
             Path = fileInfo.DirectoryName;
-            MD5 = getMD5(filePath);
+            MD5 = GetMD5(filePath);
         }
 
         public FileData(FileInfo fileInfo) : this(fileInfo.FullName) { }
@@ -23,7 +23,7 @@ namespace KryptKeeper
         public string Path { get; }
         public string MD5 { get; }
 
-        private string getMD5(string path)
+        private string GetMD5(string path)
         {
             using (var md5 = System.Security.Cryptography.MD5.Create())
             {

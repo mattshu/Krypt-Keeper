@@ -64,40 +64,40 @@ namespace KryptKeeper
 
             foreach (var a in algorithms)
             {
-                cbxEncryptAlgorithms.Items.Add(a);
-                cbxDecryptAlgorithms.Items.Add(a);
+                CbxEncryptAlgorithms.Items.Add(a);
+                CbxDecryptAlgorithms.Items.Add(a);
             }
 
             if (!settings.rememberSettings) return;
 
-            chkRememberSettings.Checked = true;
+            ChkRememberSettings.Checked = true;
 
-            cbxEncryptAlgorithms.SelectedIndex = settings.encryptionAlgorithm;
-            chkMaskInformation.Checked = settings.encryptionMaskInformation;
-            cbxMaskInformation.SelectedIndex = settings.encryptionMaskInfoType;
-            chkRemoveAfterEncrypt.Checked = settings.encryptionRemoveAfterEncrypt;
-            cbxEncryptionKeyType.SelectedIndex = settings.encryptionKeyType;
-            txtEncryptionKey.Text = settings.encryptionKey;
+            CbxEncryptAlgorithms.SelectedIndex = settings.encryptionAlgorithm;
+            ChkMaskInformation.Checked = settings.encryptionMaskInformation;
+            CbxMaskInformation.SelectedIndex = settings.encryptionMaskInfoType;
+            ChkRemoveAfterEncrypt.Checked = settings.encryptionRemoveAfterEncrypt;
+            CbxEncryptionKeyType.SelectedIndex = settings.encryptionKeyType;
+            TxtEncryptionKey.Text = settings.encryptionKey;
 
             if (settings.useEncryptionSettings)
                 CopyEncryptionSettings();
 
             else
             { 
-                chkUseEncryptSettings.Checked = false;
-                cbxDecryptionKeyType.Enabled = true;
-                cbxDecryptAlgorithms.Enabled = true;
-                txtDecryptionKey.ReadOnly = false;
+                ChkUseEncryptSettings.Checked = false;
+                CbxDecryptionKeyType.Enabled = true;
+                CbxDecryptAlgorithms.Enabled = true;
+                TxtDecryptionKey.ReadOnly = false;
 
-                cbxDecryptAlgorithms.SelectedIndex = settings.decryptionAlgorithm;
-                cbxDecryptionKeyType.SelectedIndex = settings.decryptionKeyType;
-                txtDecryptionKey.Text = settings.decryptionKey;
+                CbxDecryptAlgorithms.SelectedIndex = settings.decryptionAlgorithm;
+                CbxDecryptionKeyType.SelectedIndex = settings.decryptionKeyType;
+                TxtDecryptionKey.Text = settings.decryptionKey;
             }
 
-            chkRemoveAfterEncrypt.Checked = settings.encryptionRemoveAfterEncrypt;
+            ChkRemoveAfterEncrypt.Checked = settings.encryptionRemoveAfterEncrypt;
         }
 
-        private void btnAddFiles_Click(object sender, EventArgs e)
+        private void BtnAddFiles_Click(object sender, EventArgs e)
         {
             AddFilesToList();
         }
@@ -114,83 +114,83 @@ namespace KryptKeeper
             //listFiles.DataSource =
         }
 
-        private void btnRemoveFiles_Click(object sender, EventArgs e)
+        private void BtnRemoveFiles_Click(object sender, EventArgs e)
         {
 
         }
 
-        private void btnEncrypt_Click(object sender, EventArgs e)
+        private void BtnEncrypt_Click(object sender, EventArgs e)
         {
 
         }
 
-        private void btnDecrypt_Click(object sender, EventArgs e)
+        private void BtnDecrypt_Click(object sender, EventArgs e)
         {
 
         }
 
-        private void cbxEncryptAlgorithms_SelectedIndexChanged(object sender, EventArgs e)
+        private void CbxEncryptAlgorithms_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (chkUseEncryptSettings.Checked)
-                cbxDecryptAlgorithms.SelectedIndex = cbxEncryptAlgorithms.SelectedIndex;
+            if (ChkUseEncryptSettings.Checked)
+                CbxDecryptAlgorithms.SelectedIndex = CbxEncryptAlgorithms.SelectedIndex;
         }
 
-        private void chkMaskInformation_CheckedChanged(object sender, EventArgs e)
+        private void ChkMaskInformation_CheckedChanged(object sender, EventArgs e)
         {
-            cbxMaskInformation.Enabled = chkMaskInformation.Checked;
+            CbxMaskInformation.Enabled = ChkMaskInformation.Checked;
         }
 
-        private void chkUseEncryptSettings_CheckedChanged(object sender, EventArgs e)
+        private void ChkUseEncryptSettings_CheckedChanged(object sender, EventArgs e)
         {
-            if (chkUseEncryptSettings.Checked) CopyEncryptionSettings();
+            if (ChkUseEncryptSettings.Checked) CopyEncryptionSettings();
 
-            cbxDecryptAlgorithms.Enabled = !chkUseEncryptSettings.Checked;
-            cbxDecryptionKeyType.Enabled = !chkUseEncryptSettings.Checked;
-            txtDecryptionKey.ReadOnly = chkUseEncryptSettings.Checked;
+            CbxDecryptAlgorithms.Enabled = !ChkUseEncryptSettings.Checked;
+            CbxDecryptionKeyType.Enabled = !ChkUseEncryptSettings.Checked;
+            TxtDecryptionKey.ReadOnly = ChkUseEncryptSettings.Checked;
         }
 
         private void CopyEncryptionSettings()
         {
-            cbxDecryptAlgorithms.SelectedIndex = cbxEncryptAlgorithms.SelectedIndex;
-            cbxDecryptionKeyType.SelectedIndex = cbxEncryptionKeyType.SelectedIndex;
-            txtDecryptionKey.Text = txtEncryptionKey.Text;
-            btnBrowseDecrypt.Enabled = btnBrowseEncrypt.Enabled;
+            CbxDecryptAlgorithms.SelectedIndex = CbxEncryptAlgorithms.SelectedIndex;
+            CbxDecryptionKeyType.SelectedIndex = CbxEncryptionKeyType.SelectedIndex;
+            TxtDecryptionKey.Text = TxtEncryptionKey.Text;
+            BtnBrowseDecrypt.Enabled = BtnBrowseEncrypt.Enabled;
         }
 
-        private void cbxEncryptionKeyType_SelectedIndexChanged(object sender, EventArgs e)
+        private void CbxEncryptionKeyType_SelectedIndexChanged(object sender, EventArgs e)
         {
-            UpdateFormBasedOnKeyType(cbxEncryptionKeyType, btnBrowseEncrypt, txtEncryptionKey);
-            if (chkUseEncryptSettings.Checked)
+            UpdateFormBasedOnKeyType(CbxEncryptionKeyType, BtnBrowseEncrypt, TxtEncryptionKey);
+            if (ChkUseEncryptSettings.Checked)
             {
-                cbxDecryptionKeyType.SelectedIndex = cbxEncryptionKeyType.SelectedIndex;
+                CbxDecryptionKeyType.SelectedIndex = CbxEncryptionKeyType.SelectedIndex;
             }
         }
 
-        private void txtEncryptionKey_TextChanged(object sender, EventArgs e)
+        private void TxtEncryptionKey_TextChanged(object sender, EventArgs e)
         {
-            if (chkUseEncryptSettings.Checked)
-                txtDecryptionKey.Text = txtEncryptionKey.Text;
+            if (ChkUseEncryptSettings.Checked)
+                TxtDecryptionKey.Text = TxtEncryptionKey.Text;
         }
 
-        private void cbxDecryptionKeyType_SelectedIndexChanged(object sender, EventArgs e)
+        private void CbxDecryptionKeyType_SelectedIndexChanged(object sender, EventArgs e)
         {
-            UpdateFormBasedOnKeyType(cbxDecryptionKeyType, btnBrowseDecrypt, txtDecryptionKey);
+            UpdateFormBasedOnKeyType(CbxDecryptionKeyType, BtnBrowseDecrypt, TxtDecryptionKey);
         }
 
-        private static void UpdateFormBasedOnKeyType(ComboBox cbxKeyType, Button btnBrowse, TextBox txtKey)
+        private static void UpdateFormBasedOnKeyType(ListControl cbxKeyType, Control btnBrowse, TextBox txtKey)
         {
             btnBrowse.Enabled = cbxKeyType.SelectedIndex == 1; // Key file
             if (cbxKeyType.SelectedIndex == 1) txtKey.Text = "";
         }
 
-        private void btnBrowseEncrypt_Click(object sender, EventArgs e)
+        private void BtnBrowseEncrypt_Click(object sender, EventArgs e)
         {
-            txtEncryptionKey.Text = BrowseForKeyFile();
+            TxtEncryptionKey.Text = BrowseForKeyFile();
         }
 
-        private void btnBrowseDecrypt_Click(object sender, EventArgs e)
+        private void BtnBrowseDecrypt_Click(object sender, EventArgs e)
         {
-            txtDecryptionKey.Text = BrowseForKeyFile();
+            TxtDecryptionKey.Text = BrowseForKeyFile();
         }
 
         private static string BrowseForKeyFile()
@@ -200,7 +200,7 @@ namespace KryptKeeper
             return openFile.FileName;
         }
 
-        private void btnExit_Click(object sender, EventArgs e)
+        private void BtnExit_Click(object sender, EventArgs e)
         {
             Close();
         }
@@ -209,7 +209,7 @@ namespace KryptKeeper
         {
             SaveFileListColumnWidths();
 
-            if (chkRememberSettings.Checked)
+            if (ChkRememberSettings.Checked)
             {
                 SaveSettings();
                 return;
@@ -244,20 +244,20 @@ namespace KryptKeeper
         {
             var settings = Properties.Settings.Default;
 
-            settings.encryptionAlgorithm = cbxEncryptAlgorithms.SelectedIndex;
-            settings.encryptionKey = txtEncryptionKey.Text;
-            settings.encryptionKeyType = cbxEncryptionKeyType.SelectedIndex;
+            settings.encryptionAlgorithm = CbxEncryptAlgorithms.SelectedIndex;
+            settings.encryptionKey = TxtEncryptionKey.Text;
+            settings.encryptionKeyType = CbxEncryptionKeyType.SelectedIndex;
 
-            settings.encryptionMaskInformation = chkMaskInformation.Checked;
-            settings.encryptionMaskInfoType = cbxMaskInformation.SelectedIndex;
+            settings.encryptionMaskInformation = ChkMaskInformation.Checked;
+            settings.encryptionMaskInfoType = CbxMaskInformation.SelectedIndex;
 
-            settings.useEncryptionSettings = chkUseEncryptSettings.Checked;
+            settings.useEncryptionSettings = ChkUseEncryptSettings.Checked;
 
-            settings.decryptionAlgorithm = cbxDecryptAlgorithms.SelectedIndex;
-            settings.decryptionKey = txtDecryptionKey.Text;
-            settings.decryptionKeyType = cbxDecryptionKeyType.SelectedIndex;
+            settings.decryptionAlgorithm = CbxDecryptAlgorithms.SelectedIndex;
+            settings.decryptionKey = TxtDecryptionKey.Text;
+            settings.decryptionKeyType = CbxDecryptionKeyType.SelectedIndex;
 
-            settings.rememberSettings = chkRememberSettings.Checked;
+            settings.rememberSettings = ChkRememberSettings.Checked;
 
             settings.Save();
         }

@@ -8,6 +8,7 @@ namespace KryptKeeper
         public class Status
         {
             private readonly TextBox _statusBox;
+            private readonly string _newLine = Environment.NewLine;
             public bool IsPending;
 
             public Status(TextBox statusBox)
@@ -18,7 +19,7 @@ namespace KryptKeeper
             public void WritePending(string msg)
             {
                 if (IsPending)
-                    _statusBox.AppendText("done!" + Environment.NewLine);
+                    _statusBox.AppendText("done!" + _newLine);
                 else
                     IsPending = true;
                 _statusBox.AppendText(msg + "...");
@@ -28,14 +29,14 @@ namespace KryptKeeper
             {
                 if (!IsPending) return;
                 IsPending = false;
-                _statusBox.AppendText("done!" + Environment.NewLine);
+                _statusBox.AppendText("done!" + _newLine);
             }
 
             public void WriteLine(string msg)
             {
                 string timestamp = "[" + DateTime.Now.ToString("HH:mm:ss") + "]: ";
                 _statusBox.AppendText(timestamp);
-                _statusBox.AppendText(msg + Environment.NewLine);
+                _statusBox.AppendText(msg + _newLine);
             }
         }
     }

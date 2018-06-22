@@ -28,7 +28,7 @@ namespace KryptKeeper
             var headers = GenerateColumnHeaders();
             listFiles.Columns.AddRange(headers);
         }
-
+        
         private static DataGridViewColumn[] GenerateColumnHeaders()
         {
             var columns = Properties.Settings.Default.fileListColumns;
@@ -40,11 +40,11 @@ namespace KryptKeeper
             var headers = new DataGridViewColumn[length];
             for (int i = 0; i < headers.Length; i++)
             {
-                var header = new DataGridViewColumn
+                var header = new DataGridViewTextBoxColumn
                 {
+                    Name = columns[i],
                     HeaderText = columns[i],
-                    Width = int.Parse(columnWidths[i]),
-                    CellTemplate = new DataGridViewTextBoxCell()
+                    Width = int.Parse(columnWidths[i])
                 };
                 headers[i] = header;
             }
@@ -106,10 +106,11 @@ namespace KryptKeeper
         {
             var openFileDialog = new OpenFileDialog { Multiselect = true };
             var openResult = openFileDialog.ShowDialog();
-            if (openResult != DialogResult.OK) return;
+            if (openResult != DialogResult.OK || openFileDialog.FileNames.Length <= 0) return;
             foreach (var path in openFileDialog.FileNames)
             {
             }
+            //listFiles.DataSource =
         }
 
         private void btnRemoveFiles_Click(object sender, EventArgs e)
@@ -229,7 +230,7 @@ namespace KryptKeeper
             var widths = new StringCollection();
             while (enumer.MoveNext())
             {
-                var header = (ColumnHeader)enumer.Current;
+                var header = (DataGridViewTextBoxColumn)enumer.Current;
                 if (header == null) break;
                 widths.Add(header.Width.ToString());
             }

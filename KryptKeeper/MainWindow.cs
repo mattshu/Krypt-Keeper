@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -28,21 +29,22 @@ namespace KryptKeeper
             listFiles.Columns.AddRange(headers);
         }
 
-        private static ColumnHeader[] GenerateColumnHeaders()
+        private static DataGridViewColumn[] GenerateColumnHeaders()
         {
             var columns = Properties.Settings.Default.fileListColumns;
             var columnWidths = Properties.Settings.Default.fileListColumnWidths;
             var length = columns.Count;
             if (length <= 0 || columns.Count != columnWidths.Count)
-                return new ColumnHeader[0];
+                return new DataGridViewColumn[0];
 
-            var headers = new ColumnHeader[length];
+            var headers = new DataGridViewColumn[length];
             for (int i = 0; i < headers.Length; i++)
             {
-                var header = new ColumnHeader
+                var header = new DataGridViewColumn
                 {
-                    Text = columns[i],
-                    Width = int.Parse(columnWidths[i])
+                    HeaderText = columns[i],
+                    Width = int.Parse(columnWidths[i]),
+                    CellTemplate = new DataGridViewTextBoxCell()
                 };
                 headers[i] = header;
             }
@@ -97,7 +99,17 @@ namespace KryptKeeper
 
         private void btnAddFiles_Click(object sender, EventArgs e)
         {
+            AddFilesToList();
+        }
 
+        private void AddFilesToList()
+        {
+            var openFileDialog = new OpenFileDialog { Multiselect = true };
+            var openResult = openFileDialog.ShowDialog();
+            if (openResult != DialogResult.OK) return;
+            foreach (var path in openFileDialog.FileNames)
+            {
+            }
         }
 
         private void btnRemoveFiles_Click(object sender, EventArgs e)
@@ -145,7 +157,7 @@ namespace KryptKeeper
 
         private void cbxEncryptionKeyType_SelectedIndexChanged(object sender, EventArgs e)
         {
-            UpdateFormKeyType(cbxEncryptionKeyType, btnBrowseEncrypt, txtEncryptionKey);
+            UpdateFormBasedOnKeyType(cbxEncryptionKeyType, btnBrowseEncrypt, txtEncryptionKey);
             if (chkUseEncryptSettings.Checked)
             {
                 cbxDecryptionKeyType.SelectedIndex = cbxEncryptionKeyType.SelectedIndex;
@@ -160,10 +172,10 @@ namespace KryptKeeper
 
         private void cbxDecryptionKeyType_SelectedIndexChanged(object sender, EventArgs e)
         {
-            UpdateFormKeyType(cbxDecryptionKeyType, btnBrowseDecrypt, txtDecryptionKey);
+            UpdateFormBasedOnKeyType(cbxDecryptionKeyType, btnBrowseDecrypt, txtDecryptionKey);
         }
 
-        private static void UpdateFormKeyType(ComboBox cbxKeyType, Button btnBrowse, TextBox txtKey)
+        private static void UpdateFormBasedOnKeyType(ComboBox cbxKeyType, Button btnBrowse, TextBox txtKey)
         {
             btnBrowse.Enabled = cbxKeyType.SelectedIndex == 1; // Key file
             if (cbxKeyType.SelectedIndex == 1) txtKey.Text = "";
@@ -171,15 +183,15 @@ namespace KryptKeeper
 
         private void btnBrowseEncrypt_Click(object sender, EventArgs e)
         {
-            txtEncryptionKey.Text = BrowseKeyFile();
+            txtEncryptionKey.Text = BrowseForKeyFile();
         }
 
         private void btnBrowseDecrypt_Click(object sender, EventArgs e)
         {
-            txtDecryptionKey.Text = BrowseKeyFile();
+            txtDecryptionKey.Text = BrowseForKeyFile();
         }
 
-        private static string BrowseKeyFile()
+        private static string BrowseForKeyFile()
         {
             var openFile = new OpenFileDialog();
             if (openFile.ShowDialog() != DialogResult.OK || !openFile.CheckFileExists) return "";
@@ -251,6 +263,7 @@ namespace KryptKeeper
         private static void ResetSettings()
         {
             var settings = Properties.Settings.Default;
+
             settings.encryptionAlgorithm = settings.decryptionAlgorithm = -1;
             settings.encryptionKeyType = settings.decryptionKeyType = -1;
             settings.encryptionKey = settings.decryptionKey = "";

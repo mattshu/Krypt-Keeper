@@ -108,11 +108,10 @@ namespace KryptKeeper
             var openFileDialog = new OpenFileDialog { Multiselect = true };
             var openResult = openFileDialog.ShowDialog();
             if (openResult != DialogResult.OK) return;
-            foreach (var path in openFileDialog.FileNames)
-            {
-                status.WriteLine($"Adding this path: {path}");
-            }
-            //listFiles.DataSource =
+            listFiles.DataSource = null;
+            var fileList = openFileDialog.FileNames.Select(path => new FileData(path)).ToList();
+            listFiles.DataSource = fileList;
+
         }
 
         private void BtnRemoveFiles_Click(object sender, EventArgs e)

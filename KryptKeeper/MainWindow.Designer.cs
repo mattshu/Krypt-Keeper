@@ -51,6 +51,7 @@
             this.CbxMaskInformation = new System.Windows.Forms.ComboBox();
             this.ChkMaskInformation = new System.Windows.Forms.CheckBox();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.txtStatus = new System.Windows.Forms.TextBox();
             this.progressBar = new System.Windows.Forms.ProgressBar();
             this.btnExport = new System.Windows.Forms.Button();
             this.btnClear = new System.Windows.Forms.Button();
@@ -58,7 +59,6 @@
             this.btnDecrypt = new System.Windows.Forms.Button();
             this.btnAddFiles = new System.Windows.Forms.Button();
             this.btnRemoveFiles = new System.Windows.Forms.Button();
-            this.txtStatus = new System.Windows.Forms.TextBox();
             this.tabMain.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.listFiles)).BeginInit();
@@ -336,6 +336,18 @@
             this.tabPage3.Text = "Status";
             this.tabPage3.UseVisualStyleBackColor = true;
             // 
+            // txtStatus
+            // 
+            this.txtStatus.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtStatus.Location = new System.Drawing.Point(6, 35);
+            this.txtStatus.Multiline = true;
+            this.txtStatus.Name = "txtStatus";
+            this.txtStatus.ReadOnly = true;
+            this.txtStatus.Size = new System.Drawing.Size(499, 179);
+            this.txtStatus.TabIndex = 7;
+            // 
             // progressBar
             // 
             this.progressBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -368,7 +380,6 @@
             // btnEncrypt
             // 
             this.btnEncrypt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnEncrypt.Enabled = false;
             this.btnEncrypt.Location = new System.Drawing.Point(200, 12);
             this.btnEncrypt.Name = "btnEncrypt";
             this.btnEncrypt.Size = new System.Drawing.Size(145, 66);
@@ -409,18 +420,6 @@
             this.btnRemoveFiles.Text = "Remove Selected Files...";
             this.btnRemoveFiles.UseVisualStyleBackColor = true;
             this.btnRemoveFiles.Click += new System.EventHandler(this.BtnRemoveFiles_Click);
-            // 
-            // txtStatus
-            // 
-            this.txtStatus.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtStatus.Location = new System.Drawing.Point(6, 35);
-            this.txtStatus.Multiline = true;
-            this.txtStatus.Name = "txtStatus";
-            this.txtStatus.ReadOnly = true;
-            this.txtStatus.Size = new System.Drawing.Size(499, 179);
-            this.txtStatus.TabIndex = 7;
             // 
             // MainWindow
             // 

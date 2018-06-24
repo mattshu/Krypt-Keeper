@@ -17,7 +17,8 @@ namespace KryptKeeper
     public partial class MainWindow : Form
     {
 
-        private Status status;
+        private readonly Status status;
+        private bool _showConfirmSettings = true;
 
         public MainWindow()
         {
@@ -121,7 +122,25 @@ namespace KryptKeeper
 
         private void BtnEncrypt_Click(object sender, EventArgs e)
         {
+            // TODO if (settings aren't complete || settings weren't viewed)
+            if (_showConfirmSettings)
+            {
+                var confirmSettingsDialog = new ConfirmSettingsDialog();
+                var confirmSettingsResult = confirmSettingsDialog.ShowDialog();
+                _showConfirmSettings = confirmSettingsDialog.ShowDialogAgain;
+                if (confirmSettingsResult == DialogResult.No)
+                {
+                    tabMain.SelectTab(1);
+                    return;
+                }
+            }
+            BeginEncryption();
+        }
 
+        private void BeginEncryption()
+        {
+            // TODO 
+            throw new NotImplementedException();
         }
 
         private void BtnDecrypt_Click(object sender, EventArgs e)

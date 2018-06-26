@@ -51,7 +51,7 @@
             this.CbxMaskInformation = new System.Windows.Forms.ComboBox();
             this.ChkMaskInformation = new System.Windows.Forms.CheckBox();
             this.tabPage3 = new System.Windows.Forms.TabPage();
-            this.txtStatus = new System.Windows.Forms.TextBox();
+            this.TxtStatus = new System.Windows.Forms.TextBox();
             this.progressBar = new System.Windows.Forms.ProgressBar();
             this.btnExport = new System.Windows.Forms.Button();
             this.btnClear = new System.Windows.Forms.Button();
@@ -325,7 +325,7 @@
             // 
             // tabPage3
             // 
-            this.tabPage3.Controls.Add(this.txtStatus);
+            this.tabPage3.Controls.Add(this.TxtStatus);
             this.tabPage3.Controls.Add(this.progressBar);
             this.tabPage3.Controls.Add(this.btnExport);
             this.tabPage3.Controls.Add(this.btnClear);
@@ -337,17 +337,17 @@
             this.tabPage3.Text = "Status";
             this.tabPage3.UseVisualStyleBackColor = true;
             // 
-            // txtStatus
+            // TxtStatus
             // 
-            this.txtStatus.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.TxtStatus.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtStatus.Location = new System.Drawing.Point(6, 35);
-            this.txtStatus.Multiline = true;
-            this.txtStatus.Name = "txtStatus";
-            this.txtStatus.ReadOnly = true;
-            this.txtStatus.Size = new System.Drawing.Size(499, 179);
-            this.txtStatus.TabIndex = 7;
+            this.TxtStatus.Location = new System.Drawing.Point(6, 35);
+            this.TxtStatus.Multiline = true;
+            this.TxtStatus.Name = "TxtStatus";
+            this.TxtStatus.ReadOnly = true;
+            this.TxtStatus.Size = new System.Drawing.Size(499, 179);
+            this.TxtStatus.TabIndex = 7;
             // 
             // progressBar
             // 
@@ -484,7 +484,7 @@
         private System.Windows.Forms.Button BtnBrowseDecrypt;
         private System.Windows.Forms.Button BtnBrowseEncrypt;
         private System.Windows.Forms.DataGridView listFiles;
-        private System.Windows.Forms.TextBox txtStatus;
+        private System.Windows.Forms.TextBox TxtStatus;
     }
 }
 

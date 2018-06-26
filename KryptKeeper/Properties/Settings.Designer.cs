@@ -75,25 +75,6 @@ namespace KryptKeeper.Properties {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute(@"<?xml version=""1.0"" encoding=""utf-16""?>
 <ArrayOfString xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
-  <string>Name</string>
-  <string>Extension</string>
-  <string>Size</string>
-  <string>Path</string>
-  <string>MD5</string>
-</ArrayOfString>")]
-        public global::System.Collections.Specialized.StringCollection fileListColumns {
-            get {
-                return ((global::System.Collections.Specialized.StringCollection)(this["fileListColumns"]));
-            }
-            set {
-                this["fileListColumns"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute(@"<?xml version=""1.0"" encoding=""utf-16""?>
-<ArrayOfString xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
   <string>60</string>
   <string>60</string>
   <string>60</string>

@@ -30,7 +30,7 @@
         {
             this.TabMain = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.listFiles = new System.Windows.Forms.DataGridView();
+            this.FileListGridView = new System.Windows.Forms.DataGridView();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.BtnBrowseDecrypt = new System.Windows.Forms.Button();
@@ -53,15 +53,17 @@
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.TxtStatus = new System.Windows.Forms.TextBox();
             this.progressBar = new System.Windows.Forms.ProgressBar();
-            this.btnExport = new System.Windows.Forms.Button();
-            this.btnClear = new System.Windows.Forms.Button();
-            this.btnEncrypt = new System.Windows.Forms.Button();
-            this.btnDecrypt = new System.Windows.Forms.Button();
-            this.btnAddFiles = new System.Windows.Forms.Button();
-            this.btnRemoveFiles = new System.Windows.Forms.Button();
+            this.BtnExport = new System.Windows.Forms.Button();
+            this.BtnClear = new System.Windows.Forms.Button();
+            this.BtnEncrypt = new System.Windows.Forms.Button();
+            this.BtnDecrypt = new System.Windows.Forms.Button();
+            this.BtnAddFiles = new System.Windows.Forms.Button();
+            this.BtnRemoveFiles = new System.Windows.Forms.Button();
+            this.BtnEncryptSelected = new System.Windows.Forms.Button();
+            this.BtnDecryptSelected = new System.Windows.Forms.Button();
             this.TabMain.SuspendLayout();
             this.tabPage1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.listFiles)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.FileListGridView)).BeginInit();
             this.tabPage2.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -85,7 +87,7 @@
             // 
             // tabPage1
             // 
-            this.tabPage1.Controls.Add(this.listFiles);
+            this.tabPage1.Controls.Add(this.FileListGridView);
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
@@ -94,20 +96,24 @@
             this.tabPage1.Text = "File List";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
-            // listFiles
+            // FileListGridView
             // 
-            this.listFiles.AllowUserToAddRows = false;
-            this.listFiles.AllowUserToDeleteRows = false;
-            this.listFiles.AllowUserToOrderColumns = true;
-            this.listFiles.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.FileListGridView.AllowUserToAddRows = false;
+            this.FileListGridView.AllowUserToDeleteRows = false;
+            this.FileListGridView.AllowUserToOrderColumns = true;
+            this.FileListGridView.AllowUserToResizeRows = false;
+            this.FileListGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.listFiles.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.listFiles.Location = new System.Drawing.Point(3, 3);
-            this.listFiles.Name = "listFiles";
-            this.listFiles.ReadOnly = true;
-            this.listFiles.Size = new System.Drawing.Size(505, 243);
-            this.listFiles.TabIndex = 0;
+            this.FileListGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.FileListGridView.Location = new System.Drawing.Point(3, 3);
+            this.FileListGridView.Name = "FileListGridView";
+            this.FileListGridView.ReadOnly = true;
+            this.FileListGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.FileListGridView.Size = new System.Drawing.Size(505, 243);
+            this.FileListGridView.TabIndex = 0;
+            this.FileListGridView.DataSourceChanged += new System.EventHandler(this.FileListGridView_DataSourceChanged);
+            this.FileListGridView.SelectionChanged += new System.EventHandler(this.FileList_SelectionChanged);
             // 
             // tabPage2
             // 
@@ -327,8 +333,8 @@
             // 
             this.tabPage3.Controls.Add(this.TxtStatus);
             this.tabPage3.Controls.Add(this.progressBar);
-            this.tabPage3.Controls.Add(this.btnExport);
-            this.tabPage3.Controls.Add(this.btnClear);
+            this.tabPage3.Controls.Add(this.BtnExport);
+            this.tabPage3.Controls.Add(this.BtnClear);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
@@ -348,6 +354,7 @@
             this.TxtStatus.ReadOnly = true;
             this.TxtStatus.Size = new System.Drawing.Size(499, 179);
             this.TxtStatus.TabIndex = 7;
+            this.TxtStatus.TextChanged += new System.EventHandler(this.TxtStatus_TextChanged);
             // 
             // progressBar
             // 
@@ -358,80 +365,105 @@
             this.progressBar.Size = new System.Drawing.Size(499, 23);
             this.progressBar.TabIndex = 6;
             // 
-            // btnExport
+            // BtnExport
             // 
-            this.btnExport.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnExport.Location = new System.Drawing.Point(450, 220);
-            this.btnExport.Name = "btnExport";
-            this.btnExport.Size = new System.Drawing.Size(56, 23);
-            this.btnExport.TabIndex = 3;
-            this.btnExport.Text = "Export...";
-            this.btnExport.UseVisualStyleBackColor = true;
+            this.BtnExport.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.BtnExport.Enabled = false;
+            this.BtnExport.Location = new System.Drawing.Point(450, 220);
+            this.BtnExport.Name = "BtnExport";
+            this.BtnExport.Size = new System.Drawing.Size(56, 23);
+            this.BtnExport.TabIndex = 3;
+            this.BtnExport.Text = "Export...";
+            this.BtnExport.UseVisualStyleBackColor = true;
             // 
-            // btnClear
+            // BtnClear
             // 
-            this.btnClear.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnClear.Location = new System.Drawing.Point(388, 220);
-            this.btnClear.Name = "btnClear";
-            this.btnClear.Size = new System.Drawing.Size(56, 23);
-            this.btnClear.TabIndex = 4;
-            this.btnClear.Text = "Clear";
-            this.btnClear.UseVisualStyleBackColor = true;
+            this.BtnClear.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.BtnClear.Location = new System.Drawing.Point(388, 220);
+            this.BtnClear.Name = "BtnClear";
+            this.BtnClear.Size = new System.Drawing.Size(56, 23);
+            this.BtnClear.TabIndex = 4;
+            this.BtnClear.Text = "Clear";
+            this.BtnClear.UseVisualStyleBackColor = true;
             // 
-            // btnEncrypt
+            // BtnEncrypt
             // 
-            this.btnEncrypt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnEncrypt.Enabled = false;
-            this.btnEncrypt.Location = new System.Drawing.Point(200, 12);
-            this.btnEncrypt.Name = "btnEncrypt";
-            this.btnEncrypt.Size = new System.Drawing.Size(145, 66);
-            this.btnEncrypt.TabIndex = 2;
-            this.btnEncrypt.Text = "Encrypt Files";
-            this.btnEncrypt.UseVisualStyleBackColor = true;
-            this.btnEncrypt.Click += new System.EventHandler(this.BtnEncrypt_Click);
+            this.BtnEncrypt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.BtnEncrypt.Enabled = false;
+            this.BtnEncrypt.Location = new System.Drawing.Point(200, 12);
+            this.BtnEncrypt.Name = "BtnEncrypt";
+            this.BtnEncrypt.Size = new System.Drawing.Size(145, 30);
+            this.BtnEncrypt.TabIndex = 2;
+            this.BtnEncrypt.Text = "Encrypt All Files";
+            this.BtnEncrypt.UseVisualStyleBackColor = true;
+            this.BtnEncrypt.Click += new System.EventHandler(this.BtnEncrypt_Click);
             // 
-            // btnDecrypt
+            // BtnDecrypt
             // 
-            this.btnDecrypt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnDecrypt.Enabled = false;
-            this.btnDecrypt.Location = new System.Drawing.Point(386, 12);
-            this.btnDecrypt.Name = "btnDecrypt";
-            this.btnDecrypt.Size = new System.Drawing.Size(145, 66);
-            this.btnDecrypt.TabIndex = 2;
-            this.btnDecrypt.Text = "Decrypt Files";
-            this.btnDecrypt.UseVisualStyleBackColor = true;
-            this.btnDecrypt.Click += new System.EventHandler(this.BtnDecrypt_Click);
+            this.BtnDecrypt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.BtnDecrypt.Enabled = false;
+            this.BtnDecrypt.Location = new System.Drawing.Point(386, 12);
+            this.BtnDecrypt.Name = "BtnDecrypt";
+            this.BtnDecrypt.Size = new System.Drawing.Size(145, 30);
+            this.BtnDecrypt.TabIndex = 2;
+            this.BtnDecrypt.Text = "Decrypt All Files";
+            this.BtnDecrypt.UseVisualStyleBackColor = true;
+            this.BtnDecrypt.Click += new System.EventHandler(this.BtnDecrypt_Click);
             // 
-            // btnAddFiles
+            // BtnAddFiles
             // 
-            this.btnAddFiles.Location = new System.Drawing.Point(12, 12);
-            this.btnAddFiles.Name = "btnAddFiles";
-            this.btnAddFiles.Size = new System.Drawing.Size(145, 30);
-            this.btnAddFiles.TabIndex = 2;
-            this.btnAddFiles.Text = "Add Files...";
-            this.btnAddFiles.UseVisualStyleBackColor = true;
-            this.btnAddFiles.Click += new System.EventHandler(this.BtnAddFiles_Click);
+            this.BtnAddFiles.Location = new System.Drawing.Point(12, 12);
+            this.BtnAddFiles.Name = "BtnAddFiles";
+            this.BtnAddFiles.Size = new System.Drawing.Size(145, 30);
+            this.BtnAddFiles.TabIndex = 2;
+            this.BtnAddFiles.Text = "Add Files...";
+            this.BtnAddFiles.UseVisualStyleBackColor = true;
+            this.BtnAddFiles.Click += new System.EventHandler(this.BtnAddFiles_Click);
             // 
-            // btnRemoveFiles
+            // BtnRemoveFiles
             // 
-            this.btnRemoveFiles.Enabled = false;
-            this.btnRemoveFiles.Location = new System.Drawing.Point(12, 48);
-            this.btnRemoveFiles.Name = "btnRemoveFiles";
-            this.btnRemoveFiles.Size = new System.Drawing.Size(145, 30);
-            this.btnRemoveFiles.TabIndex = 2;
-            this.btnRemoveFiles.Text = "Remove Selected Files...";
-            this.btnRemoveFiles.UseVisualStyleBackColor = true;
-            this.btnRemoveFiles.Click += new System.EventHandler(this.BtnRemoveFiles_Click);
+            this.BtnRemoveFiles.Enabled = false;
+            this.BtnRemoveFiles.Location = new System.Drawing.Point(12, 48);
+            this.BtnRemoveFiles.Name = "BtnRemoveFiles";
+            this.BtnRemoveFiles.Size = new System.Drawing.Size(145, 30);
+            this.BtnRemoveFiles.TabIndex = 2;
+            this.BtnRemoveFiles.Text = "Remove Selected Files...";
+            this.BtnRemoveFiles.UseVisualStyleBackColor = true;
+            this.BtnRemoveFiles.Click += new System.EventHandler(this.BtnRemoveFiles_Click);
+            // 
+            // BtnEncryptSelected
+            // 
+            this.BtnEncryptSelected.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.BtnEncryptSelected.Enabled = false;
+            this.BtnEncryptSelected.Location = new System.Drawing.Point(200, 48);
+            this.BtnEncryptSelected.Name = "BtnEncryptSelected";
+            this.BtnEncryptSelected.Size = new System.Drawing.Size(145, 30);
+            this.BtnEncryptSelected.TabIndex = 3;
+            this.BtnEncryptSelected.Text = "Encrypt Selected Files";
+            this.BtnEncryptSelected.UseVisualStyleBackColor = true;
+            // 
+            // BtnDecryptSelected
+            // 
+            this.BtnDecryptSelected.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.BtnDecryptSelected.Enabled = false;
+            this.BtnDecryptSelected.Location = new System.Drawing.Point(386, 48);
+            this.BtnDecryptSelected.Name = "BtnDecryptSelected";
+            this.BtnDecryptSelected.Size = new System.Drawing.Size(145, 30);
+            this.BtnDecryptSelected.TabIndex = 4;
+            this.BtnDecryptSelected.Text = "Decrypt Selected Files";
+            this.BtnDecryptSelected.UseVisualStyleBackColor = true;
             // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(543, 368);
-            this.Controls.Add(this.btnDecrypt);
-            this.Controls.Add(this.btnRemoveFiles);
-            this.Controls.Add(this.btnAddFiles);
-            this.Controls.Add(this.btnEncrypt);
+            this.Controls.Add(this.BtnDecryptSelected);
+            this.Controls.Add(this.BtnEncryptSelected);
+            this.Controls.Add(this.BtnDecrypt);
+            this.Controls.Add(this.BtnRemoveFiles);
+            this.Controls.Add(this.BtnAddFiles);
+            this.Controls.Add(this.BtnEncrypt);
             this.Controls.Add(this.TabMain);
             this.MinimumSize = new System.Drawing.Size(559, 407);
             this.Name = "MainWindow";
@@ -442,7 +474,7 @@
             this.Shown += new System.EventHandler(this.MainWindow_Shown);
             this.TabMain.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.listFiles)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.FileListGridView)).EndInit();
             this.tabPage2.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
@@ -458,17 +490,17 @@
         private System.Windows.Forms.TabControl TabMain;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage tabPage2;
-        private System.Windows.Forms.Button btnEncrypt;
-        private System.Windows.Forms.Button btnDecrypt;
-        private System.Windows.Forms.Button btnAddFiles;
-        private System.Windows.Forms.Button btnRemoveFiles;
+        private System.Windows.Forms.Button BtnEncrypt;
+        private System.Windows.Forms.Button BtnDecrypt;
+        private System.Windows.Forms.Button BtnAddFiles;
+        private System.Windows.Forms.Button BtnRemoveFiles;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.ComboBox CbxMaskInformation;
         private System.Windows.Forms.CheckBox ChkMaskInformation;
         private System.Windows.Forms.CheckBox ChkRemoveAfterEncrypt;
         private System.Windows.Forms.TabPage tabPage3;
-        private System.Windows.Forms.Button btnExport;
-        private System.Windows.Forms.Button btnClear;
+        private System.Windows.Forms.Button BtnExport;
+        private System.Windows.Forms.Button BtnClear;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.TextBox TxtEncryptionKey;
         private System.Windows.Forms.ProgressBar progressBar;
@@ -484,8 +516,10 @@
         private System.Windows.Forms.Button btnExit;
         private System.Windows.Forms.Button BtnBrowseDecrypt;
         private System.Windows.Forms.Button BtnBrowseEncrypt;
-        private System.Windows.Forms.DataGridView listFiles;
+        private System.Windows.Forms.DataGridView FileListGridView;
         private System.Windows.Forms.TextBox TxtStatus;
+        private System.Windows.Forms.Button BtnEncryptSelected;
+        private System.Windows.Forms.Button BtnDecryptSelected;
     }
 }
 

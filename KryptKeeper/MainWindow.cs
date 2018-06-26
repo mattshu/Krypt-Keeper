@@ -17,43 +17,29 @@ namespace KryptKeeper
 {
     public partial class MainWindow : Form
     {
+        /* 
+         * TODO *
+         * - Fix column resize problem when resizing past border
+        */
 
         private readonly Status _status;
 
         private bool _settingsNeedConfirmed = true;
         private bool _settingsNotViewed = false;
 
+        private List<FileData> _fileList = new List<FileData>();
+
         public MainWindow()
         {
             InitializeComponent();
-            AddFileListColumns();
             _status = new Status(TxtStatus);
         }
 
-        private void AddFileListColumns()
+        private void LoadFileListColumnWidths()
         {
-            listFiles.Columns.Clear();
-            var headers = GenerateColumnHeaders();
-            listFiles.Columns.AddRange(headers);
-        }
-
-        private static DataGridViewColumn[] GenerateColumnHeaders()
-        {
-            var columns = Properties.Settings.Default.fileListColumns;
-            var columnWidths = Properties.Settings.Default.fileListColumnWidths;
-            var length = columns.Count;
-            var headers = new DataGridViewColumn[length];
-            for (int i = 0; i < headers.Length; i++)
-            {
-                var header = new DataGridViewTextBoxColumn
-                {
-                    Name = columns[i],
-                    HeaderText = columns[i],
-                    Width = int.Parse(columnWidths[i])
-                };
-                headers[i] = header;
-            }
-            return headers;
+            var widths = Properties.Settings.Default.fileListColumnWidths;
+            for (int i = 0; i < FileListGridView.ColumnCount; i++)
+                FileListGridView.Columns[i].Width = int.Parse(widths[i]);
         }
 
         private void MainWindow_Shown(object sender, EventArgs e)
@@ -109,15 +95,40 @@ namespace KryptKeeper
             var openFileDialog = new OpenFileDialog { Multiselect = true };
             var openResult = openFileDialog.ShowDialog();
             if (openResult != DialogResult.OK) return;
-            listFiles.Columns.Clear();
-            var fileList = openFileDialog.FileNames.Select(path => new FileData(path)).ToList();
-            listFiles.DataSource = fileList;
             
+            FileListGridView.Columns.Clear();
+            _fileList = openFileDialog.FileNames.Select(path => new FileData(path)).ToList();
+            FileListGridView.DataSource = _fileList;
+            LoadFileListColumnWidths();
+            EnableControls(FileListGridView.RowCount > 0);
+        }
+
+
+        private void EnableControls(bool state)
+        {
+            BtnEncrypt.Enabled = BtnDecrypt.Enabled = state;
         }
 
         private void BtnRemoveFiles_Click(object sender, EventArgs e)
         {
+            RemoveSelectedFiles();
+        }
 
+        private void RemoveSelectedFiles()
+        {
+            int selectedCount = FileListGridView.SelectedRows.Count;
+            if (selectedCount <= 0) return;
+            for (int i = FileListGridView.RowCount - 1; i >= 0; i--)
+                if (FileListGridView.Rows[i].Selected)
+                    _fileList.RemoveAt(i);
+            RefreshFileListGridView();
+            FileListGridView.ClearSelection();
+        }
+
+        private void RefreshFileListGridView()
+        {
+            FileListGridView.DataSource = null;
+            FileListGridView.DataSource = _fileList;
         }
 
         private bool SettingsAreDefault()
@@ -226,6 +237,11 @@ namespace KryptKeeper
             TxtDecryptionKey.Text = BrowseForKeyFile();
         }
 
+        private void FileList_SelectionChanged(object sender, EventArgs e)
+        {
+            BtnRemoveFiles.Enabled = BtnEncryptSelected.Enabled = BtnDecryptSelected.Enabled = FileListGridView.SelectedRows.Count > 0;
+        }
+
         private static string BrowseForKeyFile()
         {
             var openFile = new OpenFileDialog();
@@ -236,6 +252,11 @@ namespace KryptKeeper
         private void BtnExit_Click(object sender, EventArgs e)
         {
             Close();
+        }
+
+        private void TxtStatus_TextChanged(object sender, EventArgs e)
+        {
+            BtnExport.Enabled = TxtStatus.Text.Length > 0;
         }
 
         private void MainWindow_FormClosing(object sender, FormClosingEventArgs e)
@@ -262,7 +283,7 @@ namespace KryptKeeper
 
         private void SaveFileListColumnWidths()
         {
-            var enumer = listFiles.Columns.GetEnumerator();
+            var enumer = FileListGridView.Columns.GetEnumerator();
             var widths = new StringCollection();
             while (enumer.MoveNext())
             {
@@ -311,5 +332,9 @@ namespace KryptKeeper
             settings.Save();
         }
 
+        private void FileListGridView_DataSourceChanged(object sender, EventArgs e)
+        {
+            EnableControls(FileListGridView.RowCount > 0);
+        }
     }
 }

@@ -381,6 +381,7 @@
             // btnEncrypt
             // 
             this.btnEncrypt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnEncrypt.Enabled = false;
             this.btnEncrypt.Location = new System.Drawing.Point(200, 12);
             this.btnEncrypt.Name = "btnEncrypt";
             this.btnEncrypt.Size = new System.Drawing.Size(145, 66);

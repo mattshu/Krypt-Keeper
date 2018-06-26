@@ -111,18 +111,6 @@ namespace KryptKeeper.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool rememberSettings {
-            get {
-                return ((bool)(this["rememberSettings"]));
-            }
-            set {
-                this["rememberSettings"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute(@"<?xml version=""1.0"" encoding=""utf-16""?>
 <ArrayOfString xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
   <string>AES</string>
@@ -202,13 +190,25 @@ namespace KryptKeeper.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool encryptionRemoveAfterEncrypt {
             get {
                 return ((bool)(this["encryptionRemoveAfterEncrypt"]));
             }
             set {
                 this["encryptionRemoveAfterEncrypt"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool rememberSettings {
+            get {
+                return ((bool)(this["rememberSettings"]));
+            }
+            set {
+                this["rememberSettings"] = value;
             }
         }
     }

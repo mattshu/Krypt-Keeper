@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Forms.VisualStyles;
 using System.Xml;
 
 namespace KryptKeeper
@@ -31,6 +32,7 @@ namespace KryptKeeper
 
         private void AddFileListColumns()
         {
+            listFiles.Columns.Clear();
             var headers = GenerateColumnHeaders();
             listFiles.Columns.AddRange(headers);
         }
@@ -71,16 +73,14 @@ namespace KryptKeeper
                 CbxDecryptAlgorithms.Items.Add(a);
             }
 
-            if (!settings.rememberSettings) return;
-
-            ChkRememberSettings.Checked = true;
-
             CbxEncryptAlgorithms.SelectedIndex = settings.encryptionAlgorithm;
             ChkMaskInformation.Checked = settings.encryptionMaskInformation;
             CbxMaskInformation.SelectedIndex = settings.encryptionMaskInfoType;
             ChkRemoveAfterEncrypt.Checked = settings.encryptionRemoveAfterEncrypt;
             CbxEncryptionKeyType.SelectedIndex = settings.encryptionKeyType;
             TxtEncryptionKey.Text = settings.encryptionKey;
+
+            if (!SettingsAreDefault()) ChkRememberSettings.Checked = true;
 
             if (settings.useEncryptionSettings)
                 CopyEncryptionSettings();
@@ -97,7 +97,6 @@ namespace KryptKeeper
                 TxtDecryptionKey.Text = settings.decryptionKey;
             }
 
-            ChkRemoveAfterEncrypt.Checked = settings.encryptionRemoveAfterEncrypt;
         }
 
         private void BtnAddFiles_Click(object sender, EventArgs e)
@@ -110,11 +109,10 @@ namespace KryptKeeper
             var openFileDialog = new OpenFileDialog { Multiselect = true };
             var openResult = openFileDialog.ShowDialog();
             if (openResult != DialogResult.OK) return;
-            foreach (var path in openFileDialog.FileNames)
-            {
-                _status.WriteLine($"Adding this path: {path}");
-            }
-            //listFiles.DataSource =
+            listFiles.Columns.Clear();
+            var fileList = openFileDialog.FileNames.Select(path => new FileData(path)).ToList();
+            listFiles.DataSource = fileList;
+            
         }
 
         private void BtnRemoveFiles_Click(object sender, EventArgs e)
@@ -128,7 +126,8 @@ namespace KryptKeeper
             bool settingsModified = TxtEncryptionKey.Modified || TxtDecryptionKey.Modified ||
                                     CbxEncryptAlgorithms.SelectedIndex > -1 ||
                                     CbxDecryptAlgorithms.SelectedIndex > -1 ||
-                                    CbxEncryptionKeyType.SelectedIndex > -1 || CbxDecryptionKeyType.SelectedIndex > -1;
+                                    CbxEncryptionKeyType.SelectedIndex > -1 ||
+                                    CbxDecryptionKeyType.SelectedIndex > -1;
             return !settingsModified;
         }
 
@@ -243,6 +242,8 @@ namespace KryptKeeper
         {
             SaveFileListColumnWidths();
 
+            if (SettingsAreDefault()) return;
+
             if (ChkRememberSettings.Checked)
             {
                 SaveSettings();
@@ -290,8 +291,6 @@ namespace KryptKeeper
             settings.decryptionAlgorithm = CbxDecryptAlgorithms.SelectedIndex;
             settings.decryptionKey = TxtDecryptionKey.Text;
             settings.decryptionKeyType = CbxDecryptionKeyType.SelectedIndex;
-
-            settings.rememberSettings = ChkRememberSettings.Checked;
 
             settings.Save();
         }

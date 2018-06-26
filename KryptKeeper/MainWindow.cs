@@ -17,22 +17,24 @@ namespace KryptKeeper
     public partial class MainWindow : Form
     {
 
-        private readonly Status status;
-        private bool _showConfirmSettings = true;
+        private readonly Status _status;
+
+        private bool _settingsNeedConfirmed = true;
+        private bool _settingsNotViewed = false;
 
         public MainWindow()
         {
             InitializeComponent();
             AddFileListColumns();
-            status = new Status(txtStatus);
+            _status = new Status(TxtStatus);
         }
-        
+
         private void AddFileListColumns()
         {
             var headers = GenerateColumnHeaders();
             listFiles.Columns.AddRange(headers);
         }
-        
+
         private static DataGridViewColumn[] GenerateColumnHeaders()
         {
             var columns = Properties.Settings.Default.fileListColumns;
@@ -84,7 +86,7 @@ namespace KryptKeeper
                 CopyEncryptionSettings();
 
             else
-            { 
+            {
                 ChkUseEncryptSettings.Checked = false;
                 CbxDecryptionKeyType.Enabled = true;
                 CbxDecryptAlgorithms.Enabled = true;
@@ -108,10 +110,11 @@ namespace KryptKeeper
             var openFileDialog = new OpenFileDialog { Multiselect = true };
             var openResult = openFileDialog.ShowDialog();
             if (openResult != DialogResult.OK) return;
-            listFiles.DataSource = null;
-            var fileList = openFileDialog.FileNames.Select(path => new FileData(path)).ToList();
-            listFiles.DataSource = fileList;
-
+            foreach (var path in openFileDialog.FileNames)
+            {
+                _status.WriteLine($"Adding this path: {path}");
+            }
+            //listFiles.DataSource =
         }
 
         private void BtnRemoveFiles_Click(object sender, EventArgs e)
@@ -119,17 +122,32 @@ namespace KryptKeeper
 
         }
 
+        private bool SettingsAreDefault()
+        {
+            if (_settingsNotViewed) return true;
+            bool settingsModified = TxtEncryptionKey.Modified || TxtDecryptionKey.Modified ||
+                                    CbxEncryptAlgorithms.SelectedIndex > -1 ||
+                                    CbxDecryptAlgorithms.SelectedIndex > -1 ||
+                                    CbxEncryptionKeyType.SelectedIndex > -1 || CbxDecryptionKeyType.SelectedIndex > -1;
+            return !settingsModified;
+        }
+
+        private void TabMain_TabIndexChanged(object sender, EventArgs e)
+        {
+            if (TabMain.TabIndex == 1)
+                _settingsNotViewed = false;
+        }
+
         private void BtnEncrypt_Click(object sender, EventArgs e)
         {
-            // TODO if (settings aren't complete || settings weren't viewed)
-            if (_showConfirmSettings)
+            if (SettingsAreDefault() || _settingsNeedConfirmed)
             {
                 var confirmSettingsDialog = new ConfirmSettingsDialog();
                 var confirmSettingsResult = confirmSettingsDialog.ShowDialog();
-                _showConfirmSettings = confirmSettingsDialog.ShowDialogAgain;
+                _settingsNeedConfirmed = confirmSettingsDialog.ShowAgain;
                 if (confirmSettingsResult == DialogResult.No)
                 {
-                    tabMain.SelectTab(1);
+                    TabMain.SelectTab(1);
                     return;
                 }
             }
@@ -144,7 +162,8 @@ namespace KryptKeeper
 
         private void BtnDecrypt_Click(object sender, EventArgs e)
         {
-
+            // TODO 
+            throw new NotImplementedException();
         }
 
         private void CbxEncryptAlgorithms_SelectedIndexChanged(object sender, EventArgs e)
@@ -161,7 +180,6 @@ namespace KryptKeeper
         private void ChkUseEncryptSettings_CheckedChanged(object sender, EventArgs e)
         {
             if (ChkUseEncryptSettings.Checked) CopyEncryptionSettings();
-
             CbxDecryptAlgorithms.Enabled = !ChkUseEncryptSettings.Checked;
             CbxDecryptionKeyType.Enabled = !ChkUseEncryptSettings.Checked;
             TxtDecryptionKey.ReadOnly = ChkUseEncryptSettings.Checked;
@@ -179,9 +197,7 @@ namespace KryptKeeper
         {
             UpdateFormBasedOnKeyType(CbxEncryptionKeyType, BtnBrowseEncrypt, TxtEncryptionKey);
             if (ChkUseEncryptSettings.Checked)
-            {
                 CbxDecryptionKeyType.SelectedIndex = CbxEncryptionKeyType.SelectedIndex;
-            }
         }
 
         private void TxtEncryptionKey_TextChanged(object sender, EventArgs e)
@@ -295,5 +311,6 @@ namespace KryptKeeper
 
             settings.Save();
         }
+
     }
 }

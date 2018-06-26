@@ -13,7 +13,7 @@ namespace KryptKeeper
     public partial class ConfirmSettingsDialog : Form
     {
 
-        public bool ShowDialogAgain { get; private set; } = true;
+        public bool ShowAgain { get; private set; } = true;
 
         public ConfirmSettingsDialog()
         {
@@ -22,7 +22,7 @@ namespace KryptKeeper
 
         private void ChkDoNotAskAgain_CheckedChanged(object sender, EventArgs e)
         {
-            ShowDialogAgain = !ChkDoNotAskAgain.Checked;
+            ShowAgain = !ChkDoNotAskAgain.Checked;
         }
 
         private void BtnYes_Click(object sender, EventArgs e)

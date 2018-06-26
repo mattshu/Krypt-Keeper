@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.tabMain = new System.Windows.Forms.TabControl();
+            this.TabMain = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.listFiles = new System.Windows.Forms.DataGridView();
             this.tabPage2 = new System.Windows.Forms.TabPage();
@@ -59,7 +59,7 @@
             this.btnDecrypt = new System.Windows.Forms.Button();
             this.btnAddFiles = new System.Windows.Forms.Button();
             this.btnRemoveFiles = new System.Windows.Forms.Button();
-            this.tabMain.SuspendLayout();
+            this.TabMain.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.listFiles)).BeginInit();
             this.tabPage2.SuspendLayout();
@@ -68,19 +68,20 @@
             this.tabPage3.SuspendLayout();
             this.SuspendLayout();
             // 
-            // tabMain
+            // TabMain
             // 
-            this.tabMain.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.TabMain.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.tabMain.Controls.Add(this.tabPage1);
-            this.tabMain.Controls.Add(this.tabPage2);
-            this.tabMain.Controls.Add(this.tabPage3);
-            this.tabMain.Location = new System.Drawing.Point(12, 81);
-            this.tabMain.Name = "tabMain";
-            this.tabMain.SelectedIndex = 0;
-            this.tabMain.Size = new System.Drawing.Size(519, 275);
-            this.tabMain.TabIndex = 1;
+            this.TabMain.Controls.Add(this.tabPage1);
+            this.TabMain.Controls.Add(this.tabPage2);
+            this.TabMain.Controls.Add(this.tabPage3);
+            this.TabMain.Location = new System.Drawing.Point(12, 81);
+            this.TabMain.Name = "TabMain";
+            this.TabMain.SelectedIndex = 0;
+            this.TabMain.Size = new System.Drawing.Size(519, 275);
+            this.TabMain.TabIndex = 1;
+            this.TabMain.TabIndexChanged += new System.EventHandler(this.TabMain_TabIndexChanged);
             // 
             // tabPage1
             // 
@@ -430,7 +431,7 @@
             this.Controls.Add(this.btnRemoveFiles);
             this.Controls.Add(this.btnAddFiles);
             this.Controls.Add(this.btnEncrypt);
-            this.Controls.Add(this.tabMain);
+            this.Controls.Add(this.TabMain);
             this.MinimumSize = new System.Drawing.Size(559, 407);
             this.Name = "MainWindow";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
@@ -438,7 +439,7 @@
             this.Text = "Krypt Keeper - File Security";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainWindow_FormClosing);
             this.Shown += new System.EventHandler(this.MainWindow_Shown);
-            this.tabMain.ResumeLayout(false);
+            this.TabMain.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.listFiles)).EndInit();
             this.tabPage2.ResumeLayout(false);
@@ -453,7 +454,7 @@
         }
 
         #endregion
-        private System.Windows.Forms.TabControl tabMain;
+        private System.Windows.Forms.TabControl TabMain;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.Button btnEncrypt;

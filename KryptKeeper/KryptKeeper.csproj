@@ -51,6 +51,7 @@
     <Compile Include="ConfirmSettingsDialog.Designer.cs">
       <DependentUpon>ConfirmSettingsDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="Encryptor.cs" />
     <Compile Include="FileData.cs" />
     <Compile Include="MainWindow.cs">
       <SubType>Form</SubType>

@@ -45,6 +45,7 @@ namespace KryptKeeper
         private void MainWindow_Shown(object sender, EventArgs e)
         {
             LoadSettings();
+            Encryptor.AES();
         }
 
         private void LoadSettings()
@@ -173,7 +174,7 @@ namespace KryptKeeper
         private void BtnDecrypt_Click(object sender, EventArgs e)
         {
             // TODO 
-            throw new NotImplementedException();
+
         }
 
         private void CbxEncryptAlgorithms_SelectedIndexChanged(object sender, EventArgs e)

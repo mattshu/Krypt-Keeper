@@ -45,15 +45,16 @@ namespace KryptKeeper
         private void MainWindow_Shown(object sender, EventArgs e)
         {
             LoadSettings();
-            // Test Encryption settings
             var options = new CipherOptions
             {
-                Mode = CipherMode.AES,
-                Key = Encoding.ASCII.GetBytes(@"This is my super long passphrase key"),
-                Data = Encoding.ASCII.GetBytes("@This is the example string I'm trying to encrypt.")
+                Mode = CipherAlgorithm.AES,
+                Key = Encoding.Default.GetBytes("This is just a test")
             };
-            Console.WriteLine(Convert.ToBase64String(Cipher.Encrypt(options)));
+            Cipher.Encrypt(@"D:\\test.txt", options);
+            // remove test.txt before continuing
+            Cipher.Decrypt(@"D:\\test.txt.krpt", options);
         }
+
 
         private void LoadSettings()
         {

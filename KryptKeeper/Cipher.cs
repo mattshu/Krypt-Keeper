@@ -1,92 +1,93 @@
 ﻿using System;
+using System.Collections;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
+using System.Text;
 
 namespace KryptKeeper
 {
-    public enum CipherMode
-    {
-        AES,
-        RIJNDAEL,
-        DES,
-        RC2,
-        TRIPLEDES
-    }
-
     internal class Cipher
     {
-        public static byte[] Encrypt(CipherOptions options)
+        public const string DEFAULT_EXTENSION = ".krpt";
+
+        public static void Encrypt(string path, CipherOptions options)
         {
-            byte[] encrypted;
-
             var provider = getAlgorithm(options.Mode);
-
-            if (provider == null)
-            {
-                Console.WriteLine(@"Error: algorithm is null");
-                return new byte[0];
-            }
             provider.GenerateIV();
-
-            provider.GenerateKey();
-            var test = provider.KeySize;
-            var encryptor = provider.CreateEncryptor(provider.Key, provider.IV);
-
-            using (var msEncrypt = new MemoryStream())
+            provider.Mode = CipherMode.CBC;
+            provider.Padding = PaddingMode.PKCS7;
+            var encryptor = provider.CreateEncryptor(options.Key, provider.IV);
+            var data = File.ReadAllBytes(path);
+            using (var fStream = new FileStream(path + DEFAULT_EXTENSION, FileMode.Create))
             {
-                using (var csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
+                using (var cryptStream = new CryptoStream(fStream, encryptor, CryptoStreamMode.Write))
                 {
-                    using (var swEncrypt = new StreamWriter(csEncrypt))
+                    using (var output = new BinaryWriter(cryptStream))
                     {
-                        swEncrypt.Write(options.Data);
+                        //output.Write(encryptor.TransformFinalBlock(data, 0, data.Length));
+                        output.Write(data);
+                        //output.Write(fileFooter);
+                        output.Write(provider.IV);
                     }
-                    encrypted = msEncrypt.ToArray();
                 }
             }
-            return encrypted;
-        }
+            // TODO if (File.Exists(path + DEFAULT_EXTENSION)) handle;
+            /*using (var fStream = new FileStream(path + DEFAULT_EXTENSION, FileMode.Create))
+            {
+                using (var output = new BinaryWriter(fStream, Encoding.Default))
+                {
+                    output.Write(encryptor.TransformFinalBlock(data, 0, data.Length));
+                    //output.Write(fileFooter);
+                    output.Write(provider.IV);
+                }
+            }*/
+        } 
 
-        public static string Decrypt(CipherOptions options)
+        public static void Decrypt(string path, CipherOptions options)
         {
-            string plainText;
+            var rawData = File.ReadAllBytes(path);
+            var data = new ArraySegment<byte>(rawData, 0, rawData.Length - 16).ToArray();
+            var IV = new ArraySegment<byte>(rawData, rawData.Length - 16, 16).ToArray();
             var provider = getAlgorithm(options.Mode);
+            provider.Mode = CipherMode.CBC;
+            provider.Padding = PaddingMode.PKCS7;
+            using (var mStream = new MemoryStream())
             {
-                provider.Key = options.Key;
-                provider.IV = options.IV;
-
-                ICryptoTransform decryptor = provider.CreateDecryptor(provider.Key, provider.IV);
-
-                using (var msDecrypt = new MemoryStream(options.Data))
+                using (var cStream = new CryptoStream(mStream, provider.CreateDecryptor(options.Key, IV), CryptoStreamMode.Write))
                 {
-                    using (var csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
-                    {
-                        using (var srDecrypt = new StreamReader(csDecrypt))
-                        {
-                            plainText = srDecrypt.ReadToEnd();
-                        }
-                    }
-                }
-
+                    cStream.Write(data, 0, data.Length);
+                } // PADDING INVALID?>!!? TODO **
+                Console.WriteLine("Decrypted: " + Encoding.UTF8.GetString(mStream.ToArray()));
             }
-
-            return plainText;
+            
+            /*var decryptor = provider.CreateDecryptor(options.Key, options.Mode == CipherAlgorithm.DES ? IV.Take(8).ToArray() : IV);
+            var decryptedData = decryptor.TransformFinalBlock(data, 0, data.Length);
+            using (var fStream = new FileStream(path.Substring(0, path.Length - DEFAULT_EXTENSION.Length), FileMode.Create))
+            {
+                using (var output = new BinaryWriter(fStream, Encoding.Default))
+                {
+                    output.Write(decryptedData);
+                }
+            }*/
         }
-        private static SymmetricAlgorithm getAlgorithm(CipherMode mode)
+
+        private static SymmetricAlgorithm getAlgorithm(CipherAlgorithm mode)
         {
             switch (mode)
             {
-                case CipherMode.AES:
+                case CipherAlgorithm.AES:
                     return new AesManaged();
-                case CipherMode.RIJNDAEL:
+                case CipherAlgorithm.RIJNDAEL:
                     return new RijndaelManaged();
-                case CipherMode.DES:
+                case CipherAlgorithm.DES:
                     return new DESCryptoServiceProvider();
-                case CipherMode.RC2:
+                case CipherAlgorithm.RC2:
                     return new RC2CryptoServiceProvider();
-                case CipherMode.TRIPLEDES:
+                case CipherAlgorithm.TRIPLEDES:
                     return new TripleDESCryptoServiceProvider();
                 default:
-                    return null;
+                    throw new Exception("Unknown algorithm: " + mode);
             }
         }
     }

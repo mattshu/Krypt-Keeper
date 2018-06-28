@@ -45,7 +45,14 @@ namespace KryptKeeper
         private void MainWindow_Shown(object sender, EventArgs e)
         {
             LoadSettings();
-            Encryptor.AES();
+            // Test Encryption settings
+            var options = new CipherOptions
+            {
+                Mode = CipherMode.AES,
+                Key = Encoding.ASCII.GetBytes(@"This is my super long passphrase key"),
+                Data = Encoding.ASCII.GetBytes("@This is the example string I'm trying to encrypt.")
+            };
+            Console.WriteLine(Convert.ToBase64String(Cipher.Encrypt(options)));
         }
 
         private void LoadSettings()

@@ -26,9 +26,10 @@ namespace KryptKeeper
                     using (var output = new BinaryWriter(cryptStream))
                     {
                         //output.Write(encryptor.TransformFinalBlock(data, 0, data.Length));
+                        //Buffer.BlockCopy(data, data.Length, provider.IV, provider.IV.Length, data.Length + provider.IV.Length);
+                        // TODO (encrypt adds extra byte for some reason, maybe why padding is off)
                         output.Write(data);
                         //output.Write(fileFooter);
-                        output.Write(provider.IV);
                     }
                 }
             }
@@ -56,7 +57,8 @@ namespace KryptKeeper
             {
                 using (var cStream = new CryptoStream(mStream, provider.CreateDecryptor(options.Key, IV), CryptoStreamMode.Write))
                 {
-                    cStream.Write(data, 0, data.Length);
+                    //TODO temp
+                    cStream.Write(rawData, 0, rawData.Length);
                 } // PADDING INVALID?>!!? TODO **
                 Console.WriteLine("Decrypted: " + Encoding.UTF8.GetString(mStream.ToArray()));
             }

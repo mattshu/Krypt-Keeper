@@ -50,9 +50,9 @@ namespace KryptKeeper
                 Mode = CipherAlgorithm.AES,
                 Key = Encoding.Default.GetBytes("This is just a test")
             };
-            Cipher.Encrypt(@"D:\\test.txt", options);
+            Cipher.Encrypt(@"D:\test.txt", options);
             // remove test.txt before continuing
-            Cipher.Decrypt(@"D:\\test.txt.krpt", options);
+            Cipher.Decrypt(@"D:\test.txt.krpt", options);
         }
 
 

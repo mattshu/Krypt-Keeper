@@ -9,23 +9,32 @@ namespace KryptKeeper
 {
     internal class Cipher
     {
-        public const string DEFAULT_EXTENSION = ".krpt";
+        public const string FILE_EXTENSION = ".krpt";
 
         public static void Encrypt(string path, CipherOptions options)
         {
-            var data = File.ReadAllBytes(path);
+            if (!File.Exists(path)) throw new FileNotFoundException(path);
 
-            byte[] encrypted;
+            var dataFromFile = File.ReadAllBytes(path);
+
+            var footerFromPath = new Footer();
+            footerFromPath.Build(path);
+            var footer = footerFromPath.ToArray();
+
+            var data = new byte[dataFromFile.Length + footer.Length];
+            Array.Copy(dataFromFile, 0, data, 0, dataFromFile.Length);
+            Array.Copy(footer, 0, data, dataFromFile.Length, footer.Length);
+
             byte[] IV;
-            using (var provider = getAlgorithm(options.Mode))
+            byte[] encrypted;
+
+            using (var provider = GetAlgorithm(options.Mode))
             {
                 provider.Key = options.Key;
                 provider.GenerateIV();
                 IV = provider.IV;
-
                 provider.Mode = CipherMode.CBC;
                 provider.Padding = PaddingMode.PKCS7;
-
                 var encryptor = provider.CreateEncryptor(provider.Key, provider.IV);
                 using (var msEncrypt = new MemoryStream())
                 {
@@ -40,22 +49,24 @@ namespace KryptKeeper
                 }
             }
 
-            var dataWithIV = new byte[IV.Length + encrypted.Length];
-            Array.Copy(IV, 0, dataWithIV, 0, IV.Length);
-            Array.Copy(encrypted, 0, dataWithIV, IV.Length, encrypted.Length);
-            File.WriteAllBytes(path + DEFAULT_EXTENSION, dataWithIV);
+            var dataComplete = new byte[IV.Length + encrypted.Length];
+
+            Array.Copy(IV, 0, dataComplete, 0, IV.Length);
+            Array.Copy(encrypted, 0, dataComplete, IV.Length, encrypted.Length);
+
+            File.WriteAllBytes(path + FILE_EXTENSION, dataComplete);
         }
 
         public static void Decrypt(string path, CipherOptions options)
         {
             var data = File.ReadAllBytes(path);
 
-            using (var provider = getAlgorithm(options.Mode))
+            using (var provider = GetAlgorithm(options.Mode))
             {
                 provider.Key = options.Key;
 
-                byte[] IV = new byte[provider.BlockSize / 8];
-                byte[] encrypted = new byte[data.Length - IV.Length];
+                var IV = new byte[provider.BlockSize / 8];
+                var encrypted = new byte[data.Length - IV.Length];
 
                 Array.Copy(data, IV, IV.Length);
                 Array.Copy(data, IV.Length, encrypted, 0, encrypted.Length);
@@ -77,11 +88,26 @@ namespace KryptKeeper
                     }
                 }
 
-                File.WriteAllBytes(path.Substring(0, path.Length - DEFAULT_EXTENSION.Length), decrypted);
+                // get footer
+                var footer = new Footer();
+                var footerSignature = Encoding.Default.GetBytes(Footer.FOOTER_TAG);
+                for (int i = decrypted.Length - footerSignature.Length; i >= 0; i--)
+                {
+                    if (decrypted[i] != footerSignature[0]) continue;
+                    var read = new byte[footerSignature.Length];
+                    Array.Copy(decrypted, i, read, 0, read.Length);
+                    if (!read.SequenceEqual(footerSignature)) continue;
+                    var footerBytes = new byte[decrypted.Length - i];
+                    Array.Copy(decrypted, i, footerBytes, 0, footerBytes.Length);
+                    footer = Footer.FromString(Encoding.Default.GetString(footerBytes));
+                    //Array.Resize(ref decrypted, decrypted.Length - );
+                }
+
+                File.WriteAllBytes(path.Substring(0, path.Length - FILE_EXTENSION.Length), decrypted);
             }
         }
 
-        private static SymmetricAlgorithm getAlgorithm(CipherAlgorithm mode)
+        private static SymmetricAlgorithm GetAlgorithm(CipherAlgorithm mode)
         {
             switch (mode)
             {

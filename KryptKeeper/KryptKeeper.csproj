@@ -55,6 +55,8 @@
       <DependentUpon>ConfirmSettingsDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="FileData.cs" />
+    <Compile Include="Footer.cs" />
+    <Compile Include="Helper.cs" />
     <Compile Include="MainWindow.cs">
       <SubType>Form</SubType>
     </Compile>

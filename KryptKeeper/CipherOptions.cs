@@ -10,11 +10,11 @@ namespace KryptKeeper
         public byte[] Key
         {
             get => key;
-            set => key = Mode == CipherAlgorithm.DES ? _getMD5(value).Take(8).ToArray() : _getMD5(value);
+            set => key = Mode == CipherAlgorithm.DES ? GetMD5(value).Take(8).ToArray() : GetMD5(value);
         }
         private byte[] key;
 
-        private static byte[] _getMD5(byte[] value)
+        private static byte[] GetMD5(byte[] value)
         {
             return new MD5CryptoServiceProvider().ComputeHash(value);
         }

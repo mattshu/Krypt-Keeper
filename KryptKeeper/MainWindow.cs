@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -50,8 +51,8 @@ namespace KryptKeeper
                 Mode = CipherAlgorithm.AES,
                 Key = Encoding.Default.GetBytes("This is just a test")
             };
-            Cipher.Encrypt(@"D:\picture.jpg", options);
-            Cipher.Decrypt(@"D:\picture.jpg.krpt", options);
+            Cipher.Encrypt(@"D:\test.txt", options);
+            Cipher.Decrypt(@"D:\test.txt.krpt", options);
         }
 
 

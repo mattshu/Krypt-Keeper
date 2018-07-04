@@ -13,65 +13,72 @@ namespace KryptKeeper
 
         public static void Encrypt(string path, CipherOptions options)
         {
-            var provider = getAlgorithm(options.Mode);
-            provider.GenerateIV();
-            provider.Mode = CipherMode.CBC;
-            provider.Padding = PaddingMode.PKCS7;
-            var encryptor = provider.CreateEncryptor(options.Key, provider.IV);
             var data = File.ReadAllBytes(path);
-            using (var fStream = new FileStream(path + DEFAULT_EXTENSION, FileMode.Create))
+
+            byte[] encrypted;
+            byte[] IV;
+            using (var provider = getAlgorithm(options.Mode))
             {
-                using (var cryptStream = new CryptoStream(fStream, encryptor, CryptoStreamMode.Write))
+                provider.Key = options.Key;
+                provider.GenerateIV();
+                IV = provider.IV;
+
+                provider.Mode = CipherMode.CBC;
+                provider.Padding = PaddingMode.PKCS7;
+
+                var encryptor = provider.CreateEncryptor(provider.Key, provider.IV);
+                using (var msEncrypt = new MemoryStream())
                 {
-                    using (var output = new BinaryWriter(cryptStream))
+                    using (var csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
                     {
-                        //output.Write(encryptor.TransformFinalBlock(data, 0, data.Length));
-                        //Buffer.BlockCopy(data, data.Length, provider.IV, provider.IV.Length, data.Length + provider.IV.Length);
-                        // TODO (encrypt adds extra byte for some reason, maybe why padding is off)
-                        output.Write(data);
-                        //output.Write(fileFooter);
+                        using (var swEncrypt = new BinaryWriter(csEncrypt))
+                        {
+                            swEncrypt.Write(data);
+                        }
+                        encrypted = msEncrypt.ToArray();
                     }
                 }
             }
-            // TODO if (File.Exists(path + DEFAULT_EXTENSION)) handle;
-            /*using (var fStream = new FileStream(path + DEFAULT_EXTENSION, FileMode.Create))
-            {
-                using (var output = new BinaryWriter(fStream, Encoding.Default))
-                {
-                    output.Write(encryptor.TransformFinalBlock(data, 0, data.Length));
-                    //output.Write(fileFooter);
-                    output.Write(provider.IV);
-                }
-            }*/
-        } 
+
+            var dataWithIV = new byte[IV.Length + encrypted.Length];
+            Array.Copy(IV, 0, dataWithIV, 0, IV.Length);
+            Array.Copy(encrypted, 0, dataWithIV, IV.Length, encrypted.Length);
+            File.WriteAllBytes(path + DEFAULT_EXTENSION, dataWithIV);
+        }
 
         public static void Decrypt(string path, CipherOptions options)
         {
-            var rawData = File.ReadAllBytes(path);
-            var data = new ArraySegment<byte>(rawData, 0, rawData.Length - 16).ToArray();
-            var IV = new ArraySegment<byte>(rawData, rawData.Length - 16, 16).ToArray();
-            var provider = getAlgorithm(options.Mode);
-            provider.Mode = CipherMode.CBC;
-            provider.Padding = PaddingMode.PKCS7;
-            using (var mStream = new MemoryStream())
+            var data = File.ReadAllBytes(path);
+
+            using (var provider = getAlgorithm(options.Mode))
             {
-                using (var cStream = new CryptoStream(mStream, provider.CreateDecryptor(options.Key, IV), CryptoStreamMode.Write))
+                provider.Key = options.Key;
+
+                byte[] IV = new byte[provider.BlockSize / 8];
+                byte[] encrypted = new byte[data.Length - IV.Length];
+
+                Array.Copy(data, IV, IV.Length);
+                Array.Copy(data, IV.Length, encrypted, 0, encrypted.Length);
+
+                provider.IV = IV;
+                provider.Mode = CipherMode.CBC;
+                var decryptor = provider.CreateDecryptor(provider.Key, provider.IV);
+
+                byte[] decrypted;
+
+                using (var msDecrypt = new MemoryStream(encrypted))
                 {
-                    //TODO temp
-                    cStream.Write(rawData, 0, rawData.Length);
-                } // PADDING INVALID?>!!? TODO **
-                Console.WriteLine("Decrypted: " + Encoding.UTF8.GetString(mStream.ToArray()));
-            }
-            
-            /*var decryptor = provider.CreateDecryptor(options.Key, options.Mode == CipherAlgorithm.DES ? IV.Take(8).ToArray() : IV);
-            var decryptedData = decryptor.TransformFinalBlock(data, 0, data.Length);
-            using (var fStream = new FileStream(path.Substring(0, path.Length - DEFAULT_EXTENSION.Length), FileMode.Create))
-            {
-                using (var output = new BinaryWriter(fStream, Encoding.Default))
-                {
-                    output.Write(decryptedData);
+                    using (var csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
+                    {
+                        using (var srDecrypt = new BinaryReader(csDecrypt))
+                        {
+                            decrypted = srDecrypt.ReadBytes(encrypted.Length);
+                        }
+                    }
                 }
-            }*/
+
+                File.WriteAllBytes(path.Substring(0, path.Length - DEFAULT_EXTENSION.Length), decrypted);
+            }
         }
 
         private static SymmetricAlgorithm getAlgorithm(CipherAlgorithm mode)

@@ -9,7 +9,7 @@ namespace KryptKeeper
         public const string FOOTER_TAG = "[KRYPTKEEPER]";
 
         public string Name { get; set; }
-        public byte[] MD5 { get; set; } = new byte[16];
+        public string MD5 { get; set; }
         public DateTime CreationTime { get; set; }
         public DateTime ModifiedTime { get; set; }
         public DateTime AccessedTime { get; set; }
@@ -18,7 +18,7 @@ namespace KryptKeeper
         {
             if (!File.Exists(path)) throw new FileNotFoundException(path);
             Name = Path.GetFileName(path);
-            MD5 = Helper.GetMD5FromPath(path);
+            MD5 = Helper.GetMD5StringFromPath(path);
             CreationTime = File.GetCreationTime(path);
             ModifiedTime = File.GetLastWriteTime(path);
             AccessedTime = File.GetLastAccessTime(path);
@@ -27,8 +27,7 @@ namespace KryptKeeper
         public void Extract(string path)
         {
             if (!File.Exists(path)) throw new FileNotFoundException(path);
-
-
+            // TODO
         }
 
         public byte[] ToArray()
@@ -38,7 +37,7 @@ namespace KryptKeeper
 
         public static Footer FromString(string footerString)
         {
-            var footerSplit = footerString.Split(',');
+            var footerSplit = footerString.Replace(FOOTER_TAG, "").Split(',');
             string name = "", md5 = "";
             long created = 0, modified = 0, accessed = 0;
 
@@ -66,20 +65,20 @@ namespace KryptKeeper
                         break;
                 }
             }
-
-            return new Footer
+            var newFooter = new Footer
             {
                 Name = name,
-                MD5 = Helper.GetMD5FromString(md5),
+                MD5 = md5,
                 CreationTime = DateTime.FromFileTime(created),
                 ModifiedTime = DateTime.FromFileTime(modified),
                 AccessedTime = DateTime.FromFileTime(accessed)
             };
+            return newFooter;
         }
 
         public override string ToString()
         {
-            return FOOTER_TAG + "name:" + Name + ",md5:" + Helper.GetMD5ToString(MD5) + ",creationTime:" + CreationTime.ToFileTime() + ",modifiedTime:" + ModifiedTime.ToFileTime() + ",accessedTime:" + AccessedTime.ToFileTime();
+            return FOOTER_TAG + "name:" + Name + ",md5:" + MD5 + ",creationTime:" + CreationTime.ToFileTime() + ",modifiedTime:" + ModifiedTime.ToFileTime() + ",accessedTime:" + AccessedTime.ToFileTime();
         }
 
 

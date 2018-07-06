@@ -13,7 +13,7 @@ namespace KryptKeeper
         {
             if (File.Exists(path)) throw new FileNotFoundException(path);
 
-            var md5 = GetMD5FromPath(path);
+            var md5 = GetMD5StringFromPath(path);
             var name = Path.GetFileName(path);
             var created = File.GetCreationTime(path);
             var modified = File.GetLastWriteTime(path);
@@ -29,58 +29,23 @@ namespace KryptKeeper
             };
         }
 
-        public static byte[] GetMD5FromPath(string path)
+        public static string GetMD5StringFromPath(string path)
         {
             if (!File.Exists(path))
                 throw new FileNotFoundException(path);
             using (var md5 = MD5.Create())
-            using (var fstream = File.OpenRead(path))
-                return md5.ComputeHash(fstream);
+            {
+                using (var fstream = File.OpenRead(path))
+                {
+                    return BitConverter.ToString(md5.ComputeHash(fstream)).Replace("-", "");
+                }
+            }
         }
 
         public static string GetMD5ToString(byte[] md5Data)
         {
-            using (var md5 = new MD5CryptoServiceProvider())
-                return BitConverter.ToString(md5.ComputeHash(md5Data)).Replace("-", "");
+            return BitConverter.ToString(md5Data).Replace("-", "");
         }
 
-        public static byte[] GetMD5FromString(string md5String)
-        {
-            return Encoding.Default.GetBytes(md5String.ToUpper());
-        }
-
-            /* Byte array search */
-
-        private static readonly int[] Empty = new int[0];
-        public static int[] Locate(this byte[] self, byte[] candidate)
-        {
-            if (IsEmptyLocate(self, candidate)) return Empty;
-            var list = new List<int>();
-            for (int i = 0; i < self.Length; i++)
-            {
-                if (!IsMatch(self, i, candidate)) continue;
-                list.Add(i);
-            }
-            return list.Count == 0 ? Empty : list.ToArray();
-        }
-
-        private static bool IsMatch(byte[] array, int position, byte[] candidate)
-        {
-            if (candidate.Length > array.Length - position)
-                return false;
-            for (int i = 0; i < candidate.Length; i++)
-                if (array[position + i] != candidate[i])
-                    return false;
-            return true;
-        }
-
-        private static bool IsEmptyLocate(byte[] array, byte[] candidate)
-        {
-            return array == null
-                   || candidate == null
-                   || array.Length == 0
-                   || candidate.Length == 0
-                   || candidate.Length > array.Length;
-        }
     }
 }

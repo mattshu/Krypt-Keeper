@@ -20,8 +20,11 @@ namespace KryptKeeper
             var footerFromPath = new Footer();
             footerFromPath.Build(path);
             var footer = footerFromPath.ToArray();
+            
+            Console.WriteLine(@"Generated MD5: " + footerFromPath.MD5);
 
             var data = new byte[dataFromFile.Length + footer.Length];
+
             Array.Copy(dataFromFile, 0, data, 0, dataFromFile.Length);
             Array.Copy(footer, 0, data, dataFromFile.Length, footer.Length);
 
@@ -99,8 +102,11 @@ namespace KryptKeeper
                     if (!read.SequenceEqual(footerSignature)) continue;
                     var footerBytes = new byte[decrypted.Length - i];
                     Array.Copy(decrypted, i, footerBytes, 0, footerBytes.Length);
-                    footer = Footer.FromString(Encoding.Default.GetString(footerBytes));
-                    //Array.Resize(ref decrypted, decrypted.Length - );
+                    var decoded = Encoding.Default.GetString(footerBytes);
+                    footer = Footer.FromString(decoded);
+                    Console.WriteLine(footer);
+                    Array.Resize(ref decrypted, decrypted.Length - footerBytes.Length);
+                    break;
                 }
 
                 File.WriteAllBytes(path.Substring(0, path.Length - FILE_EXTENSION.Length), decrypted);

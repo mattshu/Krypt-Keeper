@@ -1,2 +1,2 @@
 # Krypt-Keeper
-Encryption software to protect file security using AES technology
+Software to protect file security using symmetric encryption technology

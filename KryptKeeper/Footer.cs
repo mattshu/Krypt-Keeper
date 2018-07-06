@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace KryptKeeper
@@ -24,10 +25,28 @@ namespace KryptKeeper
             AccessedTime = File.GetLastAccessTime(path);
         }
 
-        public void Extract(string path)
+        public void Extract(byte[] data)
         {
-            if (!File.Exists(path)) throw new FileNotFoundException(path);
-            // TODO
+            var footerSignature = Encoding.Default.GetBytes(FOOTER_TAG);
+            string decoded = "";
+            for (int i = data.Length - footerSignature.Length; i >= 0; i--)
+            {
+                if (data[i] != footerSignature[0]) continue;
+                var read = new byte[footerSignature.Length];
+                Array.Copy(data, i, read, 0, read.Length);
+                if (!read.SequenceEqual(footerSignature)) continue;
+                var footerBytes = new byte[data.Length - i];
+                Array.Copy(data, i, footerBytes, 0, footerBytes.Length);
+                decoded = Encoding.Default.GetString(footerBytes);
+                break;
+            }
+
+            var newFooter = FromString(decoded);
+            Name = newFooter.Name;
+            MD5 = newFooter.MD5;
+            CreationTime = newFooter.CreationTime;
+            ModifiedTime = newFooter.ModifiedTime;
+            AccessedTime = newFooter.AccessedTime;
         }
 
         public byte[] ToArray()

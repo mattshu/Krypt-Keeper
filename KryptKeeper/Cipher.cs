@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -20,8 +21,6 @@ namespace KryptKeeper
             var footerFromPath = new Footer();
             footerFromPath.Build(path);
             var footer = footerFromPath.ToArray();
-            
-            Console.WriteLine(@"Generated MD5: " + footerFromPath.MD5);
 
             var data = new byte[dataFromFile.Length + footer.Length];
 
@@ -91,25 +90,17 @@ namespace KryptKeeper
                     }
                 }
 
-                // get footer
                 var footer = new Footer();
-                var footerSignature = Encoding.Default.GetBytes(Footer.FOOTER_TAG);
-                for (int i = decrypted.Length - footerSignature.Length; i >= 0; i--)
-                {
-                    if (decrypted[i] != footerSignature[0]) continue;
-                    var read = new byte[footerSignature.Length];
-                    Array.Copy(decrypted, i, read, 0, read.Length);
-                    if (!read.SequenceEqual(footerSignature)) continue;
-                    var footerBytes = new byte[decrypted.Length - i];
-                    Array.Copy(decrypted, i, footerBytes, 0, footerBytes.Length);
-                    var decoded = Encoding.Default.GetString(footerBytes);
-                    footer = Footer.FromString(decoded);
-                    Console.WriteLine(footer);
-                    Array.Resize(ref decrypted, decrypted.Length - footerBytes.Length);
-                    break;
-                }
+                footer.Extract(decrypted);
+                var footerBytes = footer.ToArray();
+                Array.Resize(ref decrypted, decrypted.Length - footerBytes.Length); // Trim footer
+                string decryptedPath = path.Substring(0, path.Length - FILE_EXTENSION.Length);
+                if (footer.Name != null)
+                    decryptedPath = decryptedPath.Replace(Path.GetFileName(decryptedPath), footer.Name);
 
-                File.WriteAllBytes(path.Substring(0, path.Length - FILE_EXTENSION.Length), decrypted);
+                File.WriteAllBytes(decryptedPath, decrypted);
+                
+                
             }
         }
 

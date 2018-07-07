@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -47,5 +48,19 @@ namespace KryptKeeper
             return BitConverter.ToString(md5Data).Replace("-", "");
         }
 
+        public static string GetRandomAlphanumericString(int length)
+        {
+            if (length <= 0) return "";
+            var random = new Random();
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            return new string(Enumerable.Repeat(chars, length).Select(s => s[random.Next(s.Length)]).ToArray());
+        }
+        public static string GetRandomNumericString(int length)
+        {
+            if (length <= 0) return "";
+            var random = new Random();
+            const string chars = "0123456789";
+            return new string(Enumerable.Repeat(chars, length).Select(s => s[random.Next(s.Length)]).ToArray());
+        }
     }
 }

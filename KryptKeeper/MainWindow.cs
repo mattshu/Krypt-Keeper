@@ -46,20 +46,25 @@ namespace KryptKeeper
         private void MainWindow_Shown(object sender, EventArgs e)
         {
             LoadSettings();
+        }
+
+        private CipherOptions GenerateOptions()
+        {
+            // TODO under construction
             var options = new CipherOptions
             {
                 Mode = CipherAlgorithm.AES,
                 Key = Encoding.Default.GetBytes("This is just a test"),
-                MaskFileName = ChkMaskInformation.Checked && CbxMaskInformation.SelectedIndex == 0 || CbxMaskInformation.SelectedIndex == 2,
-                MaskFileTimes = ChkMaskInformation.Checked && CbxMaskInformation.SelectedIndex == 1
-
-
+                MaskFileName = true,
+                MaskFileTimes = true
             };
-            Cipher.Encrypt(@"D:\test.txt", options);
-            Cipher.Decrypt(@"D:\test.txt.krpt", options);
+            return options;
         }
+        
+        //                MaskFileName = ChkMaskInformation.Checked && CbxMaskInformation.SelectedIndex == 0 || CbxMaskInformation.SelectedIndex == 2,
+        //        MaskFileTimes = ChkMaskInformation.Checked && CbxMaskInformation.SelectedIndex == 1
 
-
+        public static string THEENCRYPTEDFILE = "";
         private void LoadSettings()
         {
             // TODO ensure settings are default upon reinstallation
@@ -116,7 +121,6 @@ namespace KryptKeeper
             LoadFileListColumnWidths();
             EnableControls(FileListGridView.RowCount > 0);
         }
-
 
         private void EnableControls(bool state)
         {

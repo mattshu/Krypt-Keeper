@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections;
-using System.Dynamic;
 using System.IO;
-using System.Linq;
 using System.Security.Cryptography;
-using System.Text;
 
 namespace KryptKeeper
 {
@@ -17,17 +13,29 @@ namespace KryptKeeper
             if (!File.Exists(path))
                 throw new FileNotFoundException(path);
             var dataFromFile = File.ReadAllBytes(path);
-            var footerFromPath = new Footer();
-            footerFromPath.Build(path);
-            var footer = footerFromPath.ToArray();
-            var data = new byte[dataFromFile.Length + footer.Length];
+            var footer = new Footer();
+            footer.Build(path);
+            var footerData = footer.ToArray();
+            var data = new byte[dataFromFile.Length + footerData.Length];
             Array.Copy(dataFromFile, 0, data, 0, dataFromFile.Length); // Copy dataFromFile into data
-            Array.Copy(footer, 0, data, dataFromFile.Length, footer.Length); // Copy footer into data
+            Array.Copy(footerData, 0, data, dataFromFile.Length, footerData.Length); // Copy footer into data
             var encrypted = EncryptData(options, data, out var IV);
             var dataComplete = new byte[IV.Length + encrypted.Length];
             Array.Copy(IV, 0, dataComplete, 0, IV.Length); // Copy IV to finished package
             Array.Copy(encrypted, 0, dataComplete, IV.Length, encrypted.Length); // Copy encrypted data to finished package
-            File.WriteAllBytes(path + FILE_EXTENSION, dataComplete);
+            if (options.MaskFileName)
+            {
+                var newPath = path.Replace(Path.GetFileName(path), Helper.GetRandomAlphanumericString(16));
+                File.Delete(path);
+                path = newPath;
+            }
+            path = path + FILE_EXTENSION;
+            File.WriteAllBytes(path, dataComplete);
+            MainWindow.THEENCRYPTEDFILE = path;
+            if (options.MaskFileTimes)
+            {
+                SetFileTimes(path);
+            }
         }
 
         private static byte[] EncryptData(CipherOptions options, byte[] data, out byte[] IV)
@@ -82,13 +90,16 @@ namespace KryptKeeper
                     decryptedPath = decryptedPath.Replace(Path.GetFileName(decryptedPath), footer.Name); // Set to original filename
                 File.WriteAllBytes(decryptedPath, decrypted);
                 SetFileTimes(decryptedPath, footer); // Set to original filetimes
+                if (Helper.GetMD5StringFromPath(decryptedPath).Equals(footer.MD5))
+                    File.Delete(path); // Remove encryption after validation
+                else
+                    throw new Exception(@"Failed to compare MD5 of " + path + ". File tampered?");
             }
         }
 
         private static byte[] DecryptData(ICryptoTransform decryptor, byte[] encrypted)
         {
             byte[] decrypted;
-
             using (var msDecrypt = new MemoryStream(encrypted))
             {
                 using (var csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
@@ -102,6 +113,13 @@ namespace KryptKeeper
             return decrypted;
         }
 
+        private static void SetFileTimes(string encryptedPath)
+        {
+            // Prepending "130" keeps the random date (arguably) more believable
+            File.SetCreationTime(encryptedPath, DateTime.FromFileTime(long.Parse("130" + Helper.GetRandomNumericString(15))));
+            File.SetLastAccessTime(encryptedPath, DateTime.FromFileTime(long.Parse("130" + Helper.GetRandomNumericString(15))));
+            File.SetLastWriteTime(encryptedPath, DateTime.FromFileTime(long.Parse("130" + Helper.GetRandomNumericString(15))));
+        }
         private static void SetFileTimes(string decryptedPath, Footer footer)
         {
             File.SetCreationTime(decryptedPath, footer.CreationTime);

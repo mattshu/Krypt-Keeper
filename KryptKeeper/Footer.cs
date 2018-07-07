@@ -40,15 +40,14 @@ namespace KryptKeeper
                 decoded = Encoding.Default.GetString(footerBytes);
                 break;
             }
-            if (string.IsNullOrEmpty(decoded)) // Cannot find footer
-                return false;
+            if (string.IsNullOrEmpty(decoded))
+                return false;  // Cannot find footer
             var newFooter = FromString(decoded);
             Name = newFooter.Name;
             MD5 = newFooter.MD5;
             CreationTime = newFooter.CreationTime;
             ModifiedTime = newFooter.ModifiedTime;
             AccessedTime = newFooter.AccessedTime;
-
             return true;
         }
 
@@ -62,12 +61,10 @@ namespace KryptKeeper
             var footerSplit = footerString.Replace(FOOTER_TAG, "").Split(',');
             string name = "", md5 = "";
             long created = 0, modified = 0, accessed = 0;
-
             foreach (var data in footerSplit)
             {
                 var item = data.Split(':')[0];
                 var value = data.Split(':')[1];
-
                 switch (item)
                 {
                     case "name":

@@ -3,13 +3,13 @@
   <Profiles />
   <Settings>
     <Setting Name="encryptionKeyType" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">0</Value>
+      <Value Profile="(Default)">1</Value>
     </Setting>
     <Setting Name="decryptionKey" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="decryptionKeyType" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">0</Value>
+      <Value Profile="(Default)">1</Value>
     </Setting>
     <Setting Name="encryptionKey" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
@@ -35,10 +35,10 @@
 &lt;/ArrayOfString&gt;</Value>
     </Setting>
     <Setting Name="decryptionAlgorithm" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">0</Value>
+      <Value Profile="(Default)">1</Value>
     </Setting>
     <Setting Name="encryptionAlgorithm" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">0</Value>
+      <Value Profile="(Default)">1</Value>
     </Setting>
     <Setting Name="useEncryptionSettings" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
@@ -47,7 +47,7 @@
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="encryptionMaskInfoType" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">0</Value>
+      <Value Profile="(Default)">1</Value>
     </Setting>
     <Setting Name="encryptionRemoveAfterEncrypt" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>

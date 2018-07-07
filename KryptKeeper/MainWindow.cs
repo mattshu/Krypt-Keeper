@@ -49,7 +49,11 @@ namespace KryptKeeper
             var options = new CipherOptions
             {
                 Mode = CipherAlgorithm.AES,
-                Key = Encoding.Default.GetBytes("This is just a test")
+                Key = Encoding.Default.GetBytes("This is just a test"),
+                MaskFileName = ChkMaskInformation.Checked && CbxMaskInformation.SelectedIndex == 0 || CbxMaskInformation.SelectedIndex == 2,
+                MaskFileTimes = ChkMaskInformation.Checked && CbxMaskInformation.SelectedIndex == 1
+
+
             };
             Cipher.Encrypt(@"D:\test.txt", options);
             Cipher.Decrypt(@"D:\test.txt.krpt", options);
@@ -58,6 +62,7 @@ namespace KryptKeeper
 
         private void LoadSettings()
         {
+            // TODO ensure settings are default upon reinstallation
             var settings = Properties.Settings.Default;
 
             var algorithms = settings.algorithms;
@@ -143,11 +148,7 @@ namespace KryptKeeper
         private bool SettingsAreDefault()
         {
             if (_settingsNotViewed) return true;
-            bool settingsModified = TxtEncryptionKey.Modified || TxtDecryptionKey.Modified ||
-                                    CbxEncryptAlgorithms.SelectedIndex > -1 ||
-                                    CbxDecryptAlgorithms.SelectedIndex > -1 ||
-                                    CbxEncryptionKeyType.SelectedIndex > -1 ||
-                                    CbxDecryptionKeyType.SelectedIndex > -1;
+            bool settingsModified = TxtEncryptionKey.Modified || TxtDecryptionKey.Modified;
             return !settingsModified;
         }
 

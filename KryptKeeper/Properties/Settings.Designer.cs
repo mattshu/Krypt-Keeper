@@ -25,7 +25,7 @@ namespace KryptKeeper.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
         public int encryptionKeyType {
             get {
                 return ((int)(this["encryptionKeyType"]));
@@ -49,7 +49,7 @@ namespace KryptKeeper.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
         public int decryptionKeyType {
             get {
                 return ((int)(this["decryptionKeyType"]));
@@ -111,7 +111,7 @@ namespace KryptKeeper.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
         public int decryptionAlgorithm {
             get {
                 return ((int)(this["decryptionAlgorithm"]));
@@ -123,7 +123,7 @@ namespace KryptKeeper.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
         public int encryptionAlgorithm {
             get {
                 return ((int)(this["encryptionAlgorithm"]));
@@ -159,7 +159,7 @@ namespace KryptKeeper.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
         public int encryptionMaskInfoType {
             get {
                 return ((int)(this["encryptionMaskInfoType"]));

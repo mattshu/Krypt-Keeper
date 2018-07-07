@@ -48,23 +48,6 @@ namespace KryptKeeper
             LoadSettings();
         }
 
-        private CipherOptions GenerateOptions()
-        {
-            // TODO under construction
-            var options = new CipherOptions
-            {
-                Mode = CipherAlgorithm.AES,
-                Key = Encoding.Default.GetBytes("This is just a test"),
-                MaskFileName = true,
-                MaskFileTimes = true
-            };
-            return options;
-        }
-        
-        //                MaskFileName = ChkMaskInformation.Checked && CbxMaskInformation.SelectedIndex == 0 || CbxMaskInformation.SelectedIndex == 2,
-        //        MaskFileTimes = ChkMaskInformation.Checked && CbxMaskInformation.SelectedIndex == 1
-
-        public static string THEENCRYPTEDFILE = "";
         private void LoadSettings()
         {
             // TODO ensure settings are default upon reinstallation
@@ -164,6 +147,80 @@ namespace KryptKeeper
 
         private void BtnEncrypt_Click(object sender, EventArgs e)
         {
+            if (ConfirmSettings())
+            {
+                EncryptAllFiles();
+            }
+        }
+
+        private void EncryptAllFiles()
+        {
+            var options = GenerateOptions(CipherOptions.Encrypt);
+            if (_fileList.Count <= 0) return;
+            foreach (var file in _fileList)
+            {
+                _status.WritePending("Encrypting " + file.Path);
+                Cipher.Encrypt(Path.Combine(file.Path, file.Name), options);
+                _status.PendingComplete();
+            }
+        }
+
+        private CipherOptions GenerateOptions(int cipherOption)
+        {
+            ComboBox algorithm;
+            ComboBox keyType;
+            TextBox keyTxt = new TextBox();
+            var key = new byte[0];
+
+            if (cipherOption == CipherOptions.Encrypt)
+            {
+                algorithm = CbxEncryptAlgorithms;
+                keyType = CbxEncryptionKeyType;
+                keyTxt = TxtEncryptionKey;
+            }
+            else if (cipherOption == CipherOptions.Decrypt)
+            {
+                algorithm = CbxDecryptAlgorithms;
+                keyType = CbxDecryptionKeyType;
+                keyTxt = TxtDecryptionKey;
+            }
+            else
+                throw new Exception("Invalid cipher option: " + cipherOption);
+            if (keyType.SelectedIndex == 0)
+            { // Plaintext
+                key = Encoding.Default.GetBytes(keyTxt.Text);
+            }
+            else if (keyType.SelectedIndex == 1)
+            { // Keyfile
+                if (!File.Exists(keyTxt.Text))
+                    throw new FileNotFoundException(keyTxt.Text);
+                key = File.ReadAllBytes(keyTxt.Text);
+            }
+            var options = new CipherOptions
+            {
+                Mode = (CipherAlgorithm) algorithm.SelectedIndex,
+                Key = key,
+                MaskFileName = ChkMaskInformation.Checked && CbxMaskInformation.SelectedIndex == 0 || CbxMaskInformation.SelectedIndex == 2,
+                MaskFileTimes = ChkMaskInformation.Checked && CbxMaskInformation.SelectedIndex == 1
+            };
+            return options;
+        }
+
+        private void BtnEncryptSelected_Click(object sender, EventArgs e)
+        {
+            if (ConfirmSettings())
+            {
+                EncryptSelectedFiles();
+            }
+        }
+
+        private void EncryptSelectedFiles()
+        {
+            throw new NotImplementedException();
+        }
+
+        private bool ConfirmSettings()
+        {
             if (SettingsAreDefault() || _settingsNeedConfirmed)
             {
                 var confirmSettingsDialog = new ConfirmSettingsDialog();
@@ -172,16 +229,10 @@ namespace KryptKeeper
                 if (confirmSettingsResult == DialogResult.No)
                 {
                     TabMain.SelectTab(1);
-                    return;
+                    return false;
                 }
             }
-            BeginEncryption();
-        }
-
-        private void BeginEncryption()
-        {
-            // TODO 
-            throw new NotImplementedException();
+            return true;
         }
 
         private void BtnDecrypt_Click(object sender, EventArgs e)
@@ -350,5 +401,7 @@ namespace KryptKeeper
         {
             EnableControls(FileListGridView.RowCount > 0);
         }
+
+
     }
 }

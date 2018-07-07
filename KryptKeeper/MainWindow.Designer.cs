@@ -441,6 +441,7 @@
             this.BtnEncryptSelected.TabIndex = 3;
             this.BtnEncryptSelected.Text = "Encrypt Selected Files";
             this.BtnEncryptSelected.UseVisualStyleBackColor = true;
+            this.BtnEncryptSelected.Click += new System.EventHandler(this.BtnEncryptSelected_Click);
             // 
             // BtnDecryptSelected
             // 

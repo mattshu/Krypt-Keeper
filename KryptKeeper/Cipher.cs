@@ -31,11 +31,8 @@ namespace KryptKeeper
             }
             path = path + FILE_EXTENSION;
             File.WriteAllBytes(path, dataComplete);
-            MainWindow.THEENCRYPTEDFILE = path;
             if (options.MaskFileTimes)
-            {
                 SetFileTimes(path);
-            }
         }
 
         private static byte[] EncryptData(CipherOptions options, byte[] data, out byte[] IV)

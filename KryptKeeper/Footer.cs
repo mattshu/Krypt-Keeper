@@ -25,7 +25,7 @@ namespace KryptKeeper
             AccessedTime = File.GetLastAccessTime(path);
         }
 
-        public void Extract(byte[] data)
+        public bool Extract(byte[] data)
         {
             var footerSignature = Encoding.Default.GetBytes(FOOTER_TAG);
             string decoded = "";
@@ -40,13 +40,16 @@ namespace KryptKeeper
                 decoded = Encoding.Default.GetString(footerBytes);
                 break;
             }
-
+            if (string.IsNullOrEmpty(decoded)) // Cannot find footer
+                return false;
             var newFooter = FromString(decoded);
             Name = newFooter.Name;
             MD5 = newFooter.MD5;
             CreationTime = newFooter.CreationTime;
             ModifiedTime = newFooter.ModifiedTime;
             AccessedTime = newFooter.AccessedTime;
+
+            return true;
         }
 
         public byte[] ToArray()

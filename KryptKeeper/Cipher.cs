@@ -71,7 +71,7 @@ namespace KryptKeeper
                 provider.IV = IV;
                 provider.Mode = CipherMode.CBC;
                 var decryptor = provider.CreateDecryptor(provider.Key, provider.IV);
-                var decrypted = DecryptData(encrypted, decryptor);
+                var decrypted = DecryptData(decryptor, encrypted);
                 var footer = new Footer();
                 if (!footer.Extract(decrypted))
                     throw new Exception(@"Failed to extract footer of " + path +". File corrupt?");
@@ -79,13 +79,13 @@ namespace KryptKeeper
                 Array.Resize(ref decrypted, decrypted.Length - footerBytes.Length); // Trim footer
                 string decryptedPath = path.Substring(0, path.Length - FILE_EXTENSION.Length); // Trim extension
                 if (!string.IsNullOrEmpty(footer.Name))
-                    decryptedPath = decryptedPath.Replace(Path.GetFileName(decryptedPath), footer.Name);
+                    decryptedPath = decryptedPath.Replace(Path.GetFileName(decryptedPath), footer.Name); // Set to original filename
                 File.WriteAllBytes(decryptedPath, decrypted);
                 SetFileTimes(decryptedPath, footer); // Set to original filetimes
             }
         }
 
-        private static byte[] DecryptData(byte[] encrypted, ICryptoTransform decryptor)
+        private static byte[] DecryptData(ICryptoTransform decryptor, byte[] encrypted)
         {
             byte[] decrypted;
 

@@ -195,7 +195,7 @@ namespace KryptKeeper
                 Mode = (CipherAlgorithm) algorithm.SelectedIndex,
                 Key = key,
                 MaskFileName = ChkMaskInformation.Checked && CbxMaskInformation.SelectedIndex == 0 || CbxMaskInformation.SelectedIndex == 2,
-                MaskFileTimes = ChkMaskInformation.Checked && CbxMaskInformation.SelectedIndex == 1,
+                MaskFileTimes = ChkMaskInformation.Checked && CbxMaskInformation.SelectedIndex == 1 || CbxMaskInformation.SelectedIndex == 2,
                 RemoveOriginal = ChkRemoveAfterEncrypt.Checked
             };
             return options;

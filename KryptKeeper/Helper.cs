@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace KryptKeeper
 {
@@ -51,16 +52,14 @@ namespace KryptKeeper
         public static string GetRandomAlphanumericString(int length)
         {
             if (length <= 0) return "";
-            var random = new Random();
-            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            return new string(Enumerable.Repeat(chars, length).Select(s => s[random.Next(s.Length)]).ToArray());
+            var random = new byte[length];
+            var rng = new RNGCryptoServiceProvider();
+            rng.GetBytes(random);
+            return BitConverter.ToString(random).Replace("-", "").Substring(0, length);
         }
         public static string GetRandomNumericString(int length)
         {
-            if (length <= 0) return "";
-            var random = new Random();
-            const string chars = "0123456789";
-            return new string(Enumerable.Repeat(chars, length).Select(s => s[random.Next(s.Length)]).ToArray());
+            return Regex.Replace(GetRandomAlphanumericString(length), @"[A-F]", "0");
         }
     }
 }

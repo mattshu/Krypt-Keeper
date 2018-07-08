@@ -46,45 +46,40 @@ namespace KryptKeeper
         private void MainWindow_Shown(object sender, EventArgs e)
         {
             LoadSettings();
+            Debug.WriteLine(Helper.GetRandomNumericString(12));
+            Debug.WriteLine(Helper.GetRandomNumericString(6));
+            Debug.WriteLine(Helper.GetRandomNumericString(4));
         }
 
         private void LoadSettings()
         {
-            // TODO ensure settings are default upon reinstallation
             var settings = Properties.Settings.Default;
-
             var algorithms = settings.algorithms;
-
             foreach (var a in algorithms)
             {
                 CbxEncryptAlgorithms.Items.Add(a);
                 CbxDecryptAlgorithms.Items.Add(a);
             }
-
+            SetDefaultCbxIndexes();
+            if (!settings.rememberSettings) return;
             CbxEncryptAlgorithms.SelectedIndex = settings.encryptionAlgorithm;
             ChkMaskInformation.Checked = settings.encryptionMaskInformation;
             CbxMaskInformation.SelectedIndex = settings.encryptionMaskInfoType;
             ChkRemoveAfterEncrypt.Checked = settings.encryptionRemoveAfterEncrypt;
             CbxEncryptionKeyType.SelectedIndex = settings.encryptionKeyType;
             TxtEncryptionKey.Text = settings.encryptionKey;
-
-            if (!SettingsAreDefault()) ChkRememberSettings.Checked = true;
-
+            ChkRememberSettings.Checked = true;
             if (settings.useEncryptionSettings)
                 CopyEncryptionSettings();
+        }
 
-            else
-            {
-                ChkUseEncryptSettings.Checked = false;
-                CbxDecryptionKeyType.Enabled = true;
-                CbxDecryptAlgorithms.Enabled = true;
-                TxtDecryptionKey.ReadOnly = false;
-
-                CbxDecryptAlgorithms.SelectedIndex = settings.decryptionAlgorithm;
-                CbxDecryptionKeyType.SelectedIndex = settings.decryptionKeyType;
-                TxtDecryptionKey.Text = settings.decryptionKey;
-            }
-
+        private void SetDefaultCbxIndexes()
+        {
+            CbxEncryptAlgorithms.SelectedIndex = 0;
+            CbxMaskInformation.SelectedIndex = 0;
+            CbxEncryptionKeyType.SelectedIndex = 0;
+            CbxDecryptAlgorithms.SelectedIndex = 0;
+            CbxDecryptionKeyType.SelectedIndex = 0;
         }
 
         private void BtnAddFiles_Click(object sender, EventArgs e)
@@ -97,7 +92,6 @@ namespace KryptKeeper
             var openFileDialog = new OpenFileDialog { Multiselect = true };
             var openResult = openFileDialog.ShowDialog();
             if (openResult != DialogResult.OK) return;
-            
             FileListGridView.Columns.Clear();
             _fileList = openFileDialog.FileNames.Select(path => new FileData(path)).ToList();
             FileListGridView.DataSource = _fileList;
@@ -135,8 +129,7 @@ namespace KryptKeeper
         private bool SettingsAreDefault()
         {
             if (_settingsNotViewed) return true;
-            bool settingsModified = TxtEncryptionKey.Modified || TxtDecryptionKey.Modified;
-            return !settingsModified;
+            return !TxtEncryptionKey.Modified || !TxtDecryptionKey.Modified;
         }
 
         private void TabMain_TabIndexChanged(object sender, EventArgs e)
@@ -159,8 +152,9 @@ namespace KryptKeeper
             if (_fileList.Count <= 0) return;
             foreach (var file in _fileList)
             {
-                _status.WritePending("Encrypting " + file.Path);
-                Cipher.Encrypt(Path.Combine(file.Path, file.Name), options);
+                var fullPath = Path.Combine(file.Path, file.Name);
+                _status.WritePending("Encrypting " + fullPath);
+                Cipher.Encrypt(fullPath, options);
                 _status.PendingComplete();
             }
         }
@@ -169,7 +163,7 @@ namespace KryptKeeper
         {
             ComboBox algorithm;
             ComboBox keyType;
-            TextBox keyTxt = new TextBox();
+            TextBox keyTxt;
             var key = new byte[0];
 
             if (cipherOption == CipherOptions.Encrypt)
@@ -201,7 +195,8 @@ namespace KryptKeeper
                 Mode = (CipherAlgorithm) algorithm.SelectedIndex,
                 Key = key,
                 MaskFileName = ChkMaskInformation.Checked && CbxMaskInformation.SelectedIndex == 0 || CbxMaskInformation.SelectedIndex == 2,
-                MaskFileTimes = ChkMaskInformation.Checked && CbxMaskInformation.SelectedIndex == 1
+                MaskFileTimes = ChkMaskInformation.Checked && CbxMaskInformation.SelectedIndex == 1,
+                RemoveOriginal = ChkRemoveAfterEncrypt.Checked
             };
             return options;
         }
@@ -216,29 +211,29 @@ namespace KryptKeeper
 
         private void EncryptSelectedFiles()
         {
-            throw new NotImplementedException();
+            // TODO
         }
 
         private bool ConfirmSettings()
         {
-            if (SettingsAreDefault() || _settingsNeedConfirmed)
-            {
-                var confirmSettingsDialog = new ConfirmSettingsDialog();
-                var confirmSettingsResult = confirmSettingsDialog.ShowDialog();
-                _settingsNeedConfirmed = confirmSettingsDialog.ShowAgain;
-                if (confirmSettingsResult == DialogResult.No)
-                {
-                    TabMain.SelectTab(1);
-                    return false;
-                }
-            }
-            return true;
+            if (!_settingsNeedConfirmed) return true;
+            var confirmSettingsDialog = new ConfirmSettingsDialog();
+            var confirmSettingsResult = confirmSettingsDialog.ShowDialog();
+            _settingsNeedConfirmed = confirmSettingsDialog.ShowAgain;
+            if (confirmSettingsResult != DialogResult.No) return true;
+            TabMain.SelectTab(1);
+            return false;
         }
 
-        private void BtnDecrypt_Click(object sender, EventArgs e)
+        private void BtnDecryptAll_Click(object sender, EventArgs e)
         {
             // TODO 
 
+        }
+
+        private void BtnDecryptSelected_Click(object sender, EventArgs e)
+        {
+            // TODO
         }
 
         private void CbxEncryptAlgorithms_SelectedIndexChanged(object sender, EventArgs e)
@@ -327,17 +322,17 @@ namespace KryptKeeper
         private void MainWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
             SaveFileListColumnWidths();
-
-            if (SettingsAreDefault()) return;
-
             if (ChkRememberSettings.Checked)
             {
                 SaveSettings();
                 return;
             }
-
+            if (SettingsAreDefault())
+            {
+                ResetSettings();
+                return;
+            }
             var result = MessageBox.Show(@"Do you want to save your settings?", @"Save Settings?", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
-
             if (result == DialogResult.Yes)
                 SaveSettings();
             else if (result == DialogResult.Cancel)
@@ -364,27 +359,22 @@ namespace KryptKeeper
         private void SaveSettings()
         {
             var settings = Properties.Settings.Default;
-
             settings.encryptionAlgorithm = CbxEncryptAlgorithms.SelectedIndex;
             settings.encryptionKey = TxtEncryptionKey.Text;
             settings.encryptionKeyType = CbxEncryptionKeyType.SelectedIndex;
-
             settings.encryptionMaskInformation = ChkMaskInformation.Checked;
             settings.encryptionMaskInfoType = CbxMaskInformation.SelectedIndex;
-
             settings.useEncryptionSettings = ChkUseEncryptSettings.Checked;
-
+            settings.rememberSettings = ChkRememberSettings.Checked;
             settings.decryptionAlgorithm = CbxDecryptAlgorithms.SelectedIndex;
             settings.decryptionKey = TxtDecryptionKey.Text;
             settings.decryptionKeyType = CbxDecryptionKeyType.SelectedIndex;
-
             settings.Save();
         }
 
         private static void ResetSettings()
         {
             var settings = Properties.Settings.Default;
-
             settings.encryptionAlgorithm = settings.decryptionAlgorithm = -1;
             settings.encryptionKeyType = settings.decryptionKeyType = -1;
             settings.encryptionKey = settings.decryptionKey = "";
@@ -393,7 +383,6 @@ namespace KryptKeeper
             settings.encryptionRemoveAfterEncrypt = true;
             settings.rememberSettings = false;
             settings.useEncryptionSettings = true;
-
             settings.Save();
         }
 
@@ -401,7 +390,6 @@ namespace KryptKeeper
         {
             EnableControls(FileListGridView.RowCount > 0);
         }
-
-
+  
     }
 }

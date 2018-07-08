@@ -408,7 +408,7 @@
             this.BtnDecrypt.TabIndex = 2;
             this.BtnDecrypt.Text = "Decrypt All Files";
             this.BtnDecrypt.UseVisualStyleBackColor = true;
-            this.BtnDecrypt.Click += new System.EventHandler(this.BtnDecrypt_Click);
+            this.BtnDecrypt.Click += new System.EventHandler(this.BtnDecryptAll_Click);
             // 
             // BtnAddFiles
             // 
@@ -453,6 +453,7 @@
             this.BtnDecryptSelected.TabIndex = 4;
             this.BtnDecryptSelected.Text = "Decrypt Selected Files";
             this.BtnDecryptSelected.UseVisualStyleBackColor = true;
+            this.BtnDecryptSelected.Click += new System.EventHandler(this.BtnDecryptSelected_Click);
             // 
             // MainWindow
             // 

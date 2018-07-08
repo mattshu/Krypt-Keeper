@@ -15,6 +15,7 @@ namespace KryptKeeper
         private byte[] key;
         public bool MaskFileName { get; set; }
         public bool MaskFileTimes { get; set; }
+        public bool RemoveOriginal { get; set; }
         public static int Encrypt { get; } = 0;
         public static int Decrypt { get; } = 1;
         private static byte[] GetMD5(byte[] value)

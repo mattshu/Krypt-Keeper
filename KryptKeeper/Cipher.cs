@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Security.Cryptography;
 
@@ -22,15 +23,18 @@ namespace KryptKeeper
             var encrypted = EncryptData(options, data, out var IV);
             var dataComplete = new byte[IV.Length + encrypted.Length];
             Array.Copy(IV, 0, dataComplete, 0, IV.Length); // Copy IV to finished package
-            Array.Copy(encrypted, 0, dataComplete, IV.Length, encrypted.Length); // Copy encrypted data to finished package
-            if (options.MaskFileName)
-            {
-                var newPath = path.Replace(Path.GetFileName(path), Helper.GetRandomAlphanumericString(16));
+            Array.Copy(encrypted, 0, dataComplete, IV.Length,
+                encrypted.Length); // Copy encrypted data to finished package
+            if (options.RemoveOriginal)
+            { 
                 File.Delete(path);
-                path = newPath;
+                Debug.WriteLine("Deleted: " + path);
             }
+            if (options.MaskFileName)
+                path = path.Replace(Path.GetFileName(path), Helper.GetRandomAlphanumericString(16));
             path = path + FILE_EXTENSION;
             File.WriteAllBytes(path, dataComplete);
+            Debug.WriteLine("Created file: " + path);
             if (options.MaskFileTimes)
                 SetFileTimes(path);
         }
@@ -91,6 +95,7 @@ namespace KryptKeeper
                     File.Delete(path); // Remove encryption after validation
                 else
                     throw new Exception(@"Failed to compare MD5 of " + path + ". File tampered?");
+
             }
         }
 

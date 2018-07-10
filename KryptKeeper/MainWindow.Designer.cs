@@ -396,7 +396,7 @@
             this.BtnEncrypt.TabIndex = 2;
             this.BtnEncrypt.Text = "Encrypt All Files";
             this.BtnEncrypt.UseVisualStyleBackColor = true;
-            this.BtnEncrypt.Click += new System.EventHandler(this.BtnEncrypt_Click);
+            this.BtnEncrypt.Click += new System.EventHandler(this.BtnEncryptAll_Click);
             // 
             // BtnDecrypt
             // 

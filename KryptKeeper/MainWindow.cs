@@ -97,6 +97,7 @@ namespace KryptKeeper
             FileListGridView.DataSource = _fileList;
             LoadFileListColumnWidths();
             EnableControls(FileListGridView.RowCount > 0);
+            TabMain.SelectedIndex = 0;
         }
 
         private void EnableControls(bool state)
@@ -138,7 +139,7 @@ namespace KryptKeeper
                 _settingsNotViewed = false;
         }
 
-        private void BtnEncrypt_Click(object sender, EventArgs e)
+        private void BtnEncryptAll_Click(object sender, EventArgs e)
         {
             if (ConfirmSettings())
             {
@@ -211,7 +212,30 @@ namespace KryptKeeper
 
         private void EncryptSelectedFiles()
         {
-            // TODO
+            var options = GenerateOptions(CipherOptions.Encrypt);
+            if (_fileList.Count <= 0) return;
+            var selectedCount = FileListGridView.Rows.GetRowCount(DataGridViewElementStates.Selected);
+            if (selectedCount <= 0) return;
+            for (int i = 0; i < selectedCount; i++)
+            {
+                var file = _fileList[FileListGridView.SelectedRows[i].Index];
+                var fullPath = Path.Combine(file.Path, file.Name);
+                _status.WritePending("Encrypting " + fullPath);
+                Cipher.Encrypt(fullPath, options);
+                _status.PendingComplete();
+            }
+            ResetFileList();
+        }
+
+        private void ResetFileList()
+        {
+            //FileListGridView.DataSource = null;
+            foreach (var file in _fileList.ToList())
+            {
+                if (!File.Exists(Path.Combine(file.Path, file.Name)))
+                    _fileList.Remove(file);
+            }
+            FileListGridView.DataSource = _fileList;
         }
 
         private bool ConfirmSettings()
@@ -227,13 +251,49 @@ namespace KryptKeeper
 
         private void BtnDecryptAll_Click(object sender, EventArgs e)
         {
-            // TODO 
+            if (ConfirmSettings())
+            {
+                DecryptAllFiles();
+            }
+        }
 
+        private void DecryptAllFiles()
+        {
+            var options = GenerateOptions(CipherOptions.Decrypt);
+            if (_fileList.Count <= 0) return;
+            foreach (var file in _fileList)
+            {
+                var fullPath = Path.Combine(file.Path, file.Name);
+                _status.WritePending("Decrypting " + fullPath);
+                Cipher.Encrypt(fullPath, options);
+                _status.PendingComplete();
+            }
+            ResetFileList();
         }
 
         private void BtnDecryptSelected_Click(object sender, EventArgs e)
         {
-            // TODO
+            if (ConfirmSettings())
+            {
+                DecryptSelectedFiles();
+            }
+        }
+
+        private void DecryptSelectedFiles()
+        {
+            var options = GenerateOptions(CipherOptions.Decrypt);
+            if (_fileList.Count <= 0) return;
+            var selectedCount = FileListGridView.Rows.GetRowCount(DataGridViewElementStates.Selected);
+            if (selectedCount <= 0) return;
+            for (int i = 0; i < selectedCount; i++)
+            {
+                var file = _fileList[FileListGridView.SelectedRows[i].Index];
+                var fullPath = Path.Combine(file.Path, file.Name);
+                _status.WritePending("Decrypting " + fullPath);
+                Cipher.Encrypt(fullPath, options);
+                _status.PendingComplete();
+            }
+            ResetFileList();
         }
 
         private void CbxEncryptAlgorithms_SelectedIndexChanged(object sender, EventArgs e)

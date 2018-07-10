@@ -34,7 +34,7 @@ namespace KryptKeeper
 
             public void WriteLine(string msg)
             {
-                string timestamp = "[" + DateTime.Now.ToString("HH:mm:ss") + "]: ";
+                var timestamp = "[" + DateTime.Now.ToString("HH:mm:ss") + "]: ";
                 _statusBox.AppendText(timestamp);
                 _statusBox.AppendText(msg + _newLine);
             }

@@ -43,7 +43,7 @@
             this.BtnYes.TabIndex = 0;
             this.BtnYes.Text = "Yes";
             this.BtnYes.UseVisualStyleBackColor = true;
-            this.BtnYes.Click += new System.EventHandler(this.BtnYes_Click);
+            this.BtnYes.Click += new System.EventHandler(this.btnYes_Click);
             // 
             // BtnNo
             // 
@@ -54,7 +54,7 @@
             this.BtnNo.TabIndex = 0;
             this.BtnNo.Text = "No";
             this.BtnNo.UseVisualStyleBackColor = true;
-            this.BtnNo.Click += new System.EventHandler(this.BtnNo_Click);
+            this.BtnNo.Click += new System.EventHandler(this.btnNo_Click);
             // 
             // ChkDoNotAskAgain
             // 
@@ -65,7 +65,7 @@
             this.ChkDoNotAskAgain.TabIndex = 1;
             this.ChkDoNotAskAgain.Text = "Never ask me again";
             this.ChkDoNotAskAgain.UseVisualStyleBackColor = true;
-            this.ChkDoNotAskAgain.CheckedChanged += new System.EventHandler(this.ChkDoNotAskAgain_CheckedChanged);
+            this.ChkDoNotAskAgain.CheckedChanged += new System.EventHandler(this.chkDoNotAskAgain_CheckedChanged);
             // 
             // label1
             // 

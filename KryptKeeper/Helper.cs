@@ -1,16 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Security.Cryptography;
-using System.Text;
 using System.Text.RegularExpressions;
 
 namespace KryptKeeper
 {
     internal static class Helper
     {
-
         public static Footer GenerateFooter(string path)
         {
             if (File.Exists(path)) throw new FileNotFoundException(path);
@@ -57,6 +53,7 @@ namespace KryptKeeper
             rng.GetBytes(random);
             return BitConverter.ToString(random).Replace("-", "").Substring(0, length);
         }
+
         public static string GetRandomNumericString(int length)
         {
             return Regex.Replace(GetRandomAlphanumericString(length), @"[A-F]", "0");

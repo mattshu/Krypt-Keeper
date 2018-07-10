@@ -28,7 +28,7 @@ namespace KryptKeeper
         public bool Extract(byte[] data)
         {
             var footerSignature = Encoding.Default.GetBytes(FOOTER_TAG);
-            string decoded = "";
+            var decoded = "";
             for (int i = data.Length - footerSignature.Length; i >= 0; i--)
             {
                 if (data[i] != footerSignature[0]) continue;
@@ -41,7 +41,7 @@ namespace KryptKeeper
                 break;
             }
             if (string.IsNullOrEmpty(decoded))
-                return false;  // Cannot find footer
+                return false; // Cannot find footer
             var newFooter = FromString(decoded);
             Name = newFooter.Name;
             MD5 = newFooter.MD5;
@@ -97,7 +97,8 @@ namespace KryptKeeper
 
         public override string ToString()
         {
-            return FOOTER_TAG + "name:" + Name + ",md5:" + MD5 + ",creationTime:" + CreationTime.ToFileTime() + ",modifiedTime:" + ModifiedTime.ToFileTime() + ",accessedTime:" + AccessedTime.ToFileTime();
+            return FOOTER_TAG + "name:" + Name + ",md5:" + MD5 + ",creationTime:" + CreationTime.ToFileTime() +
+                   ",modifiedTime:" + ModifiedTime.ToFileTime() + ",accessedTime:" + AccessedTime.ToFileTime();
         }
     }
 }

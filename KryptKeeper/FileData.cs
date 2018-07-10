@@ -5,25 +5,32 @@ namespace KryptKeeper
 {
     public class FileData
     {
-        public FileData(string filePath)
-        {
-            var fileInfo = new FileInfo(filePath);
-            Name = fileInfo.Name;
-            Extension = fileInfo.Extension;
-            Size = BytesToString(fileInfo.Length);
-            Path = fileInfo.DirectoryName;
-            MD5 = GetMD5(filePath);
-        }
-
-        public FileData(FileInfo fileInfo) : this(fileInfo.FullName) { }
-
         public string Name { get; }
         public string Extension { get; }
         public string Size { get; }
         public string Path { get; }
         public string MD5 { get; }
 
-        private string GetMD5(string path)
+        public FileData(string filePath)
+        {
+            var fileInfo = new FileInfo(filePath);
+            Name = fileInfo.Name;
+            Extension = fileInfo.Extension;
+            Size = bytesToString(fileInfo.Length);
+            Path = fileInfo.DirectoryName;
+            MD5 = getMD5(filePath);
+        }
+
+        public FileData(FileInfo fileInfo) : this(fileInfo.FullName)
+        {
+        }
+
+        public string GetFilePath()
+        {
+            return Path + @"\\" + Name;
+        }
+
+        private string getMD5(string path)
         {
             using (var md5 = System.Security.Cryptography.MD5.Create())
             {
@@ -35,14 +42,10 @@ namespace KryptKeeper
             }
         }
 
-        public string GetFilePath()
-        {
-            return Path + @"\\" + Name;
-        }
 
-        private static string BytesToString(long byteCount)
+        private static string bytesToString(long byteCount)
         {
-            string[] suf = { "B", "KB", "MB", "GB", "TB", "PB", "EB" }; //Longs run out around EB
+            string[] suf = {"B", "KB", "MB", "GB", "TB", "PB", "EB"}; //Longs run out around EB
             if (byteCount == 0)
                 return @"0";
             var bytes = Math.Abs(byteCount);

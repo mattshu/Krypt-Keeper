@@ -83,7 +83,7 @@
             this.TabMain.SelectedIndex = 0;
             this.TabMain.Size = new System.Drawing.Size(519, 275);
             this.TabMain.TabIndex = 1;
-            this.TabMain.TabIndexChanged += new System.EventHandler(this.TabMain_TabIndexChanged);
+            this.TabMain.TabIndexChanged += new System.EventHandler(this.tabMain_TabIndexChanged);
             // 
             // tabPage1
             // 
@@ -112,8 +112,8 @@
             this.FileListGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.FileListGridView.Size = new System.Drawing.Size(505, 243);
             this.FileListGridView.TabIndex = 0;
-            this.FileListGridView.DataSourceChanged += new System.EventHandler(this.FileListGridView_DataSourceChanged);
-            this.FileListGridView.SelectionChanged += new System.EventHandler(this.FileList_SelectionChanged);
+            this.FileListGridView.DataSourceChanged += new System.EventHandler(this.fileListGridView_DataSourceChanged);
+            this.FileListGridView.SelectionChanged += new System.EventHandler(this.fileList_SelectionChanged);
             // 
             // tabPage2
             // 
@@ -154,7 +154,7 @@
             this.BtnBrowseDecrypt.TabIndex = 8;
             this.BtnBrowseDecrypt.Text = "...";
             this.BtnBrowseDecrypt.UseVisualStyleBackColor = true;
-            this.BtnBrowseDecrypt.Click += new System.EventHandler(this.BtnBrowseDecrypt_Click);
+            this.BtnBrowseDecrypt.Click += new System.EventHandler(this.btnBrowseDecrypt_Click);
             // 
             // btnExit
             // 
@@ -164,7 +164,7 @@
             this.btnExit.TabIndex = 7;
             this.btnExit.Text = "Exit";
             this.btnExit.UseVisualStyleBackColor = true;
-            this.btnExit.Click += new System.EventHandler(this.BtnExit_Click);
+            this.btnExit.Click += new System.EventHandler(this.btnExit_Click);
             // 
             // ChkRememberSettings
             // 
@@ -187,7 +187,7 @@
             this.ChkUseEncryptSettings.TabIndex = 6;
             this.ChkUseEncryptSettings.Text = "Use encryption settings";
             this.ChkUseEncryptSettings.UseVisualStyleBackColor = true;
-            this.ChkUseEncryptSettings.CheckedChanged += new System.EventHandler(this.ChkUseEncryptSettings_CheckedChanged);
+            this.ChkUseEncryptSettings.CheckedChanged += new System.EventHandler(this.chkUseEncryptSettings_CheckedChanged);
             // 
             // label2
             // 
@@ -226,7 +226,7 @@
             this.CbxDecryptionKeyType.Name = "CbxDecryptionKeyType";
             this.CbxDecryptionKeyType.Size = new System.Drawing.Size(121, 21);
             this.CbxDecryptionKeyType.TabIndex = 1;
-            this.CbxDecryptionKeyType.SelectedIndexChanged += new System.EventHandler(this.CbxDecryptionKeyType_SelectedIndexChanged);
+            this.CbxDecryptionKeyType.SelectedIndexChanged += new System.EventHandler(this.cbxDecryptionKeyType_SelectedIndexChanged);
             // 
             // groupBox1
             // 
@@ -254,7 +254,7 @@
             this.BtnBrowseEncrypt.TabIndex = 8;
             this.BtnBrowseEncrypt.Text = "...";
             this.BtnBrowseEncrypt.UseVisualStyleBackColor = true;
-            this.BtnBrowseEncrypt.Click += new System.EventHandler(this.BtnBrowseEncrypt_Click);
+            this.BtnBrowseEncrypt.Click += new System.EventHandler(this.btnBrowseEncrypt_Click);
             // 
             // CbxEncryptAlgorithms
             // 
@@ -263,7 +263,7 @@
             this.CbxEncryptAlgorithms.Name = "CbxEncryptAlgorithms";
             this.CbxEncryptAlgorithms.Size = new System.Drawing.Size(155, 21);
             this.CbxEncryptAlgorithms.TabIndex = 5;
-            this.CbxEncryptAlgorithms.SelectedIndexChanged += new System.EventHandler(this.CbxEncryptAlgorithms_SelectedIndexChanged);
+            this.CbxEncryptAlgorithms.SelectedIndexChanged += new System.EventHandler(this.cbxEncryptAlgorithms_SelectedIndexChanged);
             // 
             // label1
             // 
@@ -280,7 +280,7 @@
             this.TxtEncryptionKey.Name = "TxtEncryptionKey";
             this.TxtEncryptionKey.Size = new System.Drawing.Size(155, 20);
             this.TxtEncryptionKey.TabIndex = 3;
-            this.TxtEncryptionKey.TextChanged += new System.EventHandler(this.TxtEncryptionKey_TextChanged);
+            this.TxtEncryptionKey.TextChanged += new System.EventHandler(this.txtEncryptionKey_TextChanged);
             // 
             // ChkRemoveAfterEncrypt
             // 
@@ -303,7 +303,7 @@
             this.CbxEncryptionKeyType.Name = "CbxEncryptionKeyType";
             this.CbxEncryptionKeyType.Size = new System.Drawing.Size(121, 21);
             this.CbxEncryptionKeyType.TabIndex = 1;
-            this.CbxEncryptionKeyType.SelectedIndexChanged += new System.EventHandler(this.CbxEncryptionKeyType_SelectedIndexChanged);
+            this.CbxEncryptionKeyType.SelectedIndexChanged += new System.EventHandler(this.cbxEncryptionKeyType_SelectedIndexChanged);
             // 
             // CbxMaskInformation
             // 
@@ -327,7 +327,7 @@
             this.ChkMaskInformation.TabIndex = 0;
             this.ChkMaskInformation.Text = "Mask file information:";
             this.ChkMaskInformation.UseVisualStyleBackColor = true;
-            this.ChkMaskInformation.CheckedChanged += new System.EventHandler(this.ChkMaskInformation_CheckedChanged);
+            this.ChkMaskInformation.CheckedChanged += new System.EventHandler(this.chkMaskInformation_CheckedChanged);
             // 
             // tabPage3
             // 
@@ -354,7 +354,7 @@
             this.TxtStatus.ReadOnly = true;
             this.TxtStatus.Size = new System.Drawing.Size(499, 179);
             this.TxtStatus.TabIndex = 7;
-            this.TxtStatus.TextChanged += new System.EventHandler(this.TxtStatus_TextChanged);
+            this.TxtStatus.TextChanged += new System.EventHandler(this.txtStatus_TextChanged);
             // 
             // progressBar
             // 
@@ -396,7 +396,7 @@
             this.BtnEncrypt.TabIndex = 2;
             this.BtnEncrypt.Text = "Encrypt All Files";
             this.BtnEncrypt.UseVisualStyleBackColor = true;
-            this.BtnEncrypt.Click += new System.EventHandler(this.BtnEncryptAll_Click);
+            this.BtnEncrypt.Click += new System.EventHandler(this.btnEncryptAll_Click);
             // 
             // BtnDecrypt
             // 
@@ -408,7 +408,7 @@
             this.BtnDecrypt.TabIndex = 2;
             this.BtnDecrypt.Text = "Decrypt All Files";
             this.BtnDecrypt.UseVisualStyleBackColor = true;
-            this.BtnDecrypt.Click += new System.EventHandler(this.BtnDecryptAll_Click);
+            this.BtnDecrypt.Click += new System.EventHandler(this.btnDecryptAll_Click);
             // 
             // BtnAddFiles
             // 
@@ -418,7 +418,7 @@
             this.BtnAddFiles.TabIndex = 2;
             this.BtnAddFiles.Text = "Add Files...";
             this.BtnAddFiles.UseVisualStyleBackColor = true;
-            this.BtnAddFiles.Click += new System.EventHandler(this.BtnAddFiles_Click);
+            this.BtnAddFiles.Click += new System.EventHandler(this.btnAddFiles_Click);
             // 
             // BtnRemoveFiles
             // 
@@ -429,7 +429,7 @@
             this.BtnRemoveFiles.TabIndex = 2;
             this.BtnRemoveFiles.Text = "Remove Selected Files...";
             this.BtnRemoveFiles.UseVisualStyleBackColor = true;
-            this.BtnRemoveFiles.Click += new System.EventHandler(this.BtnRemoveFiles_Click);
+            this.BtnRemoveFiles.Click += new System.EventHandler(this.btnRemoveFiles_Click);
             // 
             // BtnEncryptSelected
             // 
@@ -441,7 +441,7 @@
             this.BtnEncryptSelected.TabIndex = 3;
             this.BtnEncryptSelected.Text = "Encrypt Selected Files";
             this.BtnEncryptSelected.UseVisualStyleBackColor = true;
-            this.BtnEncryptSelected.Click += new System.EventHandler(this.BtnEncryptSelected_Click);
+            this.BtnEncryptSelected.Click += new System.EventHandler(this.btnEncryptSelected_Click);
             // 
             // BtnDecryptSelected
             // 
@@ -453,7 +453,7 @@
             this.BtnDecryptSelected.TabIndex = 4;
             this.BtnDecryptSelected.Text = "Decrypt Selected Files";
             this.BtnDecryptSelected.UseVisualStyleBackColor = true;
-            this.BtnDecryptSelected.Click += new System.EventHandler(this.BtnDecryptSelected_Click);
+            this.BtnDecryptSelected.Click += new System.EventHandler(this.btnDecryptSelected_Click);
             // 
             // MainWindow
             // 
@@ -472,8 +472,8 @@
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Krypt Keeper - File Security";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainWindow_FormClosing);
-            this.Shown += new System.EventHandler(this.MainWindow_Shown);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.mainWindow_FormClosing);
+            this.Shown += new System.EventHandler(this.mainWindow_Shown);
             this.TabMain.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.FileListGridView)).EndInit();

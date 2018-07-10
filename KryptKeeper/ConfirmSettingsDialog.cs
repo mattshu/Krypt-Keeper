@@ -14,7 +14,7 @@ namespace KryptKeeper
 
         private void chkDoNotAskAgain_CheckedChanged(object sender, EventArgs e)
         {
-            ShowAgain = !ChkDoNotAskAgain.Checked;
+            ShowAgain = !chkDoNotAskAgain.Checked;
         }
 
         private void btnYes_Click(object sender, EventArgs e)

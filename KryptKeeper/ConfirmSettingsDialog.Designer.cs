@@ -28,44 +28,44 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.BtnYes = new System.Windows.Forms.Button();
-            this.BtnNo = new System.Windows.Forms.Button();
-            this.ChkDoNotAskAgain = new System.Windows.Forms.CheckBox();
+            this.btnYes = new System.Windows.Forms.Button();
+            this.btnNo = new System.Windows.Forms.Button();
+            this.chkDoNotAskAgain = new System.Windows.Forms.CheckBox();
             this.label1 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
-            // BtnYes
+            // btnYes
             // 
-            this.BtnYes.DialogResult = System.Windows.Forms.DialogResult.Yes;
-            this.BtnYes.Location = new System.Drawing.Point(199, 77);
-            this.BtnYes.Name = "BtnYes";
-            this.BtnYes.Size = new System.Drawing.Size(75, 23);
-            this.BtnYes.TabIndex = 0;
-            this.BtnYes.Text = "Yes";
-            this.BtnYes.UseVisualStyleBackColor = true;
-            this.BtnYes.Click += new System.EventHandler(this.btnYes_Click);
+            this.btnYes.DialogResult = System.Windows.Forms.DialogResult.Yes;
+            this.btnYes.Location = new System.Drawing.Point(199, 77);
+            this.btnYes.Name = "btnYes";
+            this.btnYes.Size = new System.Drawing.Size(75, 23);
+            this.btnYes.TabIndex = 0;
+            this.btnYes.Text = "Yes";
+            this.btnYes.UseVisualStyleBackColor = true;
+            this.btnYes.Click += new System.EventHandler(this.btnYes_Click);
             // 
-            // BtnNo
+            // btnNo
             // 
-            this.BtnNo.DialogResult = System.Windows.Forms.DialogResult.No;
-            this.BtnNo.Location = new System.Drawing.Point(280, 77);
-            this.BtnNo.Name = "BtnNo";
-            this.BtnNo.Size = new System.Drawing.Size(75, 23);
-            this.BtnNo.TabIndex = 0;
-            this.BtnNo.Text = "No";
-            this.BtnNo.UseVisualStyleBackColor = true;
-            this.BtnNo.Click += new System.EventHandler(this.btnNo_Click);
+            this.btnNo.DialogResult = System.Windows.Forms.DialogResult.No;
+            this.btnNo.Location = new System.Drawing.Point(280, 77);
+            this.btnNo.Name = "btnNo";
+            this.btnNo.Size = new System.Drawing.Size(75, 23);
+            this.btnNo.TabIndex = 0;
+            this.btnNo.Text = "No";
+            this.btnNo.UseVisualStyleBackColor = true;
+            this.btnNo.Click += new System.EventHandler(this.btnNo_Click);
             // 
-            // ChkDoNotAskAgain
+            // chkDoNotAskAgain
             // 
-            this.ChkDoNotAskAgain.AutoSize = true;
-            this.ChkDoNotAskAgain.Location = new System.Drawing.Point(234, 54);
-            this.ChkDoNotAskAgain.Name = "ChkDoNotAskAgain";
-            this.ChkDoNotAskAgain.Size = new System.Drawing.Size(121, 17);
-            this.ChkDoNotAskAgain.TabIndex = 1;
-            this.ChkDoNotAskAgain.Text = "Never ask me again";
-            this.ChkDoNotAskAgain.UseVisualStyleBackColor = true;
-            this.ChkDoNotAskAgain.CheckedChanged += new System.EventHandler(this.chkDoNotAskAgain_CheckedChanged);
+            this.chkDoNotAskAgain.AutoSize = true;
+            this.chkDoNotAskAgain.Location = new System.Drawing.Point(234, 54);
+            this.chkDoNotAskAgain.Name = "chkDoNotAskAgain";
+            this.chkDoNotAskAgain.Size = new System.Drawing.Size(121, 17);
+            this.chkDoNotAskAgain.TabIndex = 1;
+            this.chkDoNotAskAgain.Text = "Never ask me again";
+            this.chkDoNotAskAgain.UseVisualStyleBackColor = true;
+            this.chkDoNotAskAgain.CheckedChanged += new System.EventHandler(this.chkDoNotAskAgain_CheckedChanged);
             // 
             // label1
             // 
@@ -82,9 +82,9 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(367, 112);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.ChkDoNotAskAgain);
-            this.Controls.Add(this.BtnNo);
-            this.Controls.Add(this.BtnYes);
+            this.Controls.Add(this.chkDoNotAskAgain);
+            this.Controls.Add(this.btnNo);
+            this.Controls.Add(this.btnYes);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
@@ -102,9 +102,9 @@
 
         #endregion
 
-        private System.Windows.Forms.Button BtnYes;
-        private System.Windows.Forms.Button BtnNo;
-        private System.Windows.Forms.CheckBox ChkDoNotAskAgain;
+        private System.Windows.Forms.Button btnYes;
+        private System.Windows.Forms.Button btnNo;
+        private System.Windows.Forms.CheckBox chkDoNotAskAgain;
         private System.Windows.Forms.Label label1;
     }
 }

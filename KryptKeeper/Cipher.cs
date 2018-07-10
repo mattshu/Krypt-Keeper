@@ -8,7 +8,14 @@ namespace KryptKeeper
     {
         public const string FILE_EXTENSION = ".krpt";
 
-        public static void Encrypt(string path, CipherOptions options)
+        public static void EncryptFiles(string[] files, CipherOptions options)
+        {
+            if (files.Length <= 0) return;
+            foreach (string file in files)
+                encrypt(file, options);
+        }
+
+        private static void encrypt(string path, CipherOptions options)
         {
             if (!File.Exists(path))
                 throw new FileNotFoundException(path);
@@ -16,14 +23,9 @@ namespace KryptKeeper
             var footer = new Footer();
             footer.Build(path);
             var footerData = footer.ToArray();
-            var data = new byte[fileData.Length + footerData.Length];
-            Array.Copy(fileData, 0, data, 0, fileData.Length); // Copy fileData into data
-            Array.Copy(footerData, 0, data, fileData.Length, footerData.Length); // Copy footer into data
-            var encrypted = encryptData(options, data, out var IV);
-            var dataComplete = new byte[IV.Length + encrypted.Length];
-            Array.Copy(IV, 0, dataComplete, 0, IV.Length); // Copy IV to finished package
-            Array.Copy(encrypted, 0, dataComplete, IV.Length,
-                encrypted.Length); // Copy encrypted data to finished package
+            var data = packData(fileData, footerData);
+            var encrypted = encryptData(data, options, out var IV);
+            var dataComplete = packData(IV, encrypted);
             if (options.RemoveOriginal)
                 File.Delete(path);
             if (options.MaskFileName)
@@ -34,7 +36,22 @@ namespace KryptKeeper
                 setFileTimes(path);
         }
 
-        public static void Decrypt(string path, CipherOptions options)
+        private static byte[] packData(byte[] dataA, byte[] dataB)
+        {
+            var data = new byte[dataA.Length + dataB.Length];
+            Array.Copy(dataA, 0, data, 0, dataA.Length); // Copy dataA into data
+            Array.Copy(dataB, 0, data, dataA.Length, dataB.Length); // Copy dataB into data
+            return data;
+        }
+
+        public static void DecryptFiles(string[] files, CipherOptions options)
+        {
+            if (files.Length <= 0) return;
+            foreach (string file in files)
+                decrypt(file, options);
+        }
+
+        private static void decrypt(string path, CipherOptions options)
         {
             var data = File.ReadAllBytes(path);
             using (var provider = getAlgorithm(options.Mode))
@@ -47,7 +64,7 @@ namespace KryptKeeper
                 provider.IV = IV;
                 provider.Mode = CipherMode.CBC;
                 var decryptor = provider.CreateDecryptor(provider.Key, provider.IV);
-                var decrypted = decryptData(decryptor, encrypted);
+                var decrypted = decryptData(encrypted, decryptor);
                 var footer = new Footer();
                 if (!footer.Extract(decrypted))
                     throw new Exception(@"Failed to extract footer of " + path + ". File corrupt?");
@@ -66,7 +83,7 @@ namespace KryptKeeper
             }
         }
 
-        private static byte[] encryptData(CipherOptions options, byte[] data, out byte[] IV)
+        private static byte[] encryptData(byte[] data, CipherOptions options, out byte[] IV)
         {
             byte[] encrypted;
 
@@ -94,20 +111,26 @@ namespace KryptKeeper
             return encrypted;
         }
 
-        private static byte[] decryptData(ICryptoTransform decryptor, byte[] encrypted)
+        private static byte[] decryptData(byte[] encrypted, ICryptoTransform decryptor)
         {
-            byte[] decrypted;
-            using (var msDecrypt = new MemoryStream(encrypted))
+            try
             {
-                using (var csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
+                byte[] decrypted;
+                using (var msDecrypt = new MemoryStream(encrypted))
                 {
-                    using (var srDecrypt = new BinaryReader(csDecrypt))
+                    using (var csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
                     {
-                        decrypted = srDecrypt.ReadBytes(encrypted.Length);
+                        using (var srDecrypt = new BinaryReader(csDecrypt))
+                        {
+                            decrypted = srDecrypt.ReadBytes(encrypted.Length);
+                        }
                     }
                 }
+                return decrypted;
+            } catch (CryptographicException cryptoException)
+            {
+                throw new Exception(@"Unable to decrypt data, file may have been tampered with. \n" + cryptoException.Message);
             }
-            return decrypted;
         }
 
         private static void setFileTimes(string encryptedPath)

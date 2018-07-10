@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using System.Security.Cryptography;
 
@@ -13,28 +12,24 @@ namespace KryptKeeper
         {
             if (!File.Exists(path))
                 throw new FileNotFoundException(path);
-            var dataFromFile = File.ReadAllBytes(path);
+            var fileData = File.ReadAllBytes(path);
             var footer = new Footer();
             footer.Build(path);
             var footerData = footer.ToArray();
-            var data = new byte[dataFromFile.Length + footerData.Length];
-            Array.Copy(dataFromFile, 0, data, 0, dataFromFile.Length); // Copy dataFromFile into data
-            Array.Copy(footerData, 0, data, dataFromFile.Length, footerData.Length); // Copy footer into data
+            var data = new byte[fileData.Length + footerData.Length];
+            Array.Copy(fileData, 0, data, 0, fileData.Length); // Copy fileData into data
+            Array.Copy(footerData, 0, data, fileData.Length, footerData.Length); // Copy footer into data
             var encrypted = EncryptData(options, data, out var IV);
             var dataComplete = new byte[IV.Length + encrypted.Length];
             Array.Copy(IV, 0, dataComplete, 0, IV.Length); // Copy IV to finished package
             Array.Copy(encrypted, 0, dataComplete, IV.Length,
                 encrypted.Length); // Copy encrypted data to finished package
             if (options.RemoveOriginal)
-            { 
                 File.Delete(path);
-                Debug.WriteLine("Deleted: " + path);
-            }
             if (options.MaskFileName)
                 path = path.Replace(Path.GetFileName(path), Helper.GetRandomAlphanumericString(16));
             path = path + FILE_EXTENSION;
             File.WriteAllBytes(path, dataComplete);
-            Debug.WriteLine("Created file: " + path);
             if (options.MaskFileTimes)
                 SetFileTimes(path);
         }
@@ -144,7 +139,7 @@ namespace KryptKeeper
                 case CipherAlgorithm.TRIPLEDES:
                     return new TripleDESCryptoServiceProvider();
                 default:
-                    throw new Exception("Unknown algorithm: " + mode);
+                    throw new Exception("Unknown algorithm: " + mode); // TODO new Exception
             }
         }
     }

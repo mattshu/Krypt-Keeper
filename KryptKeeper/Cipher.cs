@@ -6,6 +6,8 @@ namespace KryptKeeper
 {
     internal class Cipher
     {
+        private static readonly Status status = Status.GetInstance();
+
         public const string FILE_EXTENSION = ".krpt";
 
         public static void EncryptFiles(string[] files, CipherOptions options)
@@ -13,6 +15,7 @@ namespace KryptKeeper
             if (files.Length <= 0) return;
             foreach (string file in files)
                 encrypt(file, options);
+            status.WriteLine("Encryption completed.");
         }
 
         public static void DecryptFiles(string[] files, CipherOptions options)
@@ -20,12 +23,14 @@ namespace KryptKeeper
             if (files.Length <= 0) return;
             foreach (string file in files)
                 decrypt(file, options);
+            status.WriteLine("Decryption completed.");
         }
 
         private static void encrypt(string path, CipherOptions options)
         {
             if (!File.Exists(path))
                 throw new FileNotFoundException(path);
+            status.WritePending("Encrypting: " + path);
             var fileData = File.ReadAllBytes(path);
             var footer = new Footer();
             footer.Build(path);
@@ -40,7 +45,7 @@ namespace KryptKeeper
             path = path + FILE_EXTENSION;
             File.WriteAllBytes(path, dataComplete);
             if (options.MaskFileTimes)
-                setFileTimes(path);
+                Helper.SetFileTimes(path);
         }
 
         private static void decrypt(string path, CipherOptions options)
@@ -48,6 +53,7 @@ namespace KryptKeeper
             var data = File.ReadAllBytes(path);
             using (var provider = getAlgorithm(options.Mode))
             {
+                status.WritePending("Decrypting: " + path);
                 provider.Key = options.Key;
                 var IV = new byte[provider.BlockSize / 8];
                 var encrypted = new byte[data.Length - IV.Length];
@@ -67,7 +73,7 @@ namespace KryptKeeper
                     decryptedPath =
                         decryptedPath.Replace(Path.GetFileName(decryptedPath), footer.Name); // Set to original filename
                 File.WriteAllBytes(decryptedPath, decrypted);
-                setFileTimes(decryptedPath, footer); // Set to original filetimes
+                Helper.SetFileTimes(decryptedPath, footer); // Set to original filetimes
                 if (Helper.GetMD5StringFromPath(decryptedPath).Equals(footer.MD5))
                     File.Delete(path); // Remove encryption after validation
                 else
@@ -123,24 +129,6 @@ namespace KryptKeeper
             {
                 throw new Exception(@"Unable to decrypt data, file may have been tampered with. \n" + cryptoException.Message);
             }
-        }
-
-        private static void setFileTimes(string encryptedPath)
-        {
-            // Prepending "130" keeps the random date (arguably) more believable
-            File.SetCreationTime(encryptedPath,
-                DateTime.FromFileTime(long.Parse("130" + Helper.GetRandomNumericString(15))));
-            File.SetLastAccessTime(encryptedPath,
-                DateTime.FromFileTime(long.Parse("130" + Helper.GetRandomNumericString(15))));
-            File.SetLastWriteTime(encryptedPath,
-                DateTime.FromFileTime(long.Parse("130" + Helper.GetRandomNumericString(15))));
-        }
-
-        private static void setFileTimes(string decryptedPath, Footer footer)
-        {
-            File.SetCreationTime(decryptedPath, footer.CreationTime);
-            File.SetLastAccessTime(decryptedPath, footer.AccessedTime);
-            File.SetLastWriteTime(decryptedPath, footer.ModifiedTime);
         }
 
         private static SymmetricAlgorithm getAlgorithm(CipherAlgorithm mode)

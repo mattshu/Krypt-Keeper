@@ -15,6 +15,21 @@ namespace KryptKeeper
             return data;
         }
 
+        public static void SetFileTimes(string path)
+        {
+            // Prepending "130" keeps the random date within a recent but random timespan
+            File.SetCreationTime(path, DateTime.FromFileTime(long.Parse("130" + GetRandomNumericString(15))));
+            File.SetLastAccessTime(path, DateTime.FromFileTime(long.Parse("130" + GetRandomNumericString(15))));
+            File.SetLastWriteTime(path, DateTime.FromFileTime(long.Parse("130" + GetRandomNumericString(15))));
+        }
+
+        public static void SetFileTimes(string path, Footer footer)
+        {
+            File.SetCreationTime(path, footer.CreationTime);
+            File.SetLastAccessTime(path, footer.AccessedTime);
+            File.SetLastWriteTime(path, footer.ModifiedTime);
+        }
+
         public static Footer GenerateFooter(string path)
         {
             if (File.Exists(path)) throw new FileNotFoundException(path);

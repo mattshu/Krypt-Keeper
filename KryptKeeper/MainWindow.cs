@@ -17,7 +17,7 @@ namespace KryptKeeper
          * - Fix column resize problem when resizing past border
         */
 
-        private readonly Status _status;
+        private Status status;
 
         private bool _settingsNeedConfirmed = true;
         private bool _settingsNotViewed = false;
@@ -27,7 +27,6 @@ namespace KryptKeeper
         public MainWindow()
         {
             InitializeComponent();
-            _status = new Status(txtStatus);
         }
 
         private void loadFileListColumnWidths()
@@ -40,6 +39,7 @@ namespace KryptKeeper
         private void mainWindow_Shown(object sender, EventArgs e)
         {
             loadSettings();
+            status = new Status(txtStatus);
         }
 
         private void loadSettings()
@@ -207,6 +207,7 @@ namespace KryptKeeper
         private void processAllFiles(int cipherMode)
         {
             if (_fileList.Count <= 0) return;
+            focusStatusTab();
             var paths = getPathsFromFileList();
             var options = generateOptions(cipherMode);
             if (cipherMode == CipherOptions.Encrypt)
@@ -216,9 +217,15 @@ namespace KryptKeeper
             resetFileList();
         }
 
+        private void focusStatusTab()
+        {
+            TabMain.SelectedIndex = 2;
+        }
+
         private void processSelectedFiles(int cipherMode)
         {
             if (FileListGridView.SelectedRows.Count <= 0) return;
+            focusStatusTab();
             var options = generateOptions(cipherMode);
             var paths = getPathsFromSelection();
             if (cipherMode == CipherOptions.Encrypt)

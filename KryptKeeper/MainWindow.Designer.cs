@@ -60,7 +60,7 @@
             this.btnAddFiles = new System.Windows.Forms.Button();
             this.btnRemoveFiles = new System.Windows.Forms.Button();
             this.btnEncryptSelected = new System.Windows.Forms.Button();
-            this.bttnDecryptSelected = new System.Windows.Forms.Button();
+            this.btnDecryptSelected = new System.Windows.Forms.Button();
             this.TabMain.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.FileListGridView)).BeginInit();
@@ -444,24 +444,24 @@
             this.btnEncryptSelected.UseVisualStyleBackColor = true;
             this.btnEncryptSelected.Click += new System.EventHandler(this.btnEncryptSelected_Click);
             // 
-            // bttnDecryptSelected
+            // btnDecryptSelected
             // 
-            this.bttnDecryptSelected.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.bttnDecryptSelected.Enabled = false;
-            this.bttnDecryptSelected.Location = new System.Drawing.Point(386, 48);
-            this.bttnDecryptSelected.Name = "bttnDecryptSelected";
-            this.bttnDecryptSelected.Size = new System.Drawing.Size(145, 30);
-            this.bttnDecryptSelected.TabIndex = 4;
-            this.bttnDecryptSelected.Text = "Decrypt Selected Files";
-            this.bttnDecryptSelected.UseVisualStyleBackColor = true;
-            this.bttnDecryptSelected.Click += new System.EventHandler(this.btnDecryptSelected_Click);
+            this.btnDecryptSelected.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnDecryptSelected.Enabled = false;
+            this.btnDecryptSelected.Location = new System.Drawing.Point(386, 48);
+            this.btnDecryptSelected.Name = "btnDecryptSelected";
+            this.btnDecryptSelected.Size = new System.Drawing.Size(145, 30);
+            this.btnDecryptSelected.TabIndex = 4;
+            this.btnDecryptSelected.Text = "Decrypt Selected Files";
+            this.btnDecryptSelected.UseVisualStyleBackColor = true;
+            this.btnDecryptSelected.Click += new System.EventHandler(this.btnDecryptSelected_Click);
             // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(543, 368);
-            this.Controls.Add(this.bttnDecryptSelected);
+            this.Controls.Add(this.btnDecryptSelected);
             this.Controls.Add(this.btnEncryptSelected);
             this.Controls.Add(this.btnDecrypt);
             this.Controls.Add(this.btnRemoveFiles);
@@ -522,7 +522,7 @@
         private System.Windows.Forms.DataGridView FileListGridView;
         private System.Windows.Forms.TextBox txtStatus;
         private System.Windows.Forms.Button btnEncryptSelected;
-        private System.Windows.Forms.Button bttnDecryptSelected;
+        private System.Windows.Forms.Button btnDecryptSelected;
     }
 }
 

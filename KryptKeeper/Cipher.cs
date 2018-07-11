@@ -15,6 +15,13 @@ namespace KryptKeeper
                 encrypt(file, options);
         }
 
+        public static void DecryptFiles(string[] files, CipherOptions options)
+        {
+            if (files.Length <= 0) return;
+            foreach (string file in files)
+                decrypt(file, options);
+        }
+
         private static void encrypt(string path, CipherOptions options)
         {
             if (!File.Exists(path))
@@ -23,9 +30,9 @@ namespace KryptKeeper
             var footer = new Footer();
             footer.Build(path);
             var footerData = footer.ToArray();
-            var data = packData(fileData, footerData);
+            var data = Helper.PackData(fileData, footerData);
             var encrypted = encryptData(data, options, out var IV);
-            var dataComplete = packData(IV, encrypted);
+            var dataComplete = Helper.PackData(IV, encrypted);
             if (options.RemoveOriginal)
                 File.Delete(path);
             if (options.MaskFileName)
@@ -34,21 +41,6 @@ namespace KryptKeeper
             File.WriteAllBytes(path, dataComplete);
             if (options.MaskFileTimes)
                 setFileTimes(path);
-        }
-
-        private static byte[] packData(byte[] dataA, byte[] dataB)
-        {
-            var data = new byte[dataA.Length + dataB.Length];
-            Array.Copy(dataA, 0, data, 0, dataA.Length); // Copy dataA into data
-            Array.Copy(dataB, 0, data, dataA.Length, dataB.Length); // Copy dataB into data
-            return data;
-        }
-
-        public static void DecryptFiles(string[] files, CipherOptions options)
-        {
-            if (files.Length <= 0) return;
-            foreach (string file in files)
-                decrypt(file, options);
         }
 
         private static void decrypt(string path, CipherOptions options)

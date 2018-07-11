@@ -7,6 +7,14 @@ namespace KryptKeeper
 {
     internal static class Helper
     {
+        public static byte[] PackData(byte[] dataA, byte[] dataB)
+        {
+            var data = new byte[dataA.Length + dataB.Length];
+            Array.Copy(dataA, 0, data, 0, dataA.Length); // Copy dataA into data
+            Array.Copy(dataB, 0, data, dataA.Length, dataB.Length); // Copy dataB into data
+            return data;
+        }
+
         public static Footer GenerateFooter(string path)
         {
             if (File.Exists(path)) throw new FileNotFoundException(path);

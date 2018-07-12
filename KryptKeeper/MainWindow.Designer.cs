@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.TabMain = new System.Windows.Forms.TabControl();
+            this.tabMain = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.FileListGridView = new System.Windows.Forms.DataGridView();
             this.tabPage2 = new System.Windows.Forms.TabPage();
@@ -61,7 +61,8 @@
             this.btnRemoveFiles = new System.Windows.Forms.Button();
             this.btnEncryptSelected = new System.Windows.Forms.Button();
             this.btnDecryptSelected = new System.Windows.Forms.Button();
-            this.TabMain.SuspendLayout();
+            this.chkConfirmOnExit = new System.Windows.Forms.CheckBox();
+            this.tabMain.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.FileListGridView)).BeginInit();
             this.tabPage2.SuspendLayout();
@@ -70,20 +71,20 @@
             this.tabPage3.SuspendLayout();
             this.SuspendLayout();
             // 
-            // TabMain
+            // tabMain
             // 
-            this.TabMain.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.tabMain.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.TabMain.Controls.Add(this.tabPage1);
-            this.TabMain.Controls.Add(this.tabPage2);
-            this.TabMain.Controls.Add(this.tabPage3);
-            this.TabMain.Location = new System.Drawing.Point(12, 81);
-            this.TabMain.Name = "TabMain";
-            this.TabMain.SelectedIndex = 0;
-            this.TabMain.Size = new System.Drawing.Size(519, 275);
-            this.TabMain.TabIndex = 1;
-            this.TabMain.TabIndexChanged += new System.EventHandler(this.tabMain_TabIndexChanged);
+            this.tabMain.Controls.Add(this.tabPage1);
+            this.tabMain.Controls.Add(this.tabPage2);
+            this.tabMain.Controls.Add(this.tabPage3);
+            this.tabMain.Location = new System.Drawing.Point(12, 81);
+            this.tabMain.Name = "tabMain";
+            this.tabMain.SelectedIndex = 0;
+            this.tabMain.Size = new System.Drawing.Size(519, 275);
+            this.tabMain.TabIndex = 1;
+            this.tabMain.TabIndexChanged += new System.EventHandler(this.tabMain_TabIndexChanged);
             // 
             // tabPage1
             // 
@@ -132,6 +133,7 @@
             // 
             this.groupBox2.Controls.Add(this.btnBrowseDecrypt);
             this.groupBox2.Controls.Add(this.btnExit);
+            this.groupBox2.Controls.Add(this.chkConfirmOnExit);
             this.groupBox2.Controls.Add(this.chkRememberSettings);
             this.groupBox2.Controls.Add(this.chkUseEncryptSettings);
             this.groupBox2.Controls.Add(this.label2);
@@ -456,6 +458,18 @@
             this.btnDecryptSelected.UseVisualStyleBackColor = true;
             this.btnDecryptSelected.Click += new System.EventHandler(this.btnDecryptSelected_Click);
             // 
+            // chkConfirmOnExit
+            // 
+            this.chkConfirmOnExit.AutoSize = true;
+            this.chkConfirmOnExit.Checked = true;
+            this.chkConfirmOnExit.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkConfirmOnExit.Location = new System.Drawing.Point(367, 36);
+            this.chkConfirmOnExit.Name = "chkConfirmOnExit";
+            this.chkConfirmOnExit.Size = new System.Drawing.Size(98, 17);
+            this.chkConfirmOnExit.TabIndex = 6;
+            this.chkConfirmOnExit.Text = "Confirm On Exit";
+            this.chkConfirmOnExit.UseVisualStyleBackColor = true;
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -467,7 +481,7 @@
             this.Controls.Add(this.btnRemoveFiles);
             this.Controls.Add(this.btnAddFiles);
             this.Controls.Add(this.btnEncrypt);
-            this.Controls.Add(this.TabMain);
+            this.Controls.Add(this.tabMain);
             this.MinimumSize = new System.Drawing.Size(559, 407);
             this.Name = "MainWindow";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
@@ -475,7 +489,7 @@
             this.Text = "Krypt Keeper - File Security";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.mainWindow_FormClosing);
             this.Shown += new System.EventHandler(this.mainWindow_Shown);
-            this.TabMain.ResumeLayout(false);
+            this.tabMain.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.FileListGridView)).EndInit();
             this.tabPage2.ResumeLayout(false);
@@ -490,7 +504,7 @@
         }
 
         #endregion
-        private System.Windows.Forms.TabControl TabMain;
+        private System.Windows.Forms.TabControl tabMain;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.Button btnEncrypt;
@@ -523,6 +537,7 @@
         private System.Windows.Forms.TextBox txtStatus;
         private System.Windows.Forms.Button btnEncryptSelected;
         private System.Windows.Forms.Button btnDecryptSelected;
+        private System.Windows.Forms.CheckBox chkConfirmOnExit;
     }
 }
 

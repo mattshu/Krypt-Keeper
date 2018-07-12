@@ -51,7 +51,7 @@ namespace KryptKeeper
                 cbxEncryptAlgorithms.Items.Add(a);
                 cbxDecryptAlgorithms.Items.Add(a);
             }
-            setDefaultcbxIndexes();
+            setDefaultCbxIndexes();
             if (!settings.rememberSettings) return;
             cbxEncryptAlgorithms.SelectedIndex = settings.encryptionAlgorithm;
             chkMaskInformation.Checked = settings.encryptionMaskInformation;
@@ -60,6 +60,7 @@ namespace KryptKeeper
             cbxEncryptionKeyType.SelectedIndex = settings.encryptionKeyType;
             txtEncryptionKey.Text = settings.encryptionKey;
             chkRememberSettings.Checked = true;
+            chkConfirmOnExit.Checked = settings.confirmOnExit;
             if (settings.useEncryptionSettings)
                 copyEncryptionSettings();
         }
@@ -74,6 +75,7 @@ namespace KryptKeeper
             settings.encryptionMaskInfoType = cbxMaskInformation.SelectedIndex;
             settings.useEncryptionSettings = chkUseEncryptSettings.Checked;
             settings.rememberSettings = chkRememberSettings.Checked;
+            settings.confirmOnExit = chkConfirmOnExit.Checked;
             settings.decryptionAlgorithm = cbxDecryptAlgorithms.SelectedIndex;
             settings.decryptionKey = txtDecryptionKey.Text;
             settings.decryptionKeyType = cbxDecryptionKeyType.SelectedIndex;
@@ -87,7 +89,7 @@ namespace KryptKeeper
             var confirmSettingsResult = confirmSettingsDialog.ShowDialog();
             _settingsNeedConfirmed = confirmSettingsDialog.ShowAgain;
             if (confirmSettingsResult != DialogResult.No) return true;
-            TabMain.SelectTab(1);
+            tabMain.SelectTab(1);
             return false;
         }
 
@@ -108,10 +110,11 @@ namespace KryptKeeper
             settings.encryptionRemoveAfterEncrypt = true;
             settings.rememberSettings = false;
             settings.useEncryptionSettings = true;
+            settings.confirmOnExit = true;
             settings.Save();
         }
 
-        private void setDefaultcbxIndexes()
+        private void setDefaultCbxIndexes()
         {
             cbxEncryptAlgorithms.SelectedIndex = 0;
             cbxMaskInformation.SelectedIndex = 0;
@@ -130,7 +133,7 @@ namespace KryptKeeper
             FileListGridView.DataSource = _fileList;
             loadFileListColumnWidths();
             enableControls(FileListGridView.RowCount > 0);
-            TabMain.SelectedIndex = 0;
+            tabMain.SelectedIndex = 0;
         }
 
         private void resetFileList()
@@ -176,7 +179,7 @@ namespace KryptKeeper
 
         private void tabMain_TabIndexChanged(object sender, EventArgs e)
         {
-            if (TabMain.TabIndex == 1)
+            if (tabMain.TabIndex == 1)
                 _settingsNotViewed = false;
         }
 
@@ -219,7 +222,8 @@ namespace KryptKeeper
 
         private void focusStatusTab()
         {
-            TabMain.SelectedIndex = 2;
+            tabMain.SelectedIndex = 2;
+            tabMain.Refresh();
         }
 
         private void processSelectedFiles(int cipherMode)
@@ -297,6 +301,7 @@ namespace KryptKeeper
                 MaskFileTimes = chkMaskInformation.Checked && maskInfoIndex == 1 || maskInfoIndex == 2,
                 RemoveOriginal = chkRemoveAfterEncrypt.Checked
             };
+            options.GenerateIV();
             return options;
         }
 
@@ -411,6 +416,11 @@ namespace KryptKeeper
 
         private void mainWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
+            if (!confirmExit())
+            {
+                e.Cancel = true;
+                return;
+            }
             saveFileListColumnWidths();
             if (chkRememberSettings.Checked)
             {
@@ -424,13 +434,24 @@ namespace KryptKeeper
             }
             var result = MessageBox.Show(@"Do you want to save your settings?", @"Save Settings?",
                 MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
-            if (result == DialogResult.Yes)
-                saveSettings();
-            else if (result == DialogResult.Cancel)
-                e.Cancel = true;
+            if (result != DialogResult.Yes)
+            {
+                if (result == DialogResult.Cancel)
+                    e.Cancel = true;
+                else
+                    resetSettings();
+            }
             else
-                resetSettings();
+                saveSettings();
         }
 
+        private bool confirmExit()
+        {
+            if (chkConfirmOnExit.Checked)
+                return MessageBox.Show(@"Are you sure you want to exit?", @"Exit KryptKeeper",
+                       MessageBoxButtons.OKCancel,
+                       MessageBoxIcon.Question) == DialogResult.OK;
+            return true;
+        }
     }
 }

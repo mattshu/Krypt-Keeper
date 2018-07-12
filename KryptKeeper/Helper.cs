@@ -7,6 +7,25 @@ namespace KryptKeeper
 {
     internal static class Helper
     {
+        public static SymmetricAlgorithm GetAlgorithm(CipherAlgorithm mode)
+        {
+            switch (mode)
+            {
+                case CipherAlgorithm.AES:
+                    return new AesManaged();
+                case CipherAlgorithm.RIJNDAEL:
+                    return new RijndaelManaged();
+                case CipherAlgorithm.DES:
+                    return new DESCryptoServiceProvider();
+                case CipherAlgorithm.RC2:
+                    return new RC2CryptoServiceProvider();
+                case CipherAlgorithm.TRIPLEDES:
+                    return new TripleDESCryptoServiceProvider();
+                default:
+                    throw new Exception("Unknown algorithm: " + mode); // TODO new Exception
+            }
+        }
+
         public static byte[] PackData(byte[] dataA, byte[] dataB)
         {
             var data = new byte[dataA.Length + dataB.Length];
@@ -18,9 +37,9 @@ namespace KryptKeeper
         public static void SetFileTimes(string path)
         {
             // Prepending "130" keeps the random date within a recent but random timespan
-            File.SetCreationTime(path, DateTime.FromFileTime(long.Parse("130" + GetRandomNumericString(15))));
-            File.SetLastAccessTime(path, DateTime.FromFileTime(long.Parse("130" + GetRandomNumericString(15))));
-            File.SetLastWriteTime(path, DateTime.FromFileTime(long.Parse("130" + GetRandomNumericString(15))));
+            File.SetCreationTime(path, DateTime.FromFileTime(Int64.Parse("130" + GetRandomNumericString(15))));
+            File.SetLastAccessTime(path, DateTime.FromFileTime(Int64.Parse("130" + GetRandomNumericString(15))));
+            File.SetLastWriteTime(path, DateTime.FromFileTime(Int64.Parse("130" + GetRandomNumericString(15))));
         }
 
         public static void SetFileTimes(string path, Footer footer)

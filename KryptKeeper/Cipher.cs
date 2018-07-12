@@ -31,27 +31,95 @@ namespace KryptKeeper
             if (!File.Exists(path))
                 throw new FileNotFoundException(path);
             status.WritePending("Encrypting: " + path);
-            var fileData = File.ReadAllBytes(path);
-            var footer = new Footer();
-            footer.Build(path);
-            var footerData = footer.ToArray();
-            var data = Helper.PackData(fileData, footerData);
-            var encrypted = encryptData(data, options, out var IV);
-            var dataComplete = Helper.PackData(IV, encrypted);
+            const int chunkSize = 1024; // 1KB
+            using (var provider = Helper.GetAlgorithm(options.Mode))
+            {
+                provider.Key = options.Key;
+                provider.IV = options.IV;
+                provider.Mode = CipherMode.CBC;
+                provider.Padding = PaddingMode.PKCS7;
+                var encryptor = provider.CreateEncryptor(provider.Key, provider.IV);
+                using (var rStream = new FileStream(path, FileMode.Open, FileAccess.Read))
+                {
+                    using (var wStream = new FileStream(path + FILE_EXTENSION, FileMode.CreateNew, FileAccess.Write))
+                    {
+                        wStream.Write(options.IV, 0, options.IV.Length);
+                        using (var cStream = new CryptoStream(wStream, encryptor, CryptoStreamMode.Write))
+                        {
+                            var buffer = new byte[chunkSize];
+                            rStream.Seek(0, SeekOrigin.Begin);
+                            int bytesRead = rStream.Read(buffer, 0, chunkSize);
+                            while (bytesRead > 0)
+                            {
+                                if (bytesRead < 1024)
+                                    Array.Resize(ref buffer, bytesRead);
+                                cStream.Write(buffer, 0, buffer.Length);
+                                bytesRead = rStream.Read(buffer, 0, bytesRead);
+                            }
+                            var footer = new Footer();
+                            footer.Build(path);
+                            var footerData = footer.ToArray();
+                            cStream.Write(footerData, 0, footerData.Length);
+                        }
+                    }
+                }
+            }
             if (options.RemoveOriginal)
                 File.Delete(path);
             if (options.MaskFileName)
-                path = path.Replace(Path.GetFileName(path), Helper.GetRandomAlphanumericString(16));
-            path = path + FILE_EXTENSION;
-            File.WriteAllBytes(path, dataComplete);
-            if (options.MaskFileTimes)
-                Helper.SetFileTimes(path);
+                File.Move(path + FILE_EXTENSION,
+                    path.Replace(Path.GetFileName(path), Helper.GetRandomAlphanumericString(16)) + FILE_EXTENSION);
         }
 
         private static void decrypt(string path, CipherOptions options)
         {
+            if (!File.Exists(path))
+                throw new FileNotFoundException(path);
+            status.WritePending("Decrypting: " + path);
+            const int chunkSize = 1024; // 1KB
+            using (var provider = Helper.GetAlgorithm(options.Mode))
+            {
+                provider.Key = options.Key;
+                provider.IV = options.IV;
+                provider.Mode = CipherMode.CBC;
+                provider.Padding = PaddingMode.PKCS7;
+                var encryptor = provider.CreateDecryptor(provider.Key, provider.IV);
+                using (var rStream = new FileStream(path, FileMode.Open, FileAccess.Read))
+                {
+                    using (var wStream = new FileStream(path.Replace(FILE_EXTENSION, ""), FileMode.CreateNew, FileAccess.Write))
+                    {
+                        //wStream.Write(options.IV, 0, options.IV.Length);
+                        using (var cStream = new CryptoStream(wStream, encryptor, CryptoStreamMode.Write))
+                        {
+                            var buffer = new byte[chunkSize];
+                            rStream.Seek(16, SeekOrigin.Begin); // 16 to skip IV
+                            int bytesRead = rStream.Read(buffer, 0, chunkSize);
+                            while (bytesRead > 0)
+                            {
+                                if (bytesRead < 1024)
+                                    Array.Resize(ref buffer, bytesRead);
+                                cStream.Write(buffer, 0, buffer.Length);
+                                bytesRead = rStream.Read(buffer, 0, bytesRead);
+                            }
+                            var footer = new Footer();
+                            /* TODO
+                             * footer.Extract(path);
+                            Helper.SetFileTimes(decryptedPath, footer); // Set to original filetimes
+                            if (Helper.GetMD5StringFromPath(decryptedPath).Equals(footer.MD5))
+                                File.Delete(path); // Remove encryption after validation
+                            else
+                                throw new Exception(@"Failed to compare MD5 of " + path + ". File tampered?");
+                                */
+                        }
+                    }
+                }
+            }
+        }
+
+        private static void decryptxxx(string path, CipherOptions options)
+        {
             var data = File.ReadAllBytes(path);
-            using (var provider = getAlgorithm(options.Mode))
+            using (var provider = Helper.GetAlgorithm(options.Mode))
             {
                 status.WritePending("Decrypting: " + path);
                 provider.Key = options.Key;
@@ -81,34 +149,6 @@ namespace KryptKeeper
             }
         }
 
-        private static byte[] encryptData(byte[] data, CipherOptions options, out byte[] IV)
-        {
-            byte[] encrypted;
-
-            using (var provider = getAlgorithm(options.Mode))
-            {
-                provider.Key = options.Key;
-                provider.GenerateIV();
-                IV = provider.IV;
-                provider.Mode = CipherMode.CBC;
-                provider.Padding = PaddingMode.PKCS7;
-                var encryptor = provider.CreateEncryptor(provider.Key, provider.IV);
-                using (var msEncrypt = new MemoryStream())
-                {
-                    using (var csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
-                    {
-                        using (var swEncrypt = new BinaryWriter(csEncrypt))
-                        {
-                            swEncrypt.Write(data);
-                        }
-                        encrypted = msEncrypt.ToArray();
-                    }
-                }
-            }
-
-            return encrypted;
-        }
-
         private static byte[] decryptData(byte[] encrypted, ICryptoTransform decryptor)
         {
             try
@@ -118,9 +158,9 @@ namespace KryptKeeper
                 {
                     using (var csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
                     {
-                        using (var srDecrypt = new BinaryReader(csDecrypt))
+                        using (var brDecrypt = new BinaryReader(csDecrypt))
                         {
-                            decrypted = srDecrypt.ReadBytes(encrypted.Length);
+                            decrypted = brDecrypt.ReadBytes(encrypted.Length);
                         }
                     }
                 }
@@ -128,25 +168,6 @@ namespace KryptKeeper
             } catch (CryptographicException cryptoException)
             {
                 throw new Exception(@"Unable to decrypt data, file may have been tampered with. \n" + cryptoException.Message);
-            }
-        }
-
-        private static SymmetricAlgorithm getAlgorithm(CipherAlgorithm mode)
-        {
-            switch (mode)
-            {
-                case CipherAlgorithm.AES:
-                    return new AesManaged();
-                case CipherAlgorithm.RIJNDAEL:
-                    return new RijndaelManaged();
-                case CipherAlgorithm.DES:
-                    return new DESCryptoServiceProvider();
-                case CipherAlgorithm.RC2:
-                    return new RC2CryptoServiceProvider();
-                case CipherAlgorithm.TRIPLEDES:
-                    return new TripleDESCryptoServiceProvider();
-                default:
-                    throw new Exception("Unknown algorithm: " + mode); // TODO new Exception
             }
         }
     }

@@ -27,7 +27,7 @@ namespace KryptKeeper
 
         public string GetFilePath()
         {
-            return Path + @"\\" + Name;
+            return Path + "\\" + Name;
         }
 
         private string getMD5(string path)

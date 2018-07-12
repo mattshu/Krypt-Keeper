@@ -192,5 +192,17 @@ namespace KryptKeeper.Properties {
                 this["rememberSettings"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool confirmOnExit {
+            get {
+                return ((bool)(this["confirmOnExit"]));
+            }
+            set {
+                this["confirmOnExit"] = value;
+            }
+        }
     }
 }

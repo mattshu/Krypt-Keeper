@@ -43,10 +43,11 @@ namespace KryptKeeper
         {
             if (IsPending)
                 statusBox.AppendText("done!" + newLine);
+            IsPending = false;
             statusBox.AppendText(Timestamp);
             statusBox.AppendText(msg + newLine);
         }
 
-        private static string Timestamp => "[" + DateTime.Now.ToString("HH:mm:ss") + "]: ";
+        private static string Timestamp => "[" + DateTime.Now.ToString("HH:mm:ss.fff") + "]: ";
     }
 }

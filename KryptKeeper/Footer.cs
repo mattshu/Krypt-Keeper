@@ -8,6 +8,7 @@ namespace KryptKeeper
     internal class Footer
     {
         public const string FOOTER_TAG = "[KRYPTKEEPER]";
+        private readonly byte[] FOOTER_SIGNATURE = Encoding.Default.GetBytes(FOOTER_TAG);
 
         public string Name { get; set; }
         public string MD5 { get; set; }
@@ -24,17 +25,35 @@ namespace KryptKeeper
             ModifiedTime = File.GetLastWriteTime(path);
             AccessedTime = File.GetLastAccessTime(path);
         }
+        // TODO
+        /*public bool Extract(string path)
+        {
+            if (!File.Exists(path))
+                throw new FileNotFoundException(path);
+            using (var rStream = new FileStream(path, FileMode.Open, FileAccess.Read))
+            {
+                rStream.Seek(-FOOTER_SIGNATURE.Length, SeekOrigin.End);
+                int nextByte;
+                while ((nextByte = rStream.ReadByte()) > 0)
+                {
+                    if (nextByte == FOOTER_SIGNATURE[0])
+                    {
+                        var footerPacket = new byte[rStream.Length - rStream.Position];
+                        rStream.Read(footerPacket, 0, footerPacket.Length);
+                    }
+                }
+            }
+        }*/
 
         public bool Extract(byte[] data)
         {
-            var footerSignature = Encoding.Default.GetBytes(FOOTER_TAG);
             var decoded = "";
-            for (int i = data.Length - footerSignature.Length; i >= 0; i--)
+            for (int i = data.Length - FOOTER_SIGNATURE.Length; i >= 0; i--)
             {
-                if (data[i] != footerSignature[0]) continue;
-                var read = new byte[footerSignature.Length];
+                if (data[i] != FOOTER_SIGNATURE[0]) continue;
+                var read = new byte[FOOTER_SIGNATURE.Length];
                 Array.Copy(data, i, read, 0, read.Length);
-                if (!read.SequenceEqual(footerSignature)) continue;
+                if (!read.SequenceEqual(FOOTER_SIGNATURE)) continue;
                 var footerBytes = new byte[data.Length - i];
                 Array.Copy(data, i, footerBytes, 0, footerBytes.Length);
                 decoded = Encoding.Default.GetString(footerBytes);

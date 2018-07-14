@@ -25,7 +25,7 @@ namespace KryptKeeper
             ModifiedTime = File.GetLastWriteTime(path);
             AccessedTime = File.GetLastAccessTime(path);
         }
-        // TODO
+        // TODO only works if file contains one footer
         public bool Extract(string path)
         {
             if (!File.Exists(path))

@@ -125,23 +125,28 @@ namespace KryptKeeper
 
                 if (!footer.Extract(decryptedPath))
                     throw new Exception("Unable to generate file information from " + decryptedPath);
-                decryptedPath = decryptedPath.Replace(Path.GetFileName(decryptedPath), footer.Name); // Rename to original file
-                bool decryptedAlreadyExists = File.Exists(decryptedPath);
+                using (var fOpen = new FileStream(decryptedPath, FileMode.Open))
+                {
+                    fOpen.SetLength(fOpen.Length - footer.ToArray().Length);
+                }
+                var newOriginalPath = decryptedPath.Replace(Path.GetFileName(decryptedPath), footer.Name); // Path with name of original file
+                bool decryptedAlreadyExists = File.Exists(newOriginalPath);
                 if (decryptedAlreadyExists)
                 {
                     string newPath;
                     do
                     {
-                        newPath = addRandomPaddingToFileName(decryptedPath);
+                        newPath = addRandomPaddingToFileName(newOriginalPath);
                     } while (File.Exists(newPath));
-                    status.WriteLine("*** File already exists (" + decryptedPath + ") Renaming to: " + newPath);
-                    File.Move(decryptedPath, newPath);
-                    decryptedPath = newPath;
+                    status.WriteLine("*** File already exists (" + newOriginalPath + ") Renaming to: " + newPath);
+                    newOriginalPath = newPath;
                 }
-                Helper.SetFileTimes(decryptedPath, footer); // Set to original filetimes
+                File.Move(decryptedPath, newOriginalPath);
+                File.Delete(decryptedPath);
+                File.Delete(path);
+                Helper.SetFileTimes(newOriginalPath, footer); // Set to original filetimes
                 /*if (!Helper.GetMD5StringFromPath(decryptedPath).Equals(footer.MD5))
                     throw new Exception(@"Failed to compare MD5 of " + path + ". File tampered?");*/
-                File.Delete(path); // Remove encrypted file
             }
         }
 

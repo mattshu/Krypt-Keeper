@@ -22,7 +22,7 @@ namespace KryptKeeper
         {
             if (files.Length <= 0) return;
             foreach (var file in files)
-                decrypt(file, options, TODO);
+                decrypt(file, options);
             status.WriteLine("Decryption completed.");
         }
 
@@ -86,7 +86,7 @@ namespace KryptKeeper
             }
         }
 
-        private static void decrypt(string path, CipherOptions options, object addRandomPaddingToFileName)
+        private static void decrypt(string path, CipherOptions options)
         {
             if (!File.Exists(path))
                 throw new FileNotFoundException(path);
@@ -100,17 +100,6 @@ namespace KryptKeeper
                 provider.Padding = PaddingMode.PKCS7;
                 var encryptor = provider.CreateDecryptor(provider.Key, provider.IV);
                 var decryptedPath = path.Replace(FILE_EXTENSION, "");
-                if (File.Exists(decryptedPath))
-                {
-                    string newPath;
-                    do
-                    { // TODO leftoff
-                        newPath = addRandomPaddingToFileName(decryptedPath);
-                    } while (!File.Exists(newPath));
-                    
-                    status.WriteLine("*** File already exists (" + decryptedPath + ") Renaming to: " + newPath;
-                    decryptedPath = newPath;
-                }
                 var footer = new Footer();
                 using (var rStream = new FileStream(path, FileMode.Open, FileAccess.Read))
                 {
@@ -132,9 +121,21 @@ namespace KryptKeeper
                     }
                 }
 
+
+
                 if (!footer.Extract(decryptedPath))
-                    throw new Exception("Unable to generate file information from " + path);
-                
+                    throw new Exception("Unable to generate file information from " + decryptedPath);
+                decryptedPath = decryptedPath.Replace(Path.GetFileName(decryptedPath), footer.Name); // Rename to original file
+                if (File.Exists(decryptedPath))
+                {
+                    string newPath;
+                    do
+                    {
+                        newPath = addRandomPaddingToFileName(decryptedPath);
+                    } while (File.Exists(newPath));
+                    status.WriteLine("*** File already exists (" + decryptedPath + ") Renaming to: " + newPath);
+                    decryptedPath = newPath;
+                }
                 Helper.SetFileTimes(decryptedPath, footer); // Set to original filetimes
                 if (Helper.GetMD5StringFromPath(decryptedPath).Equals(footer.MD5))
                     File.Delete(path); // Remove encryption after validation
@@ -143,9 +144,10 @@ namespace KryptKeeper
             }
         }
 
-        private string addRandomPaddingToFileName(string path)
+        private static string addRandomPaddingToFileName(string path)
         {
-            return "";
+            var fileName = Path.GetFileNameWithoutExtension(path);
+            return path.Replace(fileName, fileName + Helper.GetRandomAlphanumericString(5));
         }
 
         private static byte[] extractIV(string path)
@@ -161,7 +163,7 @@ namespace KryptKeeper
             }
         }
 
-        private static void decryptxxx(string path, CipherOptions options)
+        /*private static void decryptxxx(string path, CipherOptions options)
         {
             var data = File.ReadAllBytes(path);
             using (var provider = Helper.GetAlgorithm(options.Mode))
@@ -192,7 +194,7 @@ namespace KryptKeeper
                 else
                     throw new Exception(@"Failed to compare MD5 of " + path + ". File tampered?");
             }
-        }
+        }*/
 
         private static byte[] decryptData(byte[] encrypted, ICryptoTransform decryptor)
         {

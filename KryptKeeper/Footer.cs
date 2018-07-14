@@ -32,22 +32,31 @@ namespace KryptKeeper
                 throw new FileNotFoundException(path);
             using (var rStream = new FileStream(path, FileMode.Open, FileAccess.Read))
             {
-                rStream.Seek(-FOOTER_SIGNATURE.Length, SeekOrigin.End);
-                int nextByte;
-                while ((nextByte = rStream.ReadByte()) > 0)
+                if (rStream.Length > 1024)
                 {
-                    if (nextByte == FOOTER_SIGNATURE[0])
-                    {
-                        var footerPacket = new byte[rStream.Length - rStream.Position];
-                        rStream.Read(footerPacket, 0, footerPacket.Length);
-                        return true;
-                    }
+                    rStream.Seek(-1024, SeekOrigin.End);
+                }
+                var footerArray = new byte[1024];
+                rStream.Read(footerArray, 0, 1024);
+                if (rStream.Length < 1024)
+                    Array.Resize(ref footerArray, (int)rStream.Length);
+                for (int i = 0; i < footerArray.Length; i++)
+                {
+                    if (footerArray[i] != FOOTER_SIGNATURE[0]) continue;
+                    if (!FOOTER_SIGNATURE.SequenceEqual(footerArray.Skip(i).Take(FOOTER_SIGNATURE.Length))) continue;
+                    var newFooter = FromString(Encoding.Default.GetString(footerArray.Skip(i).ToArray()));
+                    Name = newFooter.Name;
+                    MD5 = newFooter.MD5;
+                    CreationTime = newFooter.CreationTime;
+                    ModifiedTime = newFooter.ModifiedTime;
+                    AccessedTime = newFooter.AccessedTime;
+                    return true;
                 }
             }
             return false;
         }
 
-        public bool Extract(byte[] data)
+        /*public bool Extract(byte[] data)
         {
             var decoded = "";
             for (int i = data.Length - FOOTER_SIGNATURE.Length; i >= 0; i--)
@@ -70,7 +79,7 @@ namespace KryptKeeper
             ModifiedTime = newFooter.ModifiedTime;
             AccessedTime = newFooter.AccessedTime;
             return true;
-        }
+        }*/
 
         public byte[] ToArray()
         {

@@ -53,7 +53,7 @@ namespace KryptKeeper
         {
             if (File.Exists(path)) throw new FileNotFoundException(path);
 
-            var md5 = GetMD5StringFromPath(path);
+            //var md5 = GetMD5StringFromPath(path);
             var name = Path.GetFileName(path);
             var created = File.GetCreationTime(path);
             var modified = File.GetLastWriteTime(path);
@@ -61,7 +61,7 @@ namespace KryptKeeper
 
             return new Footer
             {
-                MD5 = md5,
+                //MD5 = md5,
                 Name = name,
                 CreationTime = created,
                 ModifiedTime = modified,

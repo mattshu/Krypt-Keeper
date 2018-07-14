@@ -79,7 +79,6 @@ namespace KryptKeeper.Properties {
   <string>60</string>
   <string>60</string>
   <string>60</string>
-  <string>60</string>
 </ArrayOfString>")]
         public global::System.Collections.Specialized.StringCollection fileListColumnWidths {
             get {

@@ -126,7 +126,8 @@ namespace KryptKeeper
                 if (!footer.Extract(decryptedPath))
                     throw new Exception("Unable to generate file information from " + decryptedPath);
                 decryptedPath = decryptedPath.Replace(Path.GetFileName(decryptedPath), footer.Name); // Rename to original file
-                if (File.Exists(decryptedPath))
+                bool decryptedAlreadyExists = File.Exists(decryptedPath);
+                if (decryptedAlreadyExists)
                 {
                     string newPath;
                     do
@@ -134,13 +135,13 @@ namespace KryptKeeper
                         newPath = addRandomPaddingToFileName(decryptedPath);
                     } while (File.Exists(newPath));
                     status.WriteLine("*** File already exists (" + decryptedPath + ") Renaming to: " + newPath);
+                    File.Move(decryptedPath, newPath);
                     decryptedPath = newPath;
                 }
                 Helper.SetFileTimes(decryptedPath, footer); // Set to original filetimes
-                if (Helper.GetMD5StringFromPath(decryptedPath).Equals(footer.MD5))
-                    File.Delete(path); // Remove encryption after validation
-                else
-                    throw new Exception(@"Failed to compare MD5 of " + path + ". File tampered?");
+                /*if (!Helper.GetMD5StringFromPath(decryptedPath).Equals(footer.MD5))
+                    throw new Exception(@"Failed to compare MD5 of " + path + ". File tampered?");*/
+                File.Delete(path); // Remove encrypted file
             }
         }
 
@@ -162,39 +163,6 @@ namespace KryptKeeper
                 }
             }
         }
-
-        /*private static void decryptxxx(string path, CipherOptions options)
-        {
-            var data = File.ReadAllBytes(path);
-            using (var provider = Helper.GetAlgorithm(options.Mode))
-            {
-                status.WritePending("Decrypting: " + path);
-                provider.Key = options.Key;
-                var IV = new byte[provider.BlockSize / 8];
-                var encrypted = new byte[data.Length - IV.Length];
-                Array.Copy(data, IV, IV.Length);
-                Array.Copy(data, IV.Length, encrypted, 0, encrypted.Length);
-                provider.IV = IV;
-                provider.Mode = CipherMode.CBC;
-                var decryptor = provider.CreateDecryptor(provider.Key, provider.IV);
-                var decrypted = decryptData(encrypted, decryptor);
-                var footer = new Footer();
-                if (!footer.Extract(decrypted))
-                    throw new Exception(@"Failed to extract footer of " + path + ". File corrupt?");
-                var footerBytes = footer.ToArray();
-                Array.Resize(ref decrypted, decrypted.Length - footerBytes.Length); // Trim footer
-                var decryptedPath = path.Substring(0, path.Length - FILE_EXTENSION.Length); // Trim extension
-                if (!string.IsNullOrEmpty(footer.Name))
-                    decryptedPath =
-                        decryptedPath.Replace(Path.GetFileName(decryptedPath), footer.Name); // Set to original filename
-                File.WriteAllBytes(decryptedPath, decrypted);
-                Helper.SetFileTimes(decryptedPath, footer); // Set to original filetimes
-                if (Helper.GetMD5StringFromPath(decryptedPath).Equals(footer.MD5))
-                    File.Delete(path); // Remove encryption after validation
-                else
-                    throw new Exception(@"Failed to compare MD5 of " + path + ". File tampered?");
-            }
-        }*/
 
         private static byte[] decryptData(byte[] encrypted, ICryptoTransform decryptor)
         {

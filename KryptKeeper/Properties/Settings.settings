@@ -21,7 +21,6 @@
   &lt;string&gt;60&lt;/string&gt;
   &lt;string&gt;60&lt;/string&gt;
   &lt;string&gt;60&lt;/string&gt;
-  &lt;string&gt;60&lt;/string&gt;
 &lt;/ArrayOfString&gt;</Value>
     </Setting>
     <Setting Name="algorithms" Type="System.Collections.Specialized.StringCollection" Scope="User">

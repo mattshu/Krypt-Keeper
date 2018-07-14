@@ -27,19 +27,20 @@ namespace KryptKeeper
 
         public string GetFilePath()
         {
-            return Path + "\\" + Name;
+            return Path + @"\" + Name;
         }
 
         private string getMD5(string path)
         {
-            using (var md5 = System.Security.Cryptography.MD5.Create())
+            /*using (var md5 = System.Security.Cryptography.MD5.Create())
             {
                 using (var stream = File.OpenRead(path))
                 {
                     var hash = md5.ComputeHash(stream);
                     return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
                 }
-            }
+            }*/
+            return "need optimized md5 getter";
         }
 
 

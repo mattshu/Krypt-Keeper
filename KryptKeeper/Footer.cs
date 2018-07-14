@@ -26,7 +26,7 @@ namespace KryptKeeper
             AccessedTime = File.GetLastAccessTime(path);
         }
         // TODO
-        /*public bool Extract(string path)
+        public bool Extract(string path)
         {
             if (!File.Exists(path))
                 throw new FileNotFoundException(path);
@@ -40,10 +40,12 @@ namespace KryptKeeper
                     {
                         var footerPacket = new byte[rStream.Length - rStream.Position];
                         rStream.Read(footerPacket, 0, footerPacket.Length);
+                        return true;
                     }
                 }
             }
-        }*/
+            return false;
+        }
 
         public bool Extract(byte[] data)
         {

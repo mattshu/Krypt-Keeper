@@ -209,7 +209,8 @@ namespace KryptKeeper
 
         private void processAllFiles(int cipherMode)
         {
-            if (_fileList.Count <= 0) return;
+            if (!validateSettings(cipherMode))
+                return;
             focusStatusTab();
             var paths = getPathsFromFileList();
             var options = generateOptions(cipherMode);
@@ -220,6 +221,13 @@ namespace KryptKeeper
             resetFileList();
         }
 
+        private bool validateSettings(int mode)
+        {
+            if (_fileList.Count <= 0) return false;
+            if (mode == CipherOptions.Encrypt && string.IsNullOrWhiteSpace(txtEncryptionKey.Text) ||
+                mode == CipherOptions.Decrypt && string.IsNullOrWhiteSpace(txtDecryptionKey.Text)) return false;
+            return true;
+        }
         private void focusStatusTab()
         {
             tabMain.SelectedIndex = 2;
@@ -228,6 +236,8 @@ namespace KryptKeeper
 
         private void processSelectedFiles(int cipherMode)
         {
+            if (!validateSettings(cipherMode))
+                return;
             if (FileListGridView.SelectedRows.Count <= 0) return;
             focusStatusTab();
             var options = generateOptions(cipherMode);

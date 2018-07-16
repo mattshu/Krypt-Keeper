@@ -73,6 +73,7 @@ namespace KryptKeeper
             settings.encryptionKeyType = cbxEncryptionKeyType.SelectedIndex;
             settings.encryptionMaskInformation = chkMaskInformation.Checked;
             settings.encryptionMaskInfoType = cbxMaskInformation.SelectedIndex;
+            settings.encryptionRemoveAfterEncrypt = chkRemoveAfterEncrypt.Checked;
             settings.useEncryptionSettings = chkUseEncryptSettings.Checked;
             settings.rememberSettings = chkRememberSettings.Checked;
             settings.confirmOnExit = chkConfirmOnExit.Checked;
@@ -139,10 +140,6 @@ namespace KryptKeeper
         private void resetFileList()
         {
             FileListGridView.DataSource = null;
-            foreach (var file in _fileList.ToList())
-                if (!File.Exists(Path.Combine(file.Path, file.Name)))
-                    _fileList.Remove(file);
-            FileListGridView.DataSource = _fileList;
         }
 
         private void refreshFileListGridView()
@@ -228,6 +225,7 @@ namespace KryptKeeper
                 mode == CipherOptions.Decrypt && string.IsNullOrWhiteSpace(txtDecryptionKey.Text)) return false;
             return true;
         }
+
         private void focusStatusTab()
         {
             tabMain.SelectedIndex = 2;
@@ -307,8 +305,8 @@ namespace KryptKeeper
             {
                 Mode = (CipherAlgorithm) algorithm.SelectedIndex,
                 Key = key,
-                MaskFileName = chkMaskInformation.Checked && maskInfoIndex == 0 || maskInfoIndex == 2,
-                MaskFileTimes = chkMaskInformation.Checked && maskInfoIndex == 1 || maskInfoIndex == 2,
+                MaskFileName = chkMaskInformation.Checked && (maskInfoIndex == 0 || maskInfoIndex == 2),
+                MaskFileTimes = chkMaskInformation.Checked && (maskInfoIndex == 1 || maskInfoIndex == 2),
                 RemoveOriginal = chkRemoveAfterEncrypt.Checked
             };
             options.GenerateIV();

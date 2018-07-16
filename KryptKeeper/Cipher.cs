@@ -9,6 +9,7 @@ namespace KryptKeeper
         private static readonly Status status = Status.GetInstance();
 
         public const string FILE_EXTENSION = ".krpt";
+        private const int CHUNK_SIZE = 768 * 1024 * 1024; // 768MB
 
         public static void EncryptFiles(string[] files, CipherOptions options)
         {
@@ -33,7 +34,7 @@ namespace KryptKeeper
                 if (!File.Exists(path))
                     throw new FileNotFoundException(path);
                 status.WritePending("Encrypting: " + path);
-                const int CHUNKSIZE = 128 * 1024 * 1024; // 128MB
+
                 using (var provider = Helper.GetAlgorithm(options.Mode))
                 {
                     provider.Key = options.Key;
@@ -49,12 +50,12 @@ namespace KryptKeeper
                             wStream.Write(options.IV, 0, options.IV.Length);
                             using (var cStream = new CryptoStream(wStream, encryptor, CryptoStreamMode.Write))
                             {
-                                var buffer = new byte[CHUNKSIZE];
+                                var buffer = new byte[CHUNK_SIZE];
                                 rStream.Seek(0, SeekOrigin.Begin);
-                                int bytesRead = rStream.Read(buffer, 0, CHUNKSIZE);
+                                int bytesRead = rStream.Read(buffer, 0, CHUNK_SIZE);
                                 while (bytesRead > 0)
                                 {
-                                    if (bytesRead < CHUNKSIZE)
+                                    if (bytesRead < CHUNK_SIZE)
                                         Array.Resize(ref buffer, bytesRead);
                                     cStream.Write(buffer, 0, buffer.Length);
                                     bytesRead = rStream.Read(buffer, 0, bytesRead);
@@ -81,7 +82,6 @@ namespace KryptKeeper
             }
             catch (Exception ex)
             {
-                
                 status.WriteLine("*** Error occured: " + ex.StackTrace + ex.Message);
             }
         }
@@ -91,7 +91,6 @@ namespace KryptKeeper
             if (!File.Exists(path))
                 throw new FileNotFoundException(path);
             status.WritePending("Decrypting: " + path);
-            const int CHUNKSIZE = 128 * 1024 * 1024; // 128MB
             using (var provider = Helper.GetAlgorithm(options.Mode))
             {
                 provider.Key = options.Key;
@@ -103,16 +102,18 @@ namespace KryptKeeper
                 var footer = new Footer();
                 using (var rStream = new FileStream(path, FileMode.Open, FileAccess.Read))
                 {
+                    if (File.Exists(decryptedPath))
+                        decryptedPath += Helper.GetRandomAlphanumericString(3);
                     using (var wStream = new FileStream(decryptedPath, FileMode.CreateNew, FileAccess.Write))
                     {
                         using (var cStream = new CryptoStream(wStream, encryptor, CryptoStreamMode.Write))
                         {
-                            var buffer = new byte[CHUNKSIZE];
+                            var buffer = new byte[CHUNK_SIZE];
                             rStream.Seek(16, SeekOrigin.Begin); // 16 to skip IV
-                            int bytesRead = rStream.Read(buffer, 0, CHUNKSIZE);
+                            int bytesRead = rStream.Read(buffer, 0, CHUNK_SIZE);
                             while (bytesRead > 0)
                             {
-                                if (bytesRead < CHUNKSIZE)
+                                if (bytesRead < CHUNK_SIZE)
                                     Array.Resize(ref buffer, bytesRead);
                                 cStream.Write(buffer, 0, buffer.Length);
                                 bytesRead = rStream.Read(buffer, 0, bytesRead);
@@ -120,10 +121,7 @@ namespace KryptKeeper
                         }
                     }
                 }
-
-
-
-                if (!footer.Extract(decryptedPath))
+                if (!footer.TryExtract(decryptedPath))
                     throw new Exception("Unable to generate file information from " + decryptedPath);
                 using (var fOpen = new FileStream(decryptedPath, FileMode.Open))
                 {
@@ -132,28 +130,33 @@ namespace KryptKeeper
                 var newOriginalPath = decryptedPath.Replace(Path.GetFileName(decryptedPath), footer.Name); // Path with name of original file
                 bool decryptedAlreadyExists = File.Exists(newOriginalPath);
                 if (decryptedAlreadyExists)
-                {
-                    string newPath;
-                    do
-                    {
-                        newPath = addRandomPaddingToFileName(newOriginalPath);
-                    } while (File.Exists(newPath));
-                    status.WriteLine("*** File already exists (" + newOriginalPath + ") Renaming to: " + newPath);
-                    newOriginalPath = newPath;
-                }
+                    newOriginalPath = renameFileWithPadding(newOriginalPath);
                 File.Move(decryptedPath, newOriginalPath);
                 File.Delete(decryptedPath);
                 File.Delete(path);
                 Helper.SetFileTimes(newOriginalPath, footer); // Set to original filetimes
+
                 /*if (!Helper.GetMD5StringFromPath(decryptedPath).Equals(footer.MD5))
                     throw new Exception(@"Failed to compare MD5 of " + path + ". File tampered?");*/
             }
         }
 
+        private static string renameFileWithPadding(string newOriginalPath)
+        {
+            string newPath;
+            do
+            {
+                newPath = addRandomPaddingToFileName(newOriginalPath);
+            } while (File.Exists(newPath));
+            status.WriteLine("*** File already exists (" + newOriginalPath + ") Renaming to: " + newPath);
+            newOriginalPath = newPath;
+            return newOriginalPath;
+        }
+
         private static string addRandomPaddingToFileName(string path)
         {
             var fileName = Path.GetFileNameWithoutExtension(path);
-            return path.Replace(fileName, fileName + Helper.GetRandomAlphanumericString(5));
+            return path.Replace(fileName ?? "", fileName + Helper.GetRandomAlphanumericString(5));
         }
 
         private static byte[] extractIV(string path)
@@ -166,28 +169,6 @@ namespace KryptKeeper
                 {
                     return bReader.ReadBytes(16);
                 }
-            }
-        }
-
-        private static byte[] decryptData(byte[] encrypted, ICryptoTransform decryptor)
-        {
-            try
-            {
-                byte[] decrypted;
-                using (var msDecrypt = new MemoryStream(encrypted))
-                {
-                    using (var csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
-                    {
-                        using (var brDecrypt = new BinaryReader(csDecrypt))
-                        {
-                            decrypted = brDecrypt.ReadBytes(encrypted.Length);
-                        }
-                    }
-                }
-                return decrypted;
-            } catch (CryptographicException cryptoException)
-            {
-                throw new Exception(@"Unable to decrypt data, file may have been tampered with. \n" + cryptoException.Message);
             }
         }
     }

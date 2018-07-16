@@ -26,7 +26,7 @@ namespace KryptKeeper
             AccessedTime = File.GetLastAccessTime(path);
         }
         // TODO only works if file contains one footer
-        public bool Extract(string path)
+        public bool TryExtract(string path)
         {
             if (!File.Exists(path))
                 throw new FileNotFoundException(path);
@@ -56,7 +56,7 @@ namespace KryptKeeper
             return false;
         }
 
-        /*public bool Extract(byte[] data)
+        /*public bool TryExtract(byte[] data)
         {
             var decoded = "";
             for (int i = data.Length - FOOTER_SIGNATURE.Length; i >= 0; i--)

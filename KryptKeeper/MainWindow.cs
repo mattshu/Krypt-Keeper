@@ -124,19 +124,6 @@ namespace KryptKeeper
             cbxDecryptionKeyType.SelectedIndex = 0;
         }
 
-        private void buildFileList()
-        {
-            var openFileDialog = new OpenFileDialog {Multiselect = true};
-            var openResult = openFileDialog.ShowDialog();
-            if (openResult != DialogResult.OK) return;
-            FileListGridView.Columns.Clear();
-            _fileList = openFileDialog.FileNames.Select(path => new FileData(path)).ToList();
-            FileListGridView.DataSource = _fileList;
-            loadFileListColumnWidths();
-            enableControls(FileListGridView.RowCount > 0);
-            tabMain.SelectedIndex = 0;
-        }
-
         private void resetFileList()
         {
             FileListGridView.DataSource = null;
@@ -156,6 +143,19 @@ namespace KryptKeeper
         private void btnAddFiles_Click(object sender, EventArgs e)
         {
             buildFileList();
+        }
+
+        private void buildFileList()
+        {
+            var openFileDialog = new OpenFileDialog { Multiselect = true };
+            var openResult = openFileDialog.ShowDialog();
+            if (openResult != DialogResult.OK) return;
+            FileListGridView.Columns.Clear();
+            _fileList = openFileDialog.FileNames.Select(path => new FileData(path)).ToList();
+            FileListGridView.DataSource = _fileList;
+            loadFileListColumnWidths();
+            enableControls(FileListGridView.RowCount > 0);
+            tabMain.SelectedIndex = 0;
         }
 
         private void btnRemoveFiles_Click(object sender, EventArgs e)
@@ -247,26 +247,6 @@ namespace KryptKeeper
             resetFileList();
         }
 
-        private string[] getPathsFromFileList()
-        {
-            if (_fileList.Count <= 0) throw new Exception("Cannot generate paths from empty file list!");
-            return _fileList.Select(file => file.GetFilePath()).ToArray();
-        }
-
-        private string[] getPathsFromSelection()
-        {
-            var selectedCount = FileListGridView.Rows.GetRowCount(DataGridViewElementStates.Selected);
-            if (selectedCount <= 0) throw new Exception("Cannot generate paths from empty selection!");
-            var paths = new List<string>();
-            var selectedRows = FileListGridView.SelectedRows;
-            for (int i = 0; i < selectedCount; i++)
-            {
-                var file = _fileList[selectedRows[i].Index];
-                paths.Add(file.GetFilePath());
-            }
-            return paths.ToArray();
-        }
-
         private CipherOptions generateOptions(int cipherOption)
         {
             ComboBox algorithm;
@@ -303,7 +283,7 @@ namespace KryptKeeper
             var maskInfoIndex = cbxMaskInformation.SelectedIndex;
             var options = new CipherOptions
             {
-                Mode = (CipherAlgorithm) algorithm.SelectedIndex,
+                Mode = (CipherAlgorithm)algorithm.SelectedIndex,
                 Key = key,
                 MaskFileName = chkMaskInformation.Checked && (maskInfoIndex == 0 || maskInfoIndex == 2),
                 MaskFileTimes = chkMaskInformation.Checked && (maskInfoIndex == 1 || maskInfoIndex == 2),
@@ -311,6 +291,26 @@ namespace KryptKeeper
             };
             options.GenerateIV();
             return options;
+        }
+
+        private string[] getPathsFromFileList()
+        {
+            if (_fileList.Count <= 0) throw new Exception("Cannot generate paths from empty file list!");
+            return _fileList.Select(file => file.GetFilePath()).ToArray();
+        }
+
+        private string[] getPathsFromSelection()
+        {
+            var selectedCount = FileListGridView.Rows.GetRowCount(DataGridViewElementStates.Selected);
+            if (selectedCount <= 0) throw new Exception("Cannot generate paths from empty selection!");
+            var paths = new List<string>();
+            var selectedRows = FileListGridView.SelectedRows;
+            for (int i = 0; i < selectedCount; i++)
+            {
+                var file = _fileList[selectedRows[i].Index];
+                paths.Add(file.GetFilePath());
+            }
+            return paths.ToArray();
         }
 
         private void cbxEncryptAlgorithms_SelectedIndexChanged(object sender, EventArgs e)
@@ -347,6 +347,12 @@ namespace KryptKeeper
                 cbxDecryptionKeyType.SelectedIndex = cbxEncryptionKeyType.SelectedIndex;
         }
 
+        private static void updateFormBasedOnKeyType(ListControl cbxKeyType, Control btnBrowse, TextBox txtKey)
+        {
+            btnBrowse.Enabled = cbxKeyType.SelectedIndex == 1; // Key file
+            if (cbxKeyType.SelectedIndex == 1) txtKey.Text = "";
+        }
+
         private void txtEncryptionKey_TextChanged(object sender, EventArgs e)
         {
             if (chkUseEncryptSettings.Checked)
@@ -356,12 +362,6 @@ namespace KryptKeeper
         private void cbxDecryptionKeyType_SelectedIndexChanged(object sender, EventArgs e)
         {
             updateFormBasedOnKeyType(cbxDecryptionKeyType, btnBrowseDecrypt, txtDecryptionKey);
-        }
-
-        private static void updateFormBasedOnKeyType(ListControl cbxKeyType, Control btnBrowse, TextBox txtKey)
-        {
-            btnBrowse.Enabled = cbxKeyType.SelectedIndex == 1; // Key file
-            if (cbxKeyType.SelectedIndex == 1) txtKey.Text = "";
         }
 
         private void btnBrowseEncrypt_Click(object sender, EventArgs e)

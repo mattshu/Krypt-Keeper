@@ -44,8 +44,7 @@ namespace KryptKeeper
                     var encryptor = provider.CreateEncryptor(provider.Key, provider.IV);
                     using (var rStream = new FileStream(path, FileMode.Open, FileAccess.Read))
                     {
-                        using (var wStream =
-                            new FileStream(path + FILE_EXTENSION, FileMode.CreateNew, FileAccess.Write))
+                        using (var wStream = new FileStream(path + FILE_EXTENSION, FileMode.CreateNew, FileAccess.Write))
                         {
                             wStream.Write(options.IV, 0, options.IV.Length);
                             using (var cStream = new CryptoStream(wStream, encryptor, CryptoStreamMode.Write))
@@ -55,12 +54,9 @@ namespace KryptKeeper
                                 int bytesRead = rStream.Read(buffer, 0, CHUNK_SIZE);
                                 while (bytesRead > 0)
                                 {
-                                    if (bytesRead < CHUNK_SIZE)
-                                        Array.Resize(ref buffer, bytesRead);
-                                    cStream.Write(buffer, 0, buffer.Length);
+                                    cStream.Write(buffer, 0, bytesRead);
                                     bytesRead = rStream.Read(buffer, 0, bytesRead);
                                 }
-
                                 var footer = new Footer();
                                 footer.Build(path);
                                 var footerData = footer.ToArray();
@@ -69,7 +65,7 @@ namespace KryptKeeper
                         }
                     }
                 }
-
+                
                 if (options.RemoveOriginal)
                     File.Delete(path);
                 if (options.MaskFileName)
@@ -135,9 +131,6 @@ namespace KryptKeeper
                 File.Delete(decryptedPath);
                 File.Delete(path);
                 Helper.SetFileTimes(newOriginalPath, footer); // Set to original filetimes
-
-                /*if (!Helper.GetMD5StringFromPath(decryptedPath).Equals(footer.MD5))
-                    throw new Exception(@"Failed to compare MD5 of " + path + ". File tampered?");*/
             }
         }
 

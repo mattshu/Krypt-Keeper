@@ -49,28 +49,13 @@ namespace KryptKeeper
                             wStream.Write(options.IV, 0, options.IV.Length);
                             using (var cStream = new CryptoStream(wStream, encryptor, CryptoStreamMode.Write))
                             {
-                                var buffer = new byte[CHUNK_SIZE];
-                                rStream.Seek(0, SeekOrigin.Begin);
-                                int bytesRead = rStream.Read(buffer, 0, CHUNK_SIZE);
-                                while (bytesRead > 0)
-                                {
-                                    cStream.Write(buffer, 0, bytesRead);
-                                    bytesRead = rStream.Read(buffer, 0, bytesRead);
-                                }
-                                var footer = new Footer();
-                                footer.Build(path);
-                                var footerData = footer.ToArray();
-                                cStream.Write(footerData, 0, footerData.Length);
+                                initializeEncryption(path, rStream, cStream);
                             }
                         }
                     }
                 }
                 
-                if (options.RemoveOriginal)
-                    File.Delete(path);
-                if (options.MaskFileName)
-                    File.Move(path + FILE_EXTENSION,
-                        path.Replace(Path.GetFileName(path), Helper.GetRandomAlphanumericString(16)) + FILE_EXTENSION);
+                postEncryptionFileHandling(path, options);
             }
             catch (FileNotFoundException ex)
             {
@@ -80,6 +65,31 @@ namespace KryptKeeper
             {
                 status.WriteLine("*** Error occured: " + ex.StackTrace + ex.Message);
             }
+        }
+
+        private static void initializeEncryption(string path, Stream readStream, Stream cryptoStream)
+        {
+            var buffer = new byte[CHUNK_SIZE];
+            readStream.Seek(0, SeekOrigin.Begin);
+            int bytesRead = readStream.Read(buffer, 0, CHUNK_SIZE);
+            while (bytesRead > 0)
+            {
+                cryptoStream.Write(buffer, 0, bytesRead);
+                bytesRead = readStream.Read(buffer, 0, bytesRead);
+            }
+            var footer = new Footer();
+            footer.Build(path);
+            var footerData = footer.ToArray();
+            cryptoStream.Write(footerData, 0, footerData.Length);
+        }
+
+        private static void postEncryptionFileHandling(string path, CipherOptions options)
+        {
+            if (options.RemoveOriginal)
+                File.Delete(path);
+            if (options.MaskFileName)
+                File.Move(path + FILE_EXTENSION,
+                    path.Replace(Path.GetFileName(path), Helper.GetRandomAlphanumericString(16)) + FILE_EXTENSION);
         }
 
         private static void decrypt(string path, CipherOptions options)
@@ -104,34 +114,43 @@ namespace KryptKeeper
                     {
                         using (var cStream = new CryptoStream(wStream, encryptor, CryptoStreamMode.Write))
                         {
-                            var buffer = new byte[CHUNK_SIZE];
-                            rStream.Seek(16, SeekOrigin.Begin); // 16 to skip IV
-                            int bytesRead = rStream.Read(buffer, 0, CHUNK_SIZE);
-                            while (bytesRead > 0)
-                            {
-                                if (bytesRead < CHUNK_SIZE)
-                                    Array.Resize(ref buffer, bytesRead);
-                                cStream.Write(buffer, 0, buffer.Length);
-                                bytesRead = rStream.Read(buffer, 0, bytesRead);
-                            }
+                            initializeDecryption(rStream, cStream);
                         }
                     }
                 }
-                if (!footer.TryExtract(decryptedPath))
-                    throw new Exception("Unable to generate file information from " + decryptedPath);
-                using (var fOpen = new FileStream(decryptedPath, FileMode.Open))
-                {
-                    fOpen.SetLength(fOpen.Length - footer.ToArray().Length);
-                }
-                var newOriginalPath = decryptedPath.Replace(Path.GetFileName(decryptedPath), footer.Name); // Path with name of original file
-                bool decryptedAlreadyExists = File.Exists(newOriginalPath);
-                if (decryptedAlreadyExists)
-                    newOriginalPath = renameFileWithPadding(newOriginalPath);
-                File.Move(decryptedPath, newOriginalPath);
-                File.Delete(decryptedPath);
                 File.Delete(path);
-                Helper.SetFileTimes(newOriginalPath, footer); // Set to original filetimes
+                postDecryptionFileHandling(footer, decryptedPath);
             }
+        }
+
+        private static void initializeDecryption(FileStream rStream, CryptoStream cStream)
+        {
+            var buffer = new byte[CHUNK_SIZE];
+            rStream.Seek(16, SeekOrigin.Begin); // 16 to skip IV
+            int bytesRead = rStream.Read(buffer, 0, CHUNK_SIZE);
+            while (bytesRead > 0)
+            {
+                if (bytesRead < CHUNK_SIZE)
+                    Array.Resize(ref buffer, bytesRead);
+                cStream.Write(buffer, 0, buffer.Length);
+                bytesRead = rStream.Read(buffer, 0, bytesRead);
+            }
+        }
+
+        private static void postDecryptionFileHandling(Footer footer, string decryptedPath)
+        {
+            if (!footer.TryExtract(decryptedPath))
+                throw new Exception("Unable to generate file information from " + decryptedPath);
+            using (var fOpen = new FileStream(decryptedPath, FileMode.Open))
+            {
+                fOpen.SetLength(fOpen.Length - footer.ToArray().Length);
+            }
+            var newPath = decryptedPath.Replace(Path.GetFileName(decryptedPath), footer.Name); // Path with name of original file
+            if (File.Exists(newPath))
+                newPath = renameFileWithPadding(newPath);
+            File.Move(decryptedPath, newPath);
+            File.Delete(decryptedPath);
+            Helper.SetFileTimes(newPath, footer); // Set to original filetimes
         }
 
         private static string renameFileWithPadding(string newOriginalPath)

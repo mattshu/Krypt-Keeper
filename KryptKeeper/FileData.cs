@@ -19,13 +19,9 @@ namespace KryptKeeper
             Path = fileInfo.DirectoryName;
         }
 
-        public FileData(FileInfo fileInfo) : this(fileInfo.FullName)
-        {
-        }
-
         public string GetFilePath()
         {
-            return Path + "\\" + Name;
+            return Path + Name;
         }
 
         private static string bytesToString(long byteCount)

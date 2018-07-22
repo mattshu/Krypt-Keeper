@@ -35,6 +35,7 @@
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.btnBrowseDecrypt = new System.Windows.Forms.Button();
             this.btnExit = new System.Windows.Forms.Button();
+            this.chkConfirmOnExit = new System.Windows.Forms.CheckBox();
             this.chkRememberSettings = new System.Windows.Forms.CheckBox();
             this.chkUseEncryptSettings = new System.Windows.Forms.CheckBox();
             this.label2 = new System.Windows.Forms.Label();
@@ -61,7 +62,6 @@
             this.btnRemoveFiles = new System.Windows.Forms.Button();
             this.btnEncryptSelected = new System.Windows.Forms.Button();
             this.btnDecryptSelected = new System.Windows.Forms.Button();
-            this.chkConfirmOnExit = new System.Windows.Forms.CheckBox();
             this.tabMain.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.FileListGridView)).BeginInit();
@@ -167,6 +167,18 @@
             this.btnExit.Text = "Exit";
             this.btnExit.UseVisualStyleBackColor = true;
             this.btnExit.Click += new System.EventHandler(this.btnExit_Click);
+            // 
+            // chkConfirmOnExit
+            // 
+            this.chkConfirmOnExit.AutoSize = true;
+            this.chkConfirmOnExit.Checked = true;
+            this.chkConfirmOnExit.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkConfirmOnExit.Location = new System.Drawing.Point(367, 36);
+            this.chkConfirmOnExit.Name = "chkConfirmOnExit";
+            this.chkConfirmOnExit.Size = new System.Drawing.Size(98, 17);
+            this.chkConfirmOnExit.TabIndex = 6;
+            this.chkConfirmOnExit.Text = "Confirm On Exit";
+            this.chkConfirmOnExit.UseVisualStyleBackColor = true;
             // 
             // chkRememberSettings
             // 
@@ -377,6 +389,7 @@
             this.btnExport.TabIndex = 3;
             this.btnExport.Text = "Export...";
             this.btnExport.UseVisualStyleBackColor = true;
+            this.btnExport.Click += new System.EventHandler(this.btnExport_Click);
             // 
             // btnClear
             // 
@@ -457,18 +470,6 @@
             this.btnDecryptSelected.Text = "Decrypt Selected Files";
             this.btnDecryptSelected.UseVisualStyleBackColor = true;
             this.btnDecryptSelected.Click += new System.EventHandler(this.btnDecryptSelected_Click);
-            // 
-            // chkConfirmOnExit
-            // 
-            this.chkConfirmOnExit.AutoSize = true;
-            this.chkConfirmOnExit.Checked = true;
-            this.chkConfirmOnExit.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkConfirmOnExit.Location = new System.Drawing.Point(367, 36);
-            this.chkConfirmOnExit.Name = "chkConfirmOnExit";
-            this.chkConfirmOnExit.Size = new System.Drawing.Size(98, 17);
-            this.chkConfirmOnExit.TabIndex = 6;
-            this.chkConfirmOnExit.Text = "Confirm On Exit";
-            this.chkConfirmOnExit.UseVisualStyleBackColor = true;
             // 
             // MainWindow
             // 

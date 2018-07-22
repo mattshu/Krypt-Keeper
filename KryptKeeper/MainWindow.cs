@@ -402,6 +402,32 @@ namespace KryptKeeper
             txtStatus.Clear();
         }
 
+        private void btnExport_Click(object sender, EventArgs e)
+        {
+            exportStatusLog();
+        }
+
+        private void exportStatusLog()
+        {
+            var saveFileDialog = new SaveFileDialog {DefaultExt = "log", Filter = @"Log files(*.log)|*.*"};
+            var dialogResult = saveFileDialog.ShowDialog();
+            if (dialogResult != DialogResult.OK || string.IsNullOrWhiteSpace(saveFileDialog.FileName)) return;
+            using (var fStream = saveFileDialog.OpenFile())
+            {
+                var logHeader = generateLogHeader();
+                fStream.Write(logHeader, 0, logHeader.Length);
+                fStream.Write(Encoding.Default.GetBytes(txtStatus.Text), 0, txtStatus.TextLength);
+            }
+            status.WriteLine("Exported log to " + saveFileDialog.FileName);
+        }
+
+        private static byte[] generateLogHeader()
+        {
+            var timestamp = DateTime.Now;
+            string header = "KryptKeeper Status Log -- Generated on " + timestamp; // TODO INSERT VERSION INFORMATION
+            return Encoding.Default.GetBytes(header);
+        }
+
         private void saveFileListColumnWidths()
         {
             var enumer = FileListGridView.Columns.GetEnumerator();

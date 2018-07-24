@@ -62,6 +62,7 @@
             this.btnRemoveFiles = new System.Windows.Forms.Button();
             this.btnEncryptSelected = new System.Windows.Forms.Button();
             this.btnDecryptSelected = new System.Windows.Forms.Button();
+            this.txtChunk = new System.Windows.Forms.TextBox();
             this.tabMain.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.FileListGridView)).BeginInit();
@@ -244,6 +245,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.txtChunk);
             this.groupBox1.Controls.Add(this.btnBrowseEncrypt);
             this.groupBox1.Controls.Add(this.cbxEncryptAlgorithms);
             this.groupBox1.Controls.Add(this.label1);
@@ -471,6 +473,14 @@
             this.btnDecryptSelected.UseVisualStyleBackColor = true;
             this.btnDecryptSelected.Click += new System.EventHandler(this.btnDecryptSelected_Click);
             // 
+            // txtChunk
+            // 
+            this.txtChunk.Location = new System.Drawing.Point(396, 17);
+            this.txtChunk.Name = "txtChunk";
+            this.txtChunk.Size = new System.Drawing.Size(100, 20);
+            this.txtChunk.TabIndex = 9;
+            this.txtChunk.Text = "768";
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -539,6 +549,7 @@
         private System.Windows.Forms.Button btnEncryptSelected;
         private System.Windows.Forms.Button btnDecryptSelected;
         private System.Windows.Forms.CheckBox chkConfirmOnExit;
+        private System.Windows.Forms.TextBox txtChunk;
     }
 }
 

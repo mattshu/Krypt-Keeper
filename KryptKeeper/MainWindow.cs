@@ -206,6 +206,7 @@ namespace KryptKeeper
 
         private void processAllFiles(int cipherMode)
         {
+            Cipher.CHUNK_SIZE = int.Parse(txtChunk.Text) * 1024 * 1024; // TODO REMOVE
             if (!validateSettings(cipherMode))
                 return;
             focusStatusTab();

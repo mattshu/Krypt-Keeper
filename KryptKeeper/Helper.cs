@@ -12,15 +12,15 @@ namespace KryptKeeper
             switch (mode)
             {
                 case CipherAlgorithm.AES:
-                    return new AesManaged();
+                    return Aes.Create();
                 case CipherAlgorithm.RIJNDAEL:
-                    return new RijndaelManaged();
+                    return Rijndael.Create();
                 case CipherAlgorithm.DES:
-                    return new DESCryptoServiceProvider();
+                    return DES.Create();
                 case CipherAlgorithm.RC2:
-                    return new RC2CryptoServiceProvider();
+                    return RC2.Create();
                 case CipherAlgorithm.TRIPLEDES:
-                    return new TripleDESCryptoServiceProvider();
+                    return TripleDES.Create();
                 default:
                     throw new Exception("Unknown algorithm: " + mode); // TODO new Exception
             }

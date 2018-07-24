@@ -9,7 +9,9 @@ namespace KryptKeeper
         private static readonly Status status = Status.GetInstance();
 
         public const string FILE_EXTENSION = ".krpt";
-        private const int CHUNK_SIZE = 768 * 1024 * 1024; // 768MB
+        private const int CHUNK_SIZE2 = 768 * 1024 * 1024; // 768MB
+        public static int CHUNK_SIZE;
+
 
         public static void EncryptFiles(string[] files, CipherOptions options)
         {
@@ -100,7 +102,7 @@ namespace KryptKeeper
             using (var provider = Helper.GetAlgorithm(options.Mode))
             {
                 provider.Key = options.Key;
-                provider.IV = extractIV(path);
+                provider.IV = extractIV(path); // TODO throws CryptographicException if wrong decryption method
                 provider.Mode = CipherMode.CBC;
                 provider.Padding = PaddingMode.PKCS7;
                 var encryptor = provider.CreateDecryptor(provider.Key, provider.IV);

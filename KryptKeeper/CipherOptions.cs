@@ -1,18 +1,16 @@
-﻿using System.Linq;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 
 namespace KryptKeeper
 {
     internal class CipherOptions
     {
-        public CipherAlgorithm Mode { get; set; } = CipherAlgorithm.AES;
         public byte[] Key
         {
             get => key;
-            set => key = Mode == CipherAlgorithm.DES ? getMD5(value).Take(8).ToArray() : getMD5(value);
+            set => key = getMD5(value);
         }
         private byte[] key;
-        public byte[] IV;
+        public byte[] IV { get; set; }
         public bool MaskFileName { get; set; }
         public bool MaskFileTimes { get; set; }
         public bool RemoveOriginal { get; set; }
@@ -20,16 +18,19 @@ namespace KryptKeeper
         public static int Decrypt { get; } = 1;
 
         public void GenerateIV()
-        {
-            using (var provider = Helper.GetAlgorithm(Mode))
+        { 
+            using (var aes = Aes.Create())
             {
-                provider.GenerateIV();
-                IV = provider.IV;
+                if (aes == null) throw new CryptographicException("Failed to create AES object!");
+                aes.GenerateIV();
+                IV = aes.IV;
             }
         }
+
         private static byte[] getMD5(byte[] value)
         {
-            return new MD5CryptoServiceProvider().ComputeHash(value);
+            
+            return MD5.Create().ComputeHash(value);
         }
     }
 }

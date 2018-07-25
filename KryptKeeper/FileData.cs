@@ -21,7 +21,7 @@ namespace KryptKeeper
 
         public string GetFilePath()
         {
-            return Path + "\\" + Name;
+            return Path + (Path[Path.Length - 1] == '\\' ? "" : "\\") + Name;
         }
 
         private static string bytesToString(long byteCount)

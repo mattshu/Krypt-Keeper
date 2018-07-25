@@ -31,30 +31,13 @@ namespace KryptKeeper
             else
                 isPending = true;
             pendingStartTime = DateTime.Now;
-            statusBox.AppendText(timestamp);
+            statusBox.AppendText(Timestamp);
             statusBox.AppendText(msg + "...");
         }
 
         private void finishPending()
         {
-            statusBox.AppendText("done! " + pendingTimeEnd() + newLine);
-        }
-
-        private string pendingTimeEnd()
-        {
-            var time = TimeSpan.FromTicks(DateTime.Now.Ticks - pendingStartTime.Ticks);
-            var sb = new StringBuilder();
-            if (time.Days > 0) // Gods forbid
-                sb.Append(time.Days + "d ");
-            if (time.Hours > 0)
-                sb.Append(time.Hours + "h ");
-            if (time.Minutes > 0)
-                sb.Append(time.Minutes + "m ");
-            if (time.Seconds > 0)
-                sb.Append(time.Seconds + "s ");
-            if (time.Milliseconds > 0)
-                sb.Append(time.Milliseconds + "ms");
-            return "(" + sb + ")";
+            statusBox.AppendText("done! " + Helper.GetSpannedTime(pendingStartTime.Ticks) + newLine);
         }
 
         public void PendingComplete()
@@ -69,10 +52,10 @@ namespace KryptKeeper
             if (isPending)
                 finishPending();
             isPending = false;
-            statusBox.AppendText(timestamp);
+            statusBox.AppendText(Timestamp);
             statusBox.AppendText(msg + newLine);
         }
 
-        private static string timestamp => "[" + DateTime.Now.ToString("HH:mm:ss.fff") + "]: ";
+        private static string Timestamp => "[" + DateTime.Now.ToString("HH:mm:ss.fff") + "]: ";
     }
 }

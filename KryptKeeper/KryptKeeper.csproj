@@ -79,7 +79,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Cipher.cs" />
-    <Compile Include="CipherAlgorithm.cs" />
     <Compile Include="CipherOptions.cs" />
     <Compile Include="ConfirmSettingsDialog.cs">
       <SubType>Form</SubType>

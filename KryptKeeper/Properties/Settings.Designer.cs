@@ -12,7 +12,7 @@ namespace KryptKeeper.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.6.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.7.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -26,48 +26,24 @@ namespace KryptKeeper.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("1")]
-        public int encryptionKeyType {
+        public int cipherKeyType {
             get {
-                return ((int)(this["encryptionKeyType"]));
+                return ((int)(this["cipherKeyType"]));
             }
             set {
-                this["encryptionKeyType"] = value;
+                this["cipherKeyType"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string decryptionKey {
+        public string cipherKey {
             get {
-                return ((string)(this["decryptionKey"]));
+                return ((string)(this["cipherKey"]));
             }
             set {
-                this["decryptionKey"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1")]
-        public int decryptionKeyType {
-            get {
-                return ((int)(this["decryptionKeyType"]));
-            }
-            set {
-                this["decryptionKeyType"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string encryptionKey {
-            get {
-                return ((string)(this["encryptionKey"]));
-            }
-            set {
-                this["encryptionKey"] = value;
+                this["cipherKey"] = value;
             }
         }
         
@@ -86,61 +62,6 @@ namespace KryptKeeper.Properties {
             }
             set {
                 this["fileListColumnWidths"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute(@"<?xml version=""1.0"" encoding=""utf-16""?>
-<ArrayOfString xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
-  <string>AES</string>
-  <string>Rijndael</string>
-  <string>DES</string>
-  <string>RC2</string>
-  <string>TripleDES</string>
-</ArrayOfString>")]
-        public global::System.Collections.Specialized.StringCollection algorithms {
-            get {
-                return ((global::System.Collections.Specialized.StringCollection)(this["algorithms"]));
-            }
-            set {
-                this["algorithms"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1")]
-        public int decryptionAlgorithm {
-            get {
-                return ((int)(this["decryptionAlgorithm"]));
-            }
-            set {
-                this["decryptionAlgorithm"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1")]
-        public int encryptionAlgorithm {
-            get {
-                return ((int)(this["encryptionAlgorithm"]));
-            }
-            set {
-                this["encryptionAlgorithm"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool useEncryptionSettings {
-            get {
-                return ((bool)(this["useEncryptionSettings"]));
-            }
-            set {
-                this["useEncryptionSettings"] = value;
             }
         }
         
@@ -201,6 +122,18 @@ namespace KryptKeeper.Properties {
             }
             set {
                 this["confirmOnExit"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool saveKey {
+            get {
+                return ((bool)(this["saveKey"]));
+            }
+            set {
+                this["saveKey"] = value;
             }
         }
     }

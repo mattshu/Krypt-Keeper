@@ -1,48 +1,53 @@
 ﻿using System;
 using System.IO;
 using System.Security.Cryptography;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace KryptKeeper
 {
     internal static class Helper
     {
-        public static SymmetricAlgorithm GetAlgorithm(CipherAlgorithm mode)
+        public static string GetSpannedTime(long ticks)
         {
-            switch (mode)
-            {
-                case CipherAlgorithm.AES:
-                    return Aes.Create();
-                case CipherAlgorithm.RIJNDAEL:
-                    return Rijndael.Create();
-                case CipherAlgorithm.DES:
-                    return DES.Create();
-                case CipherAlgorithm.RC2:
-                    return RC2.Create();
-                case CipherAlgorithm.TRIPLEDES:
-                    return TripleDES.Create();
-                default:
-                    throw new Exception("Unknown algorithm: " + mode); // TODO new Exception
-            }
+            var time = TimeSpan.FromTicks(Math.Max(1, DateTime.Now.Ticks - ticks));
+            var sb = new StringBuilder();
+            if (time.Days > 0)
+                sb.Append(time.Days + "d ");
+            if (time.Hours > 0)
+                sb.Append(time.Hours + "h ");
+            if (time.Minutes > 0)
+                sb.Append(time.Minutes + "m ");
+            if (time.Seconds > 0)
+                sb.Append(time.Seconds + "s ");
+            if (time.Milliseconds > 0)
+                sb.Append(time.Milliseconds + "ms");
+            return "(" + sb + ")";
         }
 
-        public static byte[] PackData(byte[] dataA, byte[] dataB)
+        public static void SetRandomFileTimes(string path)
         {
-            var data = new byte[dataA.Length + dataB.Length];
-            Array.Copy(dataA, 0, data, 0, dataA.Length); // Copy dataA into data
-            Array.Copy(dataB, 0, data, dataA.Length, dataB.Length); // Copy dataB into data
-            return data;
+            File.SetCreationTime(path, getRandomFileTime());
+            File.SetLastAccessTime(path, getRandomFileTime());
+            File.SetLastWriteTime(path, getRandomFileTime());
         }
 
-        public static void SetFileTimes(string path)
+        private static DateTime getRandomFileTime()
         {
-            // Prepending "130" keeps the random date within a recent but random timespan
-            File.SetCreationTime(path, DateTime.FromFileTime(Int64.Parse("130" + GetRandomNumericString(15))));
-            File.SetLastAccessTime(path, DateTime.FromFileTime(Int64.Parse("130" + GetRandomNumericString(15))));
-            File.SetLastWriteTime(path, DateTime.FromFileTime(Int64.Parse("130" + GetRandomNumericString(15))));
+            const long minTicks = 0x1;
+            const long maxTicks = 0x7FFF35F4F06C58F;
+            return DateTime.FromFileTime(randomTicks(Math.Max(minTicks, DateTime.MinValue.Ticks), Math.Min(maxTicks, DateTime.MaxValue.Ticks)));
         }
 
-        public static void SetFileTimes(string path, Footer footer)
+        private static long randomTicks(long min, long max)
+        {
+            var buffer = new byte[8];
+            new Random().NextBytes(buffer);
+            long longRand = BitConverter.ToInt64(buffer, 0);
+            return Math.Abs(longRand % (max - min)) + min;
+        }
+
+        public static void SetFileTimesFromFooter(string path, Footer footer)
         {
             File.SetCreationTime(path, footer.CreationTime);
             File.SetLastAccessTime(path, footer.AccessedTime);
@@ -53,7 +58,6 @@ namespace KryptKeeper
         {
             if (File.Exists(path)) throw new FileNotFoundException(path);
 
-            //var md5 = GetMD5StringFromPath(path);
             var name = Path.GetFileName(path);
             var created = File.GetCreationTime(path);
             var modified = File.GetLastWriteTime(path);
@@ -61,30 +65,11 @@ namespace KryptKeeper
 
             return new Footer
             {
-                //MD5 = md5,
                 Name = name,
                 CreationTime = created,
                 ModifiedTime = modified,
                 AccessedTime = accessed
             };
-        }
-
-        public static string GetMD5StringFromPath(string path)
-        {
-            if (!File.Exists(path))
-                throw new FileNotFoundException(path);
-            using (var md5 = MD5.Create())
-            {
-                using (var fstream = File.OpenRead(path))
-                {
-                    return BitConverter.ToString(md5.ComputeHash(fstream)).Replace("-", "");
-                }
-            }
-        }
-
-        public static string GetMD5ToString(byte[] md5Data)
-        {
-            return BitConverter.ToString(md5Data).Replace("-", "");
         }
 
         public static string GetRandomAlphanumericString(int length)

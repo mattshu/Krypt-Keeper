@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -45,41 +44,33 @@ namespace KryptKeeper
         private void loadSettings()
         {
             var settings = Settings.Default;
-            var algorithms = settings.algorithms;
-            foreach (var a in algorithms)
-            {
-                cbxEncryptAlgorithms.Items.Add(a);
-                cbxDecryptAlgorithms.Items.Add(a);
-            }
             setDefaultCbxIndexes();
             if (!settings.rememberSettings) return;
-            cbxEncryptAlgorithms.SelectedIndex = settings.encryptionAlgorithm;
             chkMaskInformation.Checked = settings.encryptionMaskInformation;
             cbxMaskInformation.SelectedIndex = settings.encryptionMaskInfoType;
             chkRemoveAfterEncrypt.Checked = settings.encryptionRemoveAfterEncrypt;
-            cbxEncryptionKeyType.SelectedIndex = settings.encryptionKeyType;
-            txtEncryptionKey.Text = settings.encryptionKey;
+            cbxCipherKeyType.SelectedIndex = settings.cipherKeyType;
             chkRememberSettings.Checked = true;
             chkConfirmOnExit.Checked = settings.confirmOnExit;
-            if (settings.useEncryptionSettings)
-                copyEncryptionSettings();
+            chkSaveKey.Checked = settings.saveKey;
+            if (settings.saveKey)
+                txtCipherKey.Text = settings.cipherKey;
         }
 
         private void saveSettings()
         {
             var settings = Settings.Default;
-            settings.encryptionAlgorithm = cbxEncryptAlgorithms.SelectedIndex;
-            settings.encryptionKey = txtEncryptionKey.Text;
-            settings.encryptionKeyType = cbxEncryptionKeyType.SelectedIndex;
+            if (chkSaveKey.Checked)
+            {
+                settings.cipherKey = txtCipherKey.Text;
+                settings.saveKey = true;
+            }
+            settings.cipherKeyType = cbxCipherKeyType.SelectedIndex;
             settings.encryptionMaskInformation = chkMaskInformation.Checked;
             settings.encryptionMaskInfoType = cbxMaskInformation.SelectedIndex;
             settings.encryptionRemoveAfterEncrypt = chkRemoveAfterEncrypt.Checked;
-            settings.useEncryptionSettings = chkUseEncryptSettings.Checked;
             settings.rememberSettings = chkRememberSettings.Checked;
             settings.confirmOnExit = chkConfirmOnExit.Checked;
-            settings.decryptionAlgorithm = cbxDecryptAlgorithms.SelectedIndex;
-            settings.decryptionKey = txtDecryptionKey.Text;
-            settings.decryptionKeyType = cbxDecryptionKeyType.SelectedIndex;
             settings.Save();
         }
 
@@ -97,31 +88,27 @@ namespace KryptKeeper
         private bool settingsAreDefault()
         {
             if (_settingsNotViewed) return true;
-            return !txtEncryptionKey.Modified || !txtDecryptionKey.Modified;
+            return !txtCipherKey.Modified;
         }
 
         private static void resetSettings()
         {
             var settings = Settings.Default;
-            settings.encryptionAlgorithm = settings.decryptionAlgorithm = -1;
-            settings.encryptionKeyType = settings.decryptionKeyType = -1;
-            settings.encryptionKey = settings.decryptionKey = "";
+            settings.cipherKeyType = settings.cipherKeyType = -1;
+            settings.cipherKey = "";
             settings.encryptionMaskInfoType = -1;
             settings.encryptionMaskInformation = false;
             settings.encryptionRemoveAfterEncrypt = true;
             settings.rememberSettings = false;
-            settings.useEncryptionSettings = true;
+            settings.saveKey = false;
             settings.confirmOnExit = true;
             settings.Save();
         }
 
         private void setDefaultCbxIndexes()
         {
-            cbxEncryptAlgorithms.SelectedIndex = 0;
             cbxMaskInformation.SelectedIndex = 0;
-            cbxEncryptionKeyType.SelectedIndex = 0;
-            cbxDecryptAlgorithms.SelectedIndex = 0;
-            cbxDecryptionKeyType.SelectedIndex = 0;
+            cbxCipherKeyType.SelectedIndex = 0;
         }
 
         private void resetFileList()
@@ -206,12 +193,11 @@ namespace KryptKeeper
 
         private void processAllFiles(int cipherMode)
         {
-            Cipher.CHUNK_SIZE = int.Parse(txtChunk.Text) * 1024 * 1024; // TODO REMOVE
-            if (!validateSettings(cipherMode))
+            if (!validateSettings())
                 return;
             focusStatusTab();
             var paths = getPathsFromFileList();
-            var options = generateOptions(cipherMode);
+            var options = generateOptions();
             if (cipherMode == CipherOptions.Encrypt)
                 Cipher.EncryptFiles(paths, options);
             else
@@ -219,12 +205,10 @@ namespace KryptKeeper
             resetFileList();
         }
 
-        private bool validateSettings(int mode)
+        private bool validateSettings()
         {
             if (_fileList.Count <= 0) return false;
-            if (mode == CipherOptions.Encrypt && string.IsNullOrWhiteSpace(txtEncryptionKey.Text) ||
-                mode == CipherOptions.Decrypt && string.IsNullOrWhiteSpace(txtDecryptionKey.Text)) return false;
-            return true;
+            return !string.IsNullOrWhiteSpace(txtCipherKey.Text);
         }
 
         private void focusStatusTab()
@@ -235,11 +219,11 @@ namespace KryptKeeper
 
         private void processSelectedFiles(int cipherMode)
         {
-            if (!validateSettings(cipherMode))
+            if (!validateSettings())
                 return;
             if (FileListGridView.SelectedRows.Count <= 0) return;
             focusStatusTab();
-            var options = generateOptions(cipherMode);
+            var options = generateOptions();
             var paths = getPathsFromSelection();
             if (cipherMode == CipherOptions.Encrypt)
                 Cipher.EncryptFiles(paths, options);
@@ -248,43 +232,21 @@ namespace KryptKeeper
             resetFileList();
         }
 
-        private CipherOptions generateOptions(int cipherOption)
+        private CipherOptions generateOptions()
         {
-            ComboBox algorithm;
-            ComboBox keyType;
-            TextBox keytxt;
             var key = new byte[0];
-
-            if (cipherOption == CipherOptions.Encrypt)
+            if (cbxCipherKeyType.SelectedIndex == 0)
             {
-                algorithm = cbxEncryptAlgorithms;
-                keyType = cbxEncryptionKeyType;
-                keytxt = txtEncryptionKey;
+                key = Encoding.Default.GetBytes(txtCipherKey.Text);
             }
-            else if (cipherOption == CipherOptions.Decrypt)
+            else if (cbxCipherKeyType.SelectedIndex == 1)
             {
-                algorithm = cbxDecryptAlgorithms;
-                keyType = cbxDecryptionKeyType;
-                keytxt = txtDecryptionKey;
-            }
-            else
-            {
-                throw new Exception("Invalid cipher option: " + cipherOption);
-            }
-            if (keyType.SelectedIndex == 0)
-            {
-                key = Encoding.Default.GetBytes(keytxt.Text);
-            }
-            else if (keyType.SelectedIndex == 1)
-            {
-                if (!File.Exists(keytxt.Text))
-                    throw new FileNotFoundException(keytxt.Text);
-                key = File.ReadAllBytes(keytxt.Text);
+                if (!File.Exists(txtCipherKey.Text)) throw new FileNotFoundException(txtCipherKey.Text);
+                key = File.ReadAllBytes(txtCipherKey.Text);
             }
             var maskInfoIndex = cbxMaskInformation.SelectedIndex;
             var options = new CipherOptions
             {
-                Mode = (CipherAlgorithm)algorithm.SelectedIndex,
                 Key = key,
                 MaskFileName = chkMaskInformation.Checked && (maskInfoIndex == 0 || maskInfoIndex == 2),
                 MaskFileTimes = chkMaskInformation.Checked && (maskInfoIndex == 1 || maskInfoIndex == 2),
@@ -314,65 +276,22 @@ namespace KryptKeeper
             return paths.ToArray();
         }
 
-        private void cbxEncryptAlgorithms_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (chkUseEncryptSettings.Checked)
-                cbxDecryptAlgorithms.SelectedIndex = cbxEncryptAlgorithms.SelectedIndex;
-        }
-
         private void chkMaskInformation_CheckedChanged(object sender, EventArgs e)
         {
             cbxMaskInformation.Enabled = chkMaskInformation.Checked;
         }
 
-        private void chkUseEncryptSettings_CheckedChanged(object sender, EventArgs e)
+        private void cbxCipherKeyType_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (chkUseEncryptSettings.Checked) copyEncryptionSettings();
-            cbxDecryptAlgorithms.Enabled = !chkUseEncryptSettings.Checked;
-            cbxDecryptionKeyType.Enabled = !chkUseEncryptSettings.Checked;
-            txtDecryptionKey.ReadOnly = chkUseEncryptSettings.Checked;
+            txtCipherKey.UseSystemPasswordChar = cbxCipherKeyType.SelectedIndex == 0;
         }
 
-        private void copyEncryptionSettings()
+        private void btnBrowseOrShowKey_Click(object sender, EventArgs e)
         {
-            cbxDecryptAlgorithms.SelectedIndex = cbxEncryptAlgorithms.SelectedIndex;
-            cbxDecryptionKeyType.SelectedIndex = cbxEncryptionKeyType.SelectedIndex;
-            txtDecryptionKey.Text = txtEncryptionKey.Text;
-            btnBrowseDecrypt.Enabled = btnBrowseEncrypt.Enabled;
-        }
-
-        private void cbxEncryptionKeyType_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            updateFormBasedOnKeyType(cbxEncryptionKeyType, btnBrowseEncrypt, txtEncryptionKey);
-            if (chkUseEncryptSettings.Checked)
-                cbxDecryptionKeyType.SelectedIndex = cbxEncryptionKeyType.SelectedIndex;
-        }
-
-        private static void updateFormBasedOnKeyType(ListControl cbxKeyType, Control btnBrowse, TextBox txtKey)
-        {
-            btnBrowse.Enabled = cbxKeyType.SelectedIndex == 1; // Key file
-            if (cbxKeyType.SelectedIndex == 1) txtKey.Text = "";
-        }
-
-        private void txtEncryptionKey_TextChanged(object sender, EventArgs e)
-        {
-            if (chkUseEncryptSettings.Checked)
-                txtDecryptionKey.Text = txtEncryptionKey.Text;
-        }
-
-        private void cbxDecryptionKeyType_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            updateFormBasedOnKeyType(cbxDecryptionKeyType, btnBrowseDecrypt, txtDecryptionKey);
-        }
-
-        private void btnBrowseEncrypt_Click(object sender, EventArgs e)
-        {
-            txtEncryptionKey.Text = browseForKeyFile();
-        }
-
-        private void btnBrowseDecrypt_Click(object sender, EventArgs e)
-        {
-            txtDecryptionKey.Text = browseForKeyFile();
+            if (cbxCipherKeyType.SelectedIndex == 0)
+                txtCipherKey.UseSystemPasswordChar = !txtCipherKey.UseSystemPasswordChar;
+            else
+                txtCipherKey.Text = browseForKeyFile();
         }
 
         private static string browseForKeyFile()

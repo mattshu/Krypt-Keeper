@@ -32,10 +32,6 @@
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.FileListGridView = new System.Windows.Forms.DataGridView();
             this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.chkMaskInformation = new System.Windows.Forms.CheckBox();
-            this.cbxMaskInformation = new System.Windows.Forms.ComboBox();
-            this.chkRemoveAfterEncrypt = new System.Windows.Forms.CheckBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.chkConfirmOnExit = new System.Windows.Forms.CheckBox();
@@ -46,6 +42,10 @@
             this.txtCipherKey = new System.Windows.Forms.TextBox();
             this.cbxCipherKeyType = new System.Windows.Forms.ComboBox();
             this.btnExit = new System.Windows.Forms.Button();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.chkMaskInformation = new System.Windows.Forms.CheckBox();
+            this.cbxMaskInformation = new System.Windows.Forms.ComboBox();
+            this.chkRemoveAfterEncrypt = new System.Windows.Forms.CheckBox();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.txtStatus = new System.Windows.Forms.TextBox();
             this.progressBar = new System.Windows.Forms.ProgressBar();
@@ -53,16 +53,15 @@
             this.btnClear = new System.Windows.Forms.Button();
             this.btnEncrypt = new System.Windows.Forms.Button();
             this.btnDecrypt = new System.Windows.Forms.Button();
-            this.btnAddFiles = new System.Windows.Forms.Button();
+            this.btnAddFilesOrCancelOperation = new System.Windows.Forms.Button();
             this.btnRemoveFiles = new System.Windows.Forms.Button();
-            this.btnEncryptSelected = new System.Windows.Forms.Button();
-            this.btnDecryptSelected = new System.Windows.Forms.Button();
+            this.backgroundWorker = new System.ComponentModel.BackgroundWorker();
             this.tabMain.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.FileListGridView)).BeginInit();
             this.tabPage2.SuspendLayout();
-            this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -109,7 +108,6 @@
             this.FileListGridView.Size = new System.Drawing.Size(505, 243);
             this.FileListGridView.TabIndex = 0;
             this.FileListGridView.DataSourceChanged += new System.EventHandler(this.fileListGridView_DataSourceChanged);
-            this.FileListGridView.SelectionChanged += new System.EventHandler(this.fileListGridView_SelectionChanged);
             // 
             // tabPage2
             // 
@@ -124,52 +122,6 @@
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Settings";
             this.tabPage2.UseVisualStyleBackColor = true;
-            // 
-            // groupBox2
-            // 
-            this.groupBox2.Controls.Add(this.chkMaskInformation);
-            this.groupBox2.Controls.Add(this.cbxMaskInformation);
-            this.groupBox2.Controls.Add(this.chkRemoveAfterEncrypt);
-            this.groupBox2.Location = new System.Drawing.Point(3, 9);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(505, 105);
-            this.groupBox2.TabIndex = 3;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Encryption Options";
-            // 
-            // chkMaskInformation
-            // 
-            this.chkMaskInformation.AutoSize = true;
-            this.chkMaskInformation.Location = new System.Drawing.Point(30, 31);
-            this.chkMaskInformation.Name = "chkMaskInformation";
-            this.chkMaskInformation.Size = new System.Drawing.Size(125, 17);
-            this.chkMaskInformation.TabIndex = 0;
-            this.chkMaskInformation.Text = "Mask file information:";
-            this.chkMaskInformation.UseVisualStyleBackColor = true;
-            this.chkMaskInformation.CheckedChanged += new System.EventHandler(this.chkMaskInformation_CheckedChanged);
-            // 
-            // cbxMaskInformation
-            // 
-            this.cbxMaskInformation.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cbxMaskInformation.Enabled = false;
-            this.cbxMaskInformation.Items.AddRange(new object[] {
-            "File name",
-            "File dates",
-            "File name AND dates"});
-            this.cbxMaskInformation.Location = new System.Drawing.Point(161, 29);
-            this.cbxMaskInformation.Name = "cbxMaskInformation";
-            this.cbxMaskInformation.Size = new System.Drawing.Size(155, 21);
-            this.cbxMaskInformation.TabIndex = 1;
-            // 
-            // chkRemoveAfterEncrypt
-            // 
-            this.chkRemoveAfterEncrypt.AutoSize = true;
-            this.chkRemoveAfterEncrypt.Location = new System.Drawing.Point(30, 56);
-            this.chkRemoveAfterEncrypt.Name = "chkRemoveAfterEncrypt";
-            this.chkRemoveAfterEncrypt.Size = new System.Drawing.Size(178, 17);
-            this.chkRemoveAfterEncrypt.TabIndex = 2;
-            this.chkRemoveAfterEncrypt.Text = "Remove original after encryption";
-            this.chkRemoveAfterEncrypt.UseVisualStyleBackColor = true;
             // 
             // groupBox1
             // 
@@ -279,6 +231,52 @@
             this.btnExit.UseVisualStyleBackColor = true;
             this.btnExit.Click += new System.EventHandler(this.btnExit_Click);
             // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.chkMaskInformation);
+            this.groupBox2.Controls.Add(this.cbxMaskInformation);
+            this.groupBox2.Controls.Add(this.chkRemoveAfterEncrypt);
+            this.groupBox2.Location = new System.Drawing.Point(3, 9);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(505, 105);
+            this.groupBox2.TabIndex = 3;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Encryption Options";
+            // 
+            // chkMaskInformation
+            // 
+            this.chkMaskInformation.AutoSize = true;
+            this.chkMaskInformation.Location = new System.Drawing.Point(30, 31);
+            this.chkMaskInformation.Name = "chkMaskInformation";
+            this.chkMaskInformation.Size = new System.Drawing.Size(125, 17);
+            this.chkMaskInformation.TabIndex = 0;
+            this.chkMaskInformation.Text = "Mask file information:";
+            this.chkMaskInformation.UseVisualStyleBackColor = true;
+            this.chkMaskInformation.CheckedChanged += new System.EventHandler(this.chkMaskInformation_CheckedChanged);
+            // 
+            // cbxMaskInformation
+            // 
+            this.cbxMaskInformation.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbxMaskInformation.Enabled = false;
+            this.cbxMaskInformation.Items.AddRange(new object[] {
+            "File name",
+            "File dates",
+            "File name AND dates"});
+            this.cbxMaskInformation.Location = new System.Drawing.Point(161, 29);
+            this.cbxMaskInformation.Name = "cbxMaskInformation";
+            this.cbxMaskInformation.Size = new System.Drawing.Size(155, 21);
+            this.cbxMaskInformation.TabIndex = 1;
+            // 
+            // chkRemoveAfterEncrypt
+            // 
+            this.chkRemoveAfterEncrypt.AutoSize = true;
+            this.chkRemoveAfterEncrypt.Location = new System.Drawing.Point(30, 56);
+            this.chkRemoveAfterEncrypt.Name = "chkRemoveAfterEncrypt";
+            this.chkRemoveAfterEncrypt.Size = new System.Drawing.Size(178, 17);
+            this.chkRemoveAfterEncrypt.TabIndex = 2;
+            this.chkRemoveAfterEncrypt.Text = "Remove original after encryption";
+            this.chkRemoveAfterEncrypt.UseVisualStyleBackColor = true;
+            // 
             // tabPage3
             // 
             this.tabPage3.Controls.Add(this.txtStatus);
@@ -345,11 +343,11 @@
             this.btnEncrypt.Enabled = false;
             this.btnEncrypt.Location = new System.Drawing.Point(200, 12);
             this.btnEncrypt.Name = "btnEncrypt";
-            this.btnEncrypt.Size = new System.Drawing.Size(145, 30);
+            this.btnEncrypt.Size = new System.Drawing.Size(145, 66);
             this.btnEncrypt.TabIndex = 2;
-            this.btnEncrypt.Text = "Encrypt All Files";
+            this.btnEncrypt.Text = "ENCRYPT Files";
             this.btnEncrypt.UseVisualStyleBackColor = true;
-            this.btnEncrypt.Click += new System.EventHandler(this.btnEncryptAll_Click);
+            this.btnEncrypt.Click += new System.EventHandler(this.btnEncrypt_Click);
             // 
             // btnDecrypt
             // 
@@ -357,21 +355,21 @@
             this.btnDecrypt.Enabled = false;
             this.btnDecrypt.Location = new System.Drawing.Point(386, 12);
             this.btnDecrypt.Name = "btnDecrypt";
-            this.btnDecrypt.Size = new System.Drawing.Size(145, 30);
+            this.btnDecrypt.Size = new System.Drawing.Size(145, 63);
             this.btnDecrypt.TabIndex = 2;
-            this.btnDecrypt.Text = "Decrypt All Files";
+            this.btnDecrypt.Text = "DECRYPT Files";
             this.btnDecrypt.UseVisualStyleBackColor = true;
-            this.btnDecrypt.Click += new System.EventHandler(this.btnDecryptAll_Click);
+            this.btnDecrypt.Click += new System.EventHandler(this.btnDecrypt_Click);
             // 
-            // btnAddFiles
+            // btnAddFilesOrCancelOperation
             // 
-            this.btnAddFiles.Location = new System.Drawing.Point(12, 12);
-            this.btnAddFiles.Name = "btnAddFiles";
-            this.btnAddFiles.Size = new System.Drawing.Size(145, 30);
-            this.btnAddFiles.TabIndex = 2;
-            this.btnAddFiles.Text = "Add Files...";
-            this.btnAddFiles.UseVisualStyleBackColor = true;
-            this.btnAddFiles.Click += new System.EventHandler(this.btnAddFiles_Click);
+            this.btnAddFilesOrCancelOperation.Location = new System.Drawing.Point(12, 12);
+            this.btnAddFilesOrCancelOperation.Name = "btnAddFilesOrCancelOperation";
+            this.btnAddFilesOrCancelOperation.Size = new System.Drawing.Size(145, 30);
+            this.btnAddFilesOrCancelOperation.TabIndex = 2;
+            this.btnAddFilesOrCancelOperation.Text = "Add Files...";
+            this.btnAddFilesOrCancelOperation.UseVisualStyleBackColor = true;
+            this.btnAddFilesOrCancelOperation.Click += new System.EventHandler(this.btnAddFilesOrCancelOperation_Click);
             // 
             // btnRemoveFiles
             // 
@@ -382,42 +380,21 @@
             this.btnRemoveFiles.TabIndex = 2;
             this.btnRemoveFiles.Text = "Remove Selected Files...";
             this.btnRemoveFiles.UseVisualStyleBackColor = true;
-            this.btnRemoveFiles.Click += new System.EventHandler(this.btnRemoveFiles_Click);
+            this.btnRemoveFiles.Click += new System.EventHandler(this.btnRemoveSelectedFiles_Click);
             // 
-            // btnEncryptSelected
+            // backgroundWorker
             // 
-            this.btnEncryptSelected.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnEncryptSelected.Enabled = false;
-            this.btnEncryptSelected.Location = new System.Drawing.Point(200, 48);
-            this.btnEncryptSelected.Name = "btnEncryptSelected";
-            this.btnEncryptSelected.Size = new System.Drawing.Size(145, 30);
-            this.btnEncryptSelected.TabIndex = 3;
-            this.btnEncryptSelected.Text = "Encrypt Selected Files";
-            this.btnEncryptSelected.UseVisualStyleBackColor = true;
-            this.btnEncryptSelected.Click += new System.EventHandler(this.btnEncryptSelected_Click);
-            // 
-            // btnDecryptSelected
-            // 
-            this.btnDecryptSelected.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnDecryptSelected.Enabled = false;
-            this.btnDecryptSelected.Location = new System.Drawing.Point(386, 48);
-            this.btnDecryptSelected.Name = "btnDecryptSelected";
-            this.btnDecryptSelected.Size = new System.Drawing.Size(145, 30);
-            this.btnDecryptSelected.TabIndex = 4;
-            this.btnDecryptSelected.Text = "Decrypt Selected Files";
-            this.btnDecryptSelected.UseVisualStyleBackColor = true;
-            this.btnDecryptSelected.Click += new System.EventHandler(this.btnDecryptSelected_Click);
+            this.backgroundWorker.WorkerReportsProgress = true;
+            this.backgroundWorker.WorkerSupportsCancellation = true;
             // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(543, 368);
-            this.Controls.Add(this.btnDecryptSelected);
-            this.Controls.Add(this.btnEncryptSelected);
             this.Controls.Add(this.btnDecrypt);
             this.Controls.Add(this.btnRemoveFiles);
-            this.Controls.Add(this.btnAddFiles);
+            this.Controls.Add(this.btnAddFilesOrCancelOperation);
             this.Controls.Add(this.btnEncrypt);
             this.Controls.Add(this.tabMain);
             this.MinimumSize = new System.Drawing.Size(559, 407);
@@ -431,10 +408,10 @@
             this.tabPage1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.FileListGridView)).EndInit();
             this.tabPage2.ResumeLayout(false);
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
             this.tabPage3.ResumeLayout(false);
             this.tabPage3.PerformLayout();
             this.ResumeLayout(false);
@@ -447,7 +424,7 @@
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.Button btnEncrypt;
         private System.Windows.Forms.Button btnDecrypt;
-        private System.Windows.Forms.Button btnAddFiles;
+        private System.Windows.Forms.Button btnAddFilesOrCancelOperation;
         private System.Windows.Forms.Button btnRemoveFiles;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.ComboBox cbxMaskInformation;
@@ -465,12 +442,11 @@
         private System.Windows.Forms.Button btnBrowseOrShowKey;
         private System.Windows.Forms.DataGridView FileListGridView;
         private System.Windows.Forms.TextBox txtStatus;
-        private System.Windows.Forms.Button btnEncryptSelected;
-        private System.Windows.Forms.Button btnDecryptSelected;
         private System.Windows.Forms.CheckBox chkConfirmOnExit;
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.CheckBox chkSaveKey;
+        private System.ComponentModel.BackgroundWorker backgroundWorker;
     }
 }
 

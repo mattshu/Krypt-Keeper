@@ -8,20 +8,32 @@ namespace KryptKeeper
     {
         private static Status instance;
         private readonly TextBox statusBox;
+        private readonly ProgressBar progressBar;
         private readonly string newLine = Environment.NewLine;
         private bool isPending;
         private DateTime pendingStartTime;
 
-        public Status(TextBox statusBox)
+        public Status(TextBox statusBox, ProgressBar progressBar)
         {
             if (instance != null) return;
             instance = this;
             this.statusBox = statusBox;
+            this.progressBar = progressBar;
         }
 
         public static Status GetInstance()
         {
             return instance;
+        }
+
+        public void UpdateProgress(int progress, int limit)
+        {
+            progressBar.Invoke((Action) delegate
+            {
+                progressBar.Maximum = limit;
+                progressBar.Step = 1;
+                progressBar.Value = progress;
+            });
         }
 
         public void WritePending(string msg)
@@ -31,13 +43,18 @@ namespace KryptKeeper
             else
                 isPending = true;
             pendingStartTime = DateTime.Now;
-            statusBox.AppendText(Timestamp);
-            statusBox.AppendText(msg + "...");
+            statusBox.Invoke((Action) delegate
+            {
+                statusBox.AppendText(Timestamp + msg + "...");
+            });
         }
 
         private void finishPending()
         {
-            statusBox.AppendText("done! " + Helper.GetSpannedTime(pendingStartTime.Ticks) + newLine);
+            statusBox.Invoke((Action) delegate
+            {
+                statusBox.AppendText("done! " + Helper.GetSpannedTime(pendingStartTime.Ticks) + newLine);
+            });
         }
 
         public void PendingComplete()
@@ -52,8 +69,10 @@ namespace KryptKeeper
             if (isPending)
                 finishPending();
             isPending = false;
-            statusBox.AppendText(Timestamp);
-            statusBox.AppendText(msg + newLine);
+            statusBox.Invoke((Action) delegate
+            {
+                statusBox.AppendText(Timestamp + msg + newLine);
+            });
         }
 
         private static string Timestamp => "[" + DateTime.Now.ToString("HH:mm:ss.fff") + "]: ";

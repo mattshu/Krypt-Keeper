@@ -1,44 +1,77 @@
 ﻿using System;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Security.Cryptography;
+using System.Windows.Forms;
 
 namespace KryptKeeper
 {
-    internal class Cipher
-    {
+    internal static class Cipher
+    { // TODO add cancel option
         private static readonly Status status = Status.GetInstance();
 
         public const string FILE_EXTENSION = ".krpt";
         private const int CHUNK_SIZE = 64 * 1024 * 1024; // 64MB
-        private static DateTime encryptionStartTime;
-        private static DateTime decryptionStartTime;
+        private static DateTime cipherStartTime;
 
-        public static void EncryptFiles(string[] files, CipherOptions options)
+        public static BackgroundWorker backgroundWorker;
+
+        public static void ProcessFiles(CipherOptions options)
         {
-            encryptionStartTime = DateTime.Now;
-            if (files.Length <= 0) return;
-            foreach (var file in files)
-                encrypt(file, options);
-            status.WriteLine("Encryption completed. " + Helper.GetSpannedTime(encryptionStartTime.Ticks));
+            if (options.Files.Length <= 0) return;
+            cipherStartTime = DateTime.Now;
+            backgroundWorker.RunWorkerAsync(options);
         }
 
-        public static void DecryptFiles(string[] files, CipherOptions options)
+        private static void backgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            decryptionStartTime = DateTime.Now;
-            if (files.Length <= 0) return;
-            foreach (var file in files)
-                decrypt(file, options);
-            status.WriteLine("Decryption completed. " + Helper.GetSpannedTime(decryptionStartTime.Ticks));
+            try
+            {
+                var options = (CipherOptions) e.Argument;
+                for (int i = 0; i < options.Files.Length; i++)
+                {
+                    if (e.Cancel)
+                    {
+                        status.WriteLine("Stopping operation.");
+                        break;
+                    }
+                    var path = options.Files[i];
+                    if (!File.Exists(path))
+                    {
+                        status.WriteLine("Unable to find: " + path);
+                        continue;
+                    }
+                    backgroundWorker.ReportProgress(i + 1, options.Files.Length);
+                    status.WritePending($"{options.GetCipherModeOfOperation()}: " + path);
+                    if (options.Mode == CipherOptions.ENCRYPT)
+                        encrypt(path, options);
+                    else
+                        decrypt(path, options);
+                }
+            }
+            catch (Exception ex)
+            {
+                status.WriteLine("*** Unhandled exception occured: " + ex.StackTrace + ex.Message);
+            }
+        }
+
+        private static void backgroundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            status.UpdateProgress(e.ProgressPercentage, (int)e.UserState);
+            
+        }
+
+        private static void backgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            status.WriteLine("Operation completed. " + Helper.GetSpannedTime(cipherStartTime.Ticks));
+            status.UpdateProgress(0, 0);
         }
 
         private static void encrypt(string path, CipherOptions options)
         {
             try
             {
-                if (!File.Exists(path))
-                    throw new FileNotFoundException(path);
-                status.WritePending("Encrypting: " + path);
-
                 using (var aes = Aes.Create())
                 {
                     if (aes == null) throw new CryptographicException("Failed to create AES object!");
@@ -59,16 +92,19 @@ namespace KryptKeeper
                         }
                     }
                 }
-                
                 postEncryptionFileHandling(path, options);
             }
-            catch (FileNotFoundException ex)
+            catch (CryptographicException ex)
             {
-                status.WriteLine("*** Error: File not found: " + ex.Message);
+                throw new CryptographicException("Unable to decrypt file: " + ex.Message);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                throw new UnauthorizedAccessException("Unable to remove file: " + ex.Message);
             }
             catch (Exception ex)
             {
-                status.WriteLine("*** Error occured: " + ex.StackTrace + ex.Message);
+                throw new Exception("Unhandled exception: " + ex.StackTrace + ex.Message);
             }
         }
 
@@ -91,7 +127,7 @@ namespace KryptKeeper
         private static void postEncryptionFileHandling(string path, CipherOptions options)
         {
             if (options.RemoveOriginal)
-                File.Delete(path); // TODO handle UnauthorizedAccessException
+                File.Delete(path);
             if (options.MaskFileName)
                 File.Move(path + FILE_EXTENSION,
                     path = path.Replace(Path.GetFileName(path), Helper.GetRandomAlphanumericString(16)) + FILE_EXTENSION);
@@ -101,33 +137,59 @@ namespace KryptKeeper
 
         private static void decrypt(string path, CipherOptions options)
         {
-            if (!File.Exists(path))
-                throw new FileNotFoundException(path);
-            status.WritePending("Decrypting: " + path);
-            using (var aes = Aes.Create())
+            try
             {
-                if (aes == null) throw new CryptographicException("Failed to create AES object!");
-                aes.Key = options.Key;
-                aes.IV = extractIV(path); // TODO throws CryptographicException if wrong decryption method
-                aes.Mode = CipherMode.CBC;
-                aes.Padding = PaddingMode.PKCS7;
-                var decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
-                var decryptedPath = path.Replace(FILE_EXTENSION, "");
-                var footer = new Footer();
-                using (var rStream = new FileStream(path, FileMode.Open, FileAccess.Read))
+                if (!File.Exists(path))
+                    throw new FileNotFoundException(path);
+                using (var aes = Aes.Create())
                 {
-                    if (File.Exists(decryptedPath))
-                        decryptedPath = renameFileWithPadding(decryptedPath);
-                    using (var wStream = new FileStream(decryptedPath, FileMode.CreateNew, FileAccess.Write))
+                    if (aes == null) throw new CryptographicException("Failed to create AES object!");
+                    aes.Key = options.Key;
+                    aes.IV = extractIV(path);
+                    aes.Mode = CipherMode.CBC;
+                    aes.Padding = PaddingMode.PKCS7;
+                    var decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
+                    var decryptedPath = path.Replace(FILE_EXTENSION, "");
+                    var footer = new Footer();
+                    using (var rStream = new FileStream(path, FileMode.Open, FileAccess.Read))
                     {
-                        using (var cStream = new CryptoStream(wStream, decryptor, CryptoStreamMode.Write)) // TODO throws CryptographicException: 'Padding is invalid and cannot be removed.' if invalid file
+                        if (File.Exists(decryptedPath)) decryptedPath = Helper.RenameExistingFile(decryptedPath);
+                        using (var wStream = new FileStream(decryptedPath, FileMode.CreateNew, FileAccess.Write))
                         {
-                            initializeDecryption(rStream, cStream);
+                            using (var cStream = new CryptoStream(wStream, decryptor, CryptoStreamMode.Write))
+                            {
+                                initializeDecryption(rStream, cStream);
+                            }
                         }
                     }
+                    File.Delete(path);
+                    postDecryptionFileHandling(footer, decryptedPath);
                 }
-                File.Delete(path);
-                postDecryptionFileHandling(footer, decryptedPath);
+            }
+            catch (CryptographicException ex)
+            {
+                throw new CryptographicException("Unable to decrypt file: " + ex.Message);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                throw new UnauthorizedAccessException("Unable to remove file: " + ex.Message);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Unhandled exception: " + ex.StackTrace + ex.Message);
+            }
+        }
+
+        private static byte[] extractIV(string path)
+        {
+            if (!File.Exists(path))
+                throw new FileNotFoundException(path);
+            using (var fStream = new FileStream(path, FileMode.Open, FileAccess.Read))
+            {
+                using (var bReader = new BinaryReader(fStream))
+                {
+                    return bReader.ReadBytes(16);
+                }
             }
         }
 
@@ -142,7 +204,6 @@ namespace KryptKeeper
                     Array.Resize(ref buffer, bytesRead);
                 cStream.Write(buffer, 0, buffer.Length);
                 bytesRead = rStream.Read(buffer, 0, bytesRead);
-
             }
         }
 
@@ -165,35 +226,12 @@ namespace KryptKeeper
                 Helper.SetFileTimesFromFooter(decryptedPath, footer);
         }
 
-        private static string renameFileWithPadding(string newOriginalPath)
+        public static void SetBackgroundWorker(BackgroundWorker bgWorker)
         {
-            string newPath;
-            do
-            {
-                newPath = addRandomPaddingToFileName(newOriginalPath);
-            } while (File.Exists(newPath));
-            status.WriteLine("*** File already exists (" + newOriginalPath + ") Renaming to: " + newPath);
-            newOriginalPath = newPath;
-            return newOriginalPath;
-        }
-
-        private static string addRandomPaddingToFileName(string path)
-        {
-            var fileName = Path.GetFileNameWithoutExtension(path);
-            return path.Replace(fileName ?? "", fileName + Helper.GetRandomAlphanumericString(5));
-        }
-
-        private static byte[] extractIV(string path)
-        {
-            if (!File.Exists(path))
-                throw new FileNotFoundException(path);
-            using (var fStream = new FileStream(path, FileMode.Open, FileAccess.Read))
-            {
-                using (var bReader = new BinaryReader(fStream))
-                {
-                    return bReader.ReadBytes(16);
-                }
-            }
+            backgroundWorker = bgWorker;
+            backgroundWorker.DoWork += backgroundWorker_DoWork;
+            backgroundWorker.ProgressChanged += backgroundWorker_ProgressChanged;
+            backgroundWorker.RunWorkerCompleted += backgroundWorker_RunWorkerCompleted;
         }
     }
 }

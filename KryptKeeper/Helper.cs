@@ -8,6 +8,17 @@ namespace KryptKeeper
 {
     internal static class Helper
     {
+        public static string RenameExistingFile(string path)
+        {
+            int i = 1;
+            do
+            {
+                path = path.Replace(Path.GetExtension(path), $" ({i})" + Path.GetExtension(path));
+                i++;
+            } while (File.Exists(path));
+            return path;
+        }
+
         public static string GetSpannedTime(long ticks)
         {
             var time = TimeSpan.FromTicks(Math.Max(1, DateTime.Now.Ticks - ticks));

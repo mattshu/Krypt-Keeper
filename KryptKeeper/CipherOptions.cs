@@ -4,6 +4,8 @@ namespace KryptKeeper
 {
     internal class CipherOptions
     {
+        public int Mode { get; set; }
+        public string[] Files { get; set; }
         public byte[] Key
         {
             get => key;
@@ -14,8 +16,13 @@ namespace KryptKeeper
         public bool MaskFileName { get; set; }
         public bool MaskFileTimes { get; set; }
         public bool RemoveOriginal { get; set; }
-        public static int Encrypt { get; } = 0;
-        public static int Decrypt { get; } = 1;
+        public static readonly int ENCRYPT = 0;
+        public static readonly int DECRYPT = 1;
+
+        public string GetCipherModeOfOperation()
+        {
+            return Mode == ENCRYPT ? "Encryption" : "Decryption";
+        }
 
         public void GenerateIV()
         { 
@@ -29,7 +36,6 @@ namespace KryptKeeper
 
         private static byte[] getMD5(byte[] value)
         {
-            
             return MD5.Create().ComputeHash(value);
         }
     }

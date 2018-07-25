@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -38,7 +39,9 @@ namespace KryptKeeper
         private void mainWindow_Shown(object sender, EventArgs e)
         {
             loadSettings();
-            status = new Status(txtStatus);
+            status = new Status(txtStatus, progressBar);
+            backgroundWorker.RunWorkerCompleted += backgroundWorker_RunWorkerCompleted;
+            Cipher.SetBackgroundWorker(backgroundWorker);
         }
 
         private void loadSettings()
@@ -60,11 +63,8 @@ namespace KryptKeeper
         private void saveSettings()
         {
             var settings = Settings.Default;
-            if (chkSaveKey.Checked)
-            {
-                settings.cipherKey = txtCipherKey.Text;
-                settings.saveKey = true;
-            }
+            settings.saveKey = chkSaveKey.Checked;
+            settings.cipherKey = chkSaveKey.Checked ? txtCipherKey.Text : "";
             settings.cipherKeyType = cbxCipherKeyType.SelectedIndex;
             settings.encryptionMaskInformation = chkMaskInformation.Checked;
             settings.encryptionMaskInfoType = cbxMaskInformation.SelectedIndex;
@@ -127,9 +127,24 @@ namespace KryptKeeper
             btnEncrypt.Enabled = btnDecrypt.Enabled = state;
         }
 
-        private void btnAddFiles_Click(object sender, EventArgs e)
+        private void btnAddFilesOrCancelOperation_Click(object sender, EventArgs e)
         {
-            buildFileList();
+            if (backgroundWorker.IsBusy)
+                backgroundWorker.CancelAsync();
+            else
+            {
+                buildFileList();
+                btnAddFilesOrCancelOperation.Text = @"Cancel";
+            }
+
+        }
+
+        private void backgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            btnAddFilesOrCancelOperation.Invoke((Action) delegate
+            {
+                btnAddFilesOrCancelOperation.Text = @"Add Files...";
+            });
         }
 
         private void buildFileList()
@@ -145,7 +160,7 @@ namespace KryptKeeper
             tabMain.SelectedIndex = 0;
         }
 
-        private void btnRemoveFiles_Click(object sender, EventArgs e)
+        private void btnRemoveSelectedFiles_Click(object sender, EventArgs e)
         {
             removeSelectedFiles();
         }
@@ -167,41 +182,25 @@ namespace KryptKeeper
                 _settingsNotViewed = false;
         }
 
-        private void btnEncryptAll_Click(object sender, EventArgs e)
+        private void btnEncrypt_Click(object sender, EventArgs e)
         {
             if (confirmSettings())
-                processAllFiles(CipherOptions.Encrypt);
+                processFiles(CipherOptions.ENCRYPT);
         }
 
-        private void btnEncryptSelected_Click(object sender, EventArgs e)
+        private void btnDecrypt_Click(object sender, EventArgs e)
         {
             if (confirmSettings())
-                processSelectedFiles(CipherOptions.Encrypt);
+                processFiles(CipherOptions.DECRYPT);
         }
 
-        private void btnDecryptAll_Click(object sender, EventArgs e)
-        {
-            if (confirmSettings())
-                processAllFiles(CipherOptions.Decrypt);
-        }
-
-        private void btnDecryptSelected_Click(object sender, EventArgs e)
-        {
-            if (confirmSettings())
-                processSelectedFiles(CipherOptions.Decrypt);
-        }
-
-        private void processAllFiles(int cipherMode)
+        private void processFiles(int cipherMode)
         {
             if (!validateSettings())
                 return;
             focusStatusTab();
-            var paths = getPathsFromFileList();
-            var options = generateOptions();
-            if (cipherMode == CipherOptions.Encrypt)
-                Cipher.EncryptFiles(paths, options);
-            else
-                Cipher.DecryptFiles(paths, options);
+            var options = generateOptions(cipherMode);
+            Cipher.ProcessFiles(options);
             resetFileList();
         }
 
@@ -217,22 +216,7 @@ namespace KryptKeeper
             tabMain.Refresh();
         }
 
-        private void processSelectedFiles(int cipherMode)
-        {
-            if (!validateSettings())
-                return;
-            if (FileListGridView.SelectedRows.Count <= 0) return;
-            focusStatusTab();
-            var options = generateOptions();
-            var paths = getPathsFromSelection();
-            if (cipherMode == CipherOptions.Encrypt)
-                Cipher.EncryptFiles(paths, options);
-            else
-                Cipher.DecryptFiles(paths, options);
-            resetFileList();
-        }
-
-        private CipherOptions generateOptions()
+        private CipherOptions generateOptions(int cipherMode)
         {
             var key = new byte[0];
             if (cbxCipherKeyType.SelectedIndex == 0)
@@ -247,6 +231,8 @@ namespace KryptKeeper
             var maskInfoIndex = cbxMaskInformation.SelectedIndex;
             var options = new CipherOptions
             {
+                Mode = cipherMode,
+                Files = getPathsFromFileList(),
                 Key = key,
                 MaskFileName = chkMaskInformation.Checked && (maskInfoIndex == 0 || maskInfoIndex == 2),
                 MaskFileTimes = chkMaskInformation.Checked && (maskInfoIndex == 1 || maskInfoIndex == 2),
@@ -260,20 +246,6 @@ namespace KryptKeeper
         {
             if (_fileList.Count <= 0) throw new Exception("Cannot generate paths from empty file list!");
             return _fileList.Select(file => file.GetFilePath()).ToArray();
-        }
-
-        private string[] getPathsFromSelection()
-        {
-            var selectedCount = FileListGridView.Rows.GetRowCount(DataGridViewElementStates.Selected);
-            if (selectedCount <= 0) throw new Exception("Cannot generate paths from empty selection!");
-            var paths = new List<string>();
-            var selectedRows = FileListGridView.SelectedRows;
-            for (int i = 0; i < selectedCount; i++)
-            {
-                var file = _fileList[selectedRows[i].Index];
-                paths.Add(file.GetFilePath());
-            }
-            return paths.ToArray();
         }
 
         private void chkMaskInformation_CheckedChanged(object sender, EventArgs e)
@@ -299,12 +271,6 @@ namespace KryptKeeper
             var openFile = new OpenFileDialog();
             if (openFile.ShowDialog() != DialogResult.OK || !openFile.CheckFileExists) return "";
             return openFile.FileName;
-        }
-
-        private void fileListGridView_SelectionChanged(object sender, EventArgs e)
-        {
-            btnRemoveFiles.Enabled = btnEncryptSelected.Enabled =
-                btnDecryptSelected.Enabled = FileListGridView.SelectedRows.Count > 0;
         }
 
         private void fileListGridView_DataSourceChanged(object sender, EventArgs e)
@@ -344,7 +310,7 @@ namespace KryptKeeper
         private static byte[] generateLogHeader()
         {
             var timestamp = DateTime.Now;
-            string header = "KryptKeeper Status Log -- Generated on " + timestamp; // TODO INSERT VERSION INFORMATION
+            string header = "KryptKeeper Status Log" + Environment.NewLine + "Generated on " + timestamp + Environment.NewLine; // TODO INSERT VERSION INFORMATION
             return Encoding.Default.GetBytes(header);
         }
 
@@ -407,5 +373,7 @@ namespace KryptKeeper
                        MessageBoxIcon.Question) == DialogResult.OK;
             return true;
         }
+
+
     }
 }

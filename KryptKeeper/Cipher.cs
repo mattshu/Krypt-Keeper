@@ -50,7 +50,7 @@ namespace KryptKeeper
             }
             catch (CryptographicException ex)
             {
-                Helper.SafeFileDelete(ex.Message);
+                Helper.RemoveTempFile(ex.Message);
                 status.WriteLine($"*** Invalid password for {ex.Message}");
             }
             catch (Exception ex)
@@ -213,9 +213,7 @@ namespace KryptKeeper
             int bytesRead = rStream.Read(buffer, 0, CHUNK_SIZE);
             while (bytesRead > 0)
             {
-                if (bytesRead < CHUNK_SIZE)
-                    Array.Resize(ref buffer, bytesRead);
-                cStream.Write(buffer, 0, buffer.Length);
+                cStream.Write(buffer, 0, bytesRead);
                 bytesRead = rStream.Read(buffer, 0, bytesRead);
             }
         }

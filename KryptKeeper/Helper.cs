@@ -11,7 +11,7 @@ namespace KryptKeeper
 
         public static void RemoveTempFile(string path)
         {
-            var tempFile = path.Replace(path + Cipher.FILE_EXTENSION, "");
+            var tempFile = path.Replace(Cipher.FILE_EXTENSION, "");
             SafeFileDelete(tempFile);
         }
 
@@ -20,7 +20,7 @@ namespace KryptKeeper
             try
             {
                 if (File.Exists(path))
-                    Helper.SafeFileDelete(path);
+                    File.Delete(path);
             }
             catch (Exception)
             {

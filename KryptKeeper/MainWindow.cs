@@ -240,7 +240,6 @@ namespace KryptKeeper
 
         private string[] getPathsFromFileList()
         {
-            if (_fileList.Count <= 0) throw new Exception("Cannot generate paths from empty file list!");
             return _fileList.Select(file => file.GetFilePath()).ToArray();
         }
 

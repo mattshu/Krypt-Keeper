@@ -50,6 +50,7 @@ namespace KryptKeeper
             }
             catch (CryptographicException ex)
             {
+                Helper.SafeFileDelete(ex.Message);
                 status.WriteLine($"*** Invalid password for {ex.Message}");
             }
             catch (Exception ex)
@@ -83,7 +84,7 @@ namespace KryptKeeper
                 {
                     if (aes == null)
                     {
-                        status.WriteLine("* Error: Failed to create AES object!");
+                        status.WriteLine("*** Error: Failed to create AES object!");
                         return;
                     }
                     aes.Key = options.Key;
@@ -157,7 +158,7 @@ namespace KryptKeeper
                 {
                     if (aes == null)
                     {
-                        status.WriteLine("* Error: Failed to create AES object!");
+                        status.WriteLine("*** Error: Failed to create AES object!");
                         return;
                     }
                     aes.Key = options.Key;

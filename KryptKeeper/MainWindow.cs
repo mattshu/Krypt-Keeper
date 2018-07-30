@@ -132,11 +132,7 @@ namespace KryptKeeper
             if (backgroundWorker.IsBusy)
                 backgroundWorker.CancelAsync();
             else
-            {
                 buildFileList();
-                btnAddFilesOrCancelOperation.Text = @"Cancel";
-            }
-
         }
 
         private void backgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)

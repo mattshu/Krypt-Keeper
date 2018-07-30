@@ -1,14 +1,12 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 using System.Security.Cryptography;
-using System.Windows.Forms;
 
 namespace KryptKeeper
 {
     internal static class Cipher
-    { // TODO add cancel option
+    {
         private static readonly Status status = Status.GetInstance();
 
         public const string FILE_EXTENSION = ".krpt";
@@ -31,7 +29,7 @@ namespace KryptKeeper
                 var options = (CipherOptions) e.Argument;
                 for (int i = 0; i < options.Files.Length; i++)
                 {
-                    if (e.Cancel)
+                    if (backgroundWorker.CancellationPending)
                     {
                         status.WriteLine("Stopping operation.");
                         break;
@@ -39,7 +37,7 @@ namespace KryptKeeper
                     var path = options.Files[i];
                     if (!File.Exists(path))
                     {
-                        status.WriteLine("Unable to find: " + path);
+                        status.WriteLine("* Unable to find: " + path);
                         continue;
                     }
                     backgroundWorker.ReportProgress(i + 1, options.Files.Length);
@@ -49,6 +47,10 @@ namespace KryptKeeper
                     else
                         decrypt(path, options);
                 }
+            }
+            catch (CryptographicException ex)
+            {
+                status.WriteLine($"*** Invalid password for {ex.Message}");
             }
             catch (Exception ex)
             {
@@ -72,9 +74,18 @@ namespace KryptKeeper
         {
             try
             {
+                if (!File.Exists(path))
+                {
+                    status.WriteLine("* File not found: " + path);
+                    return;
+                }
                 using (var aes = Aes.Create())
                 {
-                    if (aes == null) throw new CryptographicException("Failed to create AES object!");
+                    if (aes == null)
+                    {
+                        status.WriteLine("* Error: Failed to create AES object!");
+                        return;
+                    }
                     aes.Key = options.Key;
                     aes.IV = options.IV;
                     aes.Mode = CipherMode.CBC;
@@ -94,19 +105,17 @@ namespace KryptKeeper
                 }
                 postEncryptionFileHandling(path, options);
             }
-            catch (CryptographicException ex)
+            catch (CryptographicException)
             {
-                throw new CryptographicException("Unable to decrypt file: " + ex.Message);
+                throw new CryptographicException(path);
             }
-            catch (UnauthorizedAccessException ex)
+            catch (UnauthorizedAccessException)
             {
-                throw new UnauthorizedAccessException("Unable to remove file: " + ex.Message);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Unhandled exception: " + ex.StackTrace + ex.Message);
+                throw new UnauthorizedAccessException(path);
             }
         }
+
+
 
         private static void initializeEncryption(string path, Stream readStream, Stream cryptoStream)
         {
@@ -127,7 +136,7 @@ namespace KryptKeeper
         private static void postEncryptionFileHandling(string path, CipherOptions options)
         {
             if (options.RemoveOriginal)
-                File.Delete(path);
+                Helper.SafeFileDelete(path);
             if (options.MaskFileName)
                 File.Move(path + FILE_EXTENSION,
                     path = path.Replace(Path.GetFileName(path), Helper.GetRandomAlphanumericString(16)) + FILE_EXTENSION);
@@ -140,10 +149,17 @@ namespace KryptKeeper
             try
             {
                 if (!File.Exists(path))
-                    throw new FileNotFoundException(path);
+                {
+                    status.WriteLine("* File not found: " + path);
+                    return;
+                }
                 using (var aes = Aes.Create())
                 {
-                    if (aes == null) throw new CryptographicException("Failed to create AES object!");
+                    if (aes == null)
+                    {
+                        status.WriteLine("* Error: Failed to create AES object!");
+                        return;
+                    }
                     aes.Key = options.Key;
                     aes.IV = extractIV(path);
                     aes.Mode = CipherMode.CBC;
@@ -162,21 +178,17 @@ namespace KryptKeeper
                             }
                         }
                     }
-                    File.Delete(path);
+                    Helper.SafeFileDelete(path);
                     postDecryptionFileHandling(footer, decryptedPath);
                 }
             }
-            catch (CryptographicException ex)
+            catch (CryptographicException)
             {
-                throw new CryptographicException("Unable to decrypt file: " + ex.Message);
+                throw new CryptographicException(path);
             }
-            catch (UnauthorizedAccessException ex)
+            catch (UnauthorizedAccessException)
             {
-                throw new UnauthorizedAccessException("Unable to remove file: " + ex.Message);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Unhandled exception: " + ex.StackTrace + ex.Message);
+                throw new UnauthorizedAccessException(path);
             }
         }
 
@@ -219,7 +231,7 @@ namespace KryptKeeper
             if (!File.Exists(projectedPath))
             {
                 File.Move(decryptedPath, projectedPath);
-                File.Delete(decryptedPath);
+                Helper.SafeFileDelete(decryptedPath);
                 Helper.SetFileTimesFromFooter(projectedPath, footer);
             }
             else

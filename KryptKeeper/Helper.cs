@@ -8,6 +8,26 @@ namespace KryptKeeper
 {
     internal static class Helper
     {
+
+        public static void RemoveTempFile(string path)
+        {
+            var tempFile = path.Replace(path + Cipher.FILE_EXTENSION, "");
+            SafeFileDelete(tempFile);
+        }
+
+        public static void SafeFileDelete(string path)
+        {
+            try
+            {
+                if (File.Exists(path))
+                    Helper.SafeFileDelete(path);
+            }
+            catch (Exception)
+            {
+                // ignore
+            }
+        }
+
         public static string RenameExistingFile(string path)
         {
             int i = 1;

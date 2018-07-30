@@ -31,7 +31,7 @@ namespace KryptKeeper
             progressBar.Invoke((Action) delegate
             {
                 progressBar.Maximum = limit;
-                progressBar.Step = 1;
+                progressBar.Step = 5;
                 progressBar.Value = progress;
             });
         }

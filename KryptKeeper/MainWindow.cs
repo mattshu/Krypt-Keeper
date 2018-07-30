@@ -40,6 +40,7 @@ namespace KryptKeeper
         {
             loadSettings();
             status = new Status(txtStatus, progressBar);
+            backgroundWorker.RunWorkerCompleted += backgroundWorker_RunWorkerCompleted;
             Cipher.SetBackgroundWorker(backgroundWorker);
         }
 
@@ -126,9 +127,24 @@ namespace KryptKeeper
             btnEncrypt.Enabled = btnDecrypt.Enabled = state;
         }
 
-        private void btnAddFiles_Click(object sender, EventArgs e)
+        private void btnAddFilesOrCancelOperation_Click(object sender, EventArgs e)
         {
-            buildFileList();
+            if (backgroundWorker.IsBusy)
+                backgroundWorker.CancelAsync();
+            else
+            {
+                buildFileList();
+                btnAddFilesOrCancelOperation.Text = @"Cancel";
+            }
+
+        }
+
+        private void backgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            btnAddFilesOrCancelOperation.Invoke((Action) delegate
+            {
+                btnAddFilesOrCancelOperation.Text = @"Add Files...";
+            });
         }
 
         private void buildFileList()

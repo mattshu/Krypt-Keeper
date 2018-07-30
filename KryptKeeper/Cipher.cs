@@ -31,6 +31,11 @@ namespace KryptKeeper
                 var options = (CipherOptions) e.Argument;
                 for (int i = 0; i < options.Files.Length; i++)
                 {
+                    if (e.Cancel)
+                    {
+                        status.WriteLine("Stopping operation.");
+                        break;
+                    }
                     var path = options.Files[i];
                     if (!File.Exists(path))
                     {
@@ -58,11 +63,6 @@ namespace KryptKeeper
         }
 
         private static void backgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            operationComplete();
-        }
-
-        private static void operationComplete()
         {
             status.WriteLine("Operation completed. " + Helper.GetSpannedTime(cipherStartTime.Ticks));
             status.UpdateProgress(0, 0);

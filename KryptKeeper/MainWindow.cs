@@ -202,8 +202,48 @@ namespace KryptKeeper
 
         private bool validateSettings()
         {
-            if (_fileList.Count <= 0) return false;
-            return !string.IsNullOrWhiteSpace(txtCipherKey.Text);
+            if (string.IsNullOrWhiteSpace(txtCipherKey.Text))
+            {
+                Helper.ShowErrorBox("The passkey cannot be blank.");
+                focusSettingsTab();
+                return false;
+            }
+            if (_fileList.Count <= 0)
+            {
+                Helper.ShowErrorBox("There are no files to work.");
+                focusFilesTab();
+                return false;
+            }
+            if (cbxCipherKeyType.SelectedIndex == 1)
+            {
+                if (File.Exists(txtCipherKey.Text))
+                {
+                    if (new FileInfo(txtCipherKey.Text).Length <= 0)
+                    {
+                        Helper.ShowErrorBox($"Keyfile is empty: {Path.GetFileName(txtCipherKey.Text)}");
+                        return false;
+                    }
+                }
+                else
+                {
+                    Helper.ShowErrorBox($"Unable to find keyfile: {Path.GetFileName(txtCipherKey.Text)}");
+                    focusSettingsTab();
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        private void focusFilesTab()
+        {
+            tabMain.SelectedIndex = 0;
+            tabMain.Refresh();
+        }
+
+        private void focusSettingsTab()
+        {
+            tabMain.SelectedIndex = 1;
+            tabMain.Refresh();
         }
 
         private void focusStatusTab()
@@ -221,7 +261,6 @@ namespace KryptKeeper
             }
             else if (cbxCipherKeyType.SelectedIndex == 1)
             {
-                if (!File.Exists(txtCipherKey.Text)) throw new FileNotFoundException(txtCipherKey.Text);
                 key = File.ReadAllBytes(txtCipherKey.Text);
             }
             var maskInfoIndex = cbxMaskInformation.SelectedIndex;
@@ -290,7 +329,7 @@ namespace KryptKeeper
 
         private void exportStatusLog()
         {
-            var saveFileDialog = new SaveFileDialog {DefaultExt = "log", Filter = @"Log files(*.log)|*.*"};
+            var saveFileDialog = new SaveFileDialog {DefaultExt = "log", Filter = @"Log files(*.log)|*.*", FileName = $"kryptlog-{DateTime.Now:yyMMdd-HHmm}"};
             var dialogResult = saveFileDialog.ShowDialog();
             if (dialogResult != DialogResult.OK || string.IsNullOrWhiteSpace(saveFileDialog.FileName)) return;
             using (var fStream = saveFileDialog.OpenFile())

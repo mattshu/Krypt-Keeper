@@ -51,11 +51,16 @@ namespace KryptKeeper
             catch (CryptographicException ex)
             {
                 Helper.RemoveTempFile(ex.Message);
-                status.WriteLine($"*** Invalid password for {ex.Message}");
+                status.WriteLine($"*** Invalid password for {Path.GetFileName(ex.Message)}");
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                Helper.RemoveTempFile(ex.Message);
+                status.WriteLine($"*** Unable to access {Path.GetFileName(ex.Message)}");
             }
             catch (Exception ex)
             {
-                status.WriteLine("*** Unhandled exception occured: " + ex.StackTrace + ex.Message);
+                status.WriteLine($"*** Unhandled exception occured: ({ex.Message})" + Environment.NewLine + ex.StackTrace);
             }
         }
 

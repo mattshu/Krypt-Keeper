@@ -3,6 +3,7 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Windows.Forms;
 
 namespace KryptKeeper
 {
@@ -115,6 +116,11 @@ namespace KryptKeeper
         public static string GetRandomNumericString(int length)
         {
             return Regex.Replace(GetRandomAlphanumericString(length), @"[A-F]", "0");
+        }
+
+        public static void ShowErrorBox(string msg)
+        {
+            MessageBox.Show(msg, @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
 }

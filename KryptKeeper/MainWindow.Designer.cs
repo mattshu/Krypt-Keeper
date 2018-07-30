@@ -53,7 +53,7 @@
             this.btnClear = new System.Windows.Forms.Button();
             this.btnEncrypt = new System.Windows.Forms.Button();
             this.btnDecrypt = new System.Windows.Forms.Button();
-            this.btnAddFilesOrCancelOperation = new System.Windows.Forms.Button();
+            this.btnAddFiles = new System.Windows.Forms.Button();
             this.btnRemoveFiles = new System.Windows.Forms.Button();
             this.backgroundWorker = new System.ComponentModel.BackgroundWorker();
             this.tabMain.SuspendLayout();
@@ -361,15 +361,15 @@
             this.btnDecrypt.UseVisualStyleBackColor = true;
             this.btnDecrypt.Click += new System.EventHandler(this.btnDecrypt_Click);
             // 
-            // btnAddFilesOrCancelOperation
+            // btnAddFiles
             // 
-            this.btnAddFilesOrCancelOperation.Location = new System.Drawing.Point(12, 12);
-            this.btnAddFilesOrCancelOperation.Name = "btnAddFilesOrCancelOperation";
-            this.btnAddFilesOrCancelOperation.Size = new System.Drawing.Size(145, 30);
-            this.btnAddFilesOrCancelOperation.TabIndex = 2;
-            this.btnAddFilesOrCancelOperation.Text = "Add Files...";
-            this.btnAddFilesOrCancelOperation.UseVisualStyleBackColor = true;
-            this.btnAddFilesOrCancelOperation.Click += new System.EventHandler(this.btnAddFilesOrCancelOperation_Click);
+            this.btnAddFiles.Location = new System.Drawing.Point(12, 12);
+            this.btnAddFiles.Name = "btnAddFiles";
+            this.btnAddFiles.Size = new System.Drawing.Size(145, 30);
+            this.btnAddFiles.TabIndex = 2;
+            this.btnAddFiles.Text = "Add Files...";
+            this.btnAddFiles.UseVisualStyleBackColor = true;
+            this.btnAddFiles.Click += new System.EventHandler(this.btnAddFiles_Click);
             // 
             // btnRemoveFiles
             // 
@@ -394,7 +394,7 @@
             this.ClientSize = new System.Drawing.Size(543, 368);
             this.Controls.Add(this.btnDecrypt);
             this.Controls.Add(this.btnRemoveFiles);
-            this.Controls.Add(this.btnAddFilesOrCancelOperation);
+            this.Controls.Add(this.btnAddFiles);
             this.Controls.Add(this.btnEncrypt);
             this.Controls.Add(this.tabMain);
             this.MinimumSize = new System.Drawing.Size(559, 407);
@@ -424,7 +424,7 @@
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.Button btnEncrypt;
         private System.Windows.Forms.Button btnDecrypt;
-        private System.Windows.Forms.Button btnAddFilesOrCancelOperation;
+        private System.Windows.Forms.Button btnAddFiles;
         private System.Windows.Forms.Button btnRemoveFiles;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.ComboBox cbxMaskInformation;

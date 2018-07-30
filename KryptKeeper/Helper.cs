@@ -86,24 +86,6 @@ namespace KryptKeeper
             File.SetLastWriteTime(path, footer.ModifiedTime);
         }
 
-        public static Footer GenerateFooter(string path)
-        {
-            if (File.Exists(path)) throw new FileNotFoundException(path);
-
-            var name = Path.GetFileName(path);
-            var created = File.GetCreationTime(path);
-            var modified = File.GetLastWriteTime(path);
-            var accessed = File.GetLastAccessTime(path);
-
-            return new Footer
-            {
-                Name = name,
-                CreationTime = created,
-                ModifiedTime = modified,
-                AccessedTime = accessed
-            };
-        }
-
         public static string GetRandomAlphanumericString(int length)
         {
             if (length <= 0) return "";

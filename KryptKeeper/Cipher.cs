@@ -121,8 +121,6 @@ namespace KryptKeeper
             }
         }
 
-
-
         private static void initializeEncryption(string path, Stream readStream, Stream cryptoStream)
         {
             var buffer = new byte[CHUNK_SIZE];
@@ -200,8 +198,6 @@ namespace KryptKeeper
 
         private static byte[] extractIV(string path)
         {
-            if (!File.Exists(path))
-                throw new FileNotFoundException(path);
             using (var fStream = new FileStream(path, FileMode.Open, FileAccess.Read))
             {
                 using (var bReader = new BinaryReader(fStream))

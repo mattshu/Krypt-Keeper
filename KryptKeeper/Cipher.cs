@@ -116,7 +116,7 @@ namespace KryptKeeper
                         }
                     }
                     Helper.SafeFileDelete(path);
-                    postDecryptionFileHandling(footer, decryptedPath);
+                    postDecryptionFileHandling(decryptedPath, footer);
                 }
             }
             catch (CryptographicException)
@@ -138,6 +138,7 @@ namespace KryptKeeper
                     status.WriteLine("* File not found: " + path);
                     return;
                 }
+                string pathWithExt = path + FILE_EXTENSION;
                 using (var aes = Aes.Create())
                 {
                     if (aes == null)
@@ -152,7 +153,7 @@ namespace KryptKeeper
                     var encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
                     using (var rStream = new FileStream(path, FileMode.Open, FileAccess.Read))
                     {
-                        using (var wStream = new FileStream(path + FILE_EXTENSION, FileMode.CreateNew, FileAccess.Write))
+                        using (var wStream = new FileStream(pathWithExt, FileMode.CreateNew, FileAccess.Write))
                         {
                             wStream.Write(options.IV, 0, options.IV.Length);
                             using (var cStream = new CryptoStream(wStream, encryptor, CryptoStreamMode.Write))
@@ -162,7 +163,7 @@ namespace KryptKeeper
                         }
                     }
                 }
-                postEncryptionFileHandling(path, options);
+                postEncryptionFileHandling(pathWithExt, options);
             }
             catch (CryptographicException)
             {
@@ -213,7 +214,7 @@ namespace KryptKeeper
             cryptoStream.Write(footerData, 0, footerData.Length);
         }
 
-        private static void postDecryptionFileHandling(Footer footer, string decryptedPath)
+        private static void postDecryptionFileHandling(string decryptedPath, Footer footer)
         {
             if (!footer.TryExtract(decryptedPath))
                 throw new Exception("Unable to generate file information from " + decryptedPath);
@@ -222,25 +223,23 @@ namespace KryptKeeper
                 fOpen.SetLength(fOpen.Length - footer.ToArray().Length);
             }
             var projectedPath = decryptedPath.Replace(Path.GetFileName(decryptedPath), footer.Name);
-            if (!File.Exists(projectedPath))
-            {
-                File.Move(decryptedPath, projectedPath);
-                Helper.SafeFileDelete(decryptedPath);
-                Helper.SetFileTimesFromFooter(projectedPath, footer);
-            }
-            else
-                Helper.SetFileTimesFromFooter(decryptedPath, footer);
+            //if (File.Exists(projectedPath.Replace(Path.GetFileName(decryptedPath), footer.Name))) //TODO fucked up 
+               // projectedPath = Helper.RenameExistingFile(projectedPath);
+            //File.Move(decryptedPath, projectedPath);
+            Helper.SetFileTimesFromFooter(projectedPath, footer);
         }
 
-        private static void postEncryptionFileHandling(string path, CipherOptions options)
+        private static void postEncryptionFileHandling(string pathWithExt, CipherOptions options)
         {
             if (options.RemoveOriginal)
-                Helper.SafeFileDelete(path);
+                Helper.SafeFileDelete(pathWithExt.RemoveFileExt());
             if (options.MaskFileName)
-                File.Move(path + FILE_EXTENSION,
-                    path = path.Replace(Path.GetFileName(path), Helper.GetRandomAlphanumericString(16)) + FILE_EXTENSION);
+                File.Move(pathWithExt,
+                    pathWithExt = pathWithExt.Replace(Path.GetFileName(pathWithExt).RemoveFileExt(), Helper.GetRandomAlphanumericString(16)));
             if (options.MaskFileTimes)
-                Helper.SetRandomFileTimes(path);
+                Helper.SetRandomFileTimes(pathWithExt);
         }
+
+
     }
 }

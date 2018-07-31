@@ -10,6 +10,7 @@ namespace KryptKeeper
 {
     internal static class Helper
     {
+
         public static string BrowseFile()
         {
             var openFile = new OpenFileDialog();
@@ -53,6 +54,11 @@ namespace KryptKeeper
             if (time.Milliseconds > 0)
                 sb.Append(time.Milliseconds + "ms");
             return "(" + sb + ")";
+        }
+
+        public static string RemoveFileExt(this string path)
+        {
+            return path.Replace(Cipher.FILE_EXTENSION, "");
         }
 
         public static void RemoveTempFile(string path)

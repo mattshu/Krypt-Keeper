@@ -30,7 +30,7 @@
         {
             this.tabMain = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.FileListGridView = new System.Windows.Forms.DataGridView();
+            this.gridFileList = new System.Windows.Forms.DataGridView();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.textBox1 = new System.Windows.Forms.TextBox();
@@ -58,7 +58,7 @@
             this.backgroundWorker = new System.ComponentModel.BackgroundWorker();
             this.tabMain.SuspendLayout();
             this.tabPage1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.FileListGridView)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.gridFileList)).BeginInit();
             this.tabPage2.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -82,7 +82,7 @@
             // 
             // tabPage1
             // 
-            this.tabPage1.Controls.Add(this.FileListGridView);
+            this.tabPage1.Controls.Add(this.gridFileList);
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
@@ -91,23 +91,24 @@
             this.tabPage1.Text = "File List";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
-            // FileListGridView
+            // gridFileList
             // 
-            this.FileListGridView.AllowUserToAddRows = false;
-            this.FileListGridView.AllowUserToDeleteRows = false;
-            this.FileListGridView.AllowUserToOrderColumns = true;
-            this.FileListGridView.AllowUserToResizeRows = false;
-            this.FileListGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.gridFileList.AllowUserToAddRows = false;
+            this.gridFileList.AllowUserToDeleteRows = false;
+            this.gridFileList.AllowUserToOrderColumns = true;
+            this.gridFileList.AllowUserToResizeRows = false;
+            this.gridFileList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.FileListGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.FileListGridView.Location = new System.Drawing.Point(3, 3);
-            this.FileListGridView.Name = "FileListGridView";
-            this.FileListGridView.ReadOnly = true;
-            this.FileListGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.FileListGridView.Size = new System.Drawing.Size(505, 243);
-            this.FileListGridView.TabIndex = 0;
-            this.FileListGridView.DataSourceChanged += new System.EventHandler(this.fileListGridView_DataSourceChanged);
+            this.gridFileList.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.gridFileList.Location = new System.Drawing.Point(3, 3);
+            this.gridFileList.Name = "gridFileList";
+            this.gridFileList.ReadOnly = true;
+            this.gridFileList.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.gridFileList.Size = new System.Drawing.Size(505, 243);
+            this.gridFileList.TabIndex = 0;
+            this.gridFileList.DataSourceChanged += new System.EventHandler(this.fileListGridView_DataSourceChanged);
+            this.gridFileList.SelectionChanged += new System.EventHandler(this.gridFileList_SelectionChanged);
             // 
             // tabPage2
             // 
@@ -406,7 +407,7 @@
             this.Shown += new System.EventHandler(this.mainWindow_Shown);
             this.tabMain.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.FileListGridView)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.gridFileList)).EndInit();
             this.tabPage2.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
@@ -440,7 +441,7 @@
         private System.Windows.Forms.CheckBox chkRememberSettings;
         private System.Windows.Forms.Button btnExit;
         private System.Windows.Forms.Button btnBrowseOrShowKey;
-        private System.Windows.Forms.DataGridView FileListGridView;
+        private System.Windows.Forms.DataGridView gridFileList;
         private System.Windows.Forms.TextBox txtStatus;
         private System.Windows.Forms.CheckBox chkConfirmOnExit;
         private System.Windows.Forms.TextBox textBox1;

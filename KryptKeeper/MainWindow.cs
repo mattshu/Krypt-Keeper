@@ -40,13 +40,13 @@ namespace KryptKeeper
         private void loadFileListColumnWidths()
         {
             var widths = Settings.Default.fileListColumnWidths;
-            for (int i = 0; i < FileListGridView.ColumnCount; i++)
-                FileListGridView.Columns[i].Width = int.Parse(widths[i]);
+            for (int i = 0; i < gridFileList.ColumnCount; i++)
+                gridFileList.Columns[i].Width = int.Parse(widths[i]);
         }
 
         private void saveFileListColumnWidths()
         {
-            var enumer = FileListGridView.Columns.GetEnumerator();
+            var enumer = gridFileList.Columns.GetEnumerator();
             var widths = new StringCollection();
             while (enumer.MoveNext())
             {
@@ -156,34 +156,34 @@ namespace KryptKeeper
             var openFileDialog = new OpenFileDialog { Multiselect = true };
             var openResult = openFileDialog.ShowDialog();
             if (openResult != DialogResult.OK) return;
-            FileListGridView.Columns.Clear();
+            gridFileList.Columns.Clear();
             _fileList = openFileDialog.FileNames.Select(path => new FileData(path)).ToList();
-            FileListGridView.DataSource = _fileList;
+            gridFileList.DataSource = _fileList;
             loadFileListColumnWidths();
-            enableControls(FileListGridView.RowCount > 0);
+            enableControls(gridFileList.RowCount > 0);
             tabMain.SelectedIndex = 0;
         }
 
         private void resetFileList()
         {
-            FileListGridView.DataSource = null;
+            gridFileList.DataSource = null;
         }
 
         private void refreshFileListGridView()
         {
-            FileListGridView.DataSource = null;
-            FileListGridView.DataSource = _fileList;
+            gridFileList.DataSource = null;
+            gridFileList.DataSource = _fileList;
         }
 
         private void removeSelectedFiles()
         {
-            var selectedCount = FileListGridView.SelectedRows.Count;
+            var selectedCount = gridFileList.SelectedRows.Count;
             if (selectedCount <= 0) return;
-            for (int i = FileListGridView.RowCount - 1; i >= 0; i--)
-                if (FileListGridView.Rows[i].Selected)
+            for (int i = gridFileList.RowCount - 1; i >= 0; i--)
+                if (gridFileList.Rows[i].Selected)
                     _fileList.RemoveAt(i);
             refreshFileListGridView();
-            FileListGridView.ClearSelection();
+            gridFileList.ClearSelection();
         }
 
         private void tabMain_TabIndexChanged(object sender, EventArgs e)
@@ -295,7 +295,7 @@ namespace KryptKeeper
 
         private void fileListGridView_DataSourceChanged(object sender, EventArgs e)
         {
-            enableControls(FileListGridView.RowCount > 0);
+            enableControls(gridFileList.RowCount > 0);
         }
 
         private void txtStatus_TextChanged(object sender, EventArgs e)
@@ -378,6 +378,11 @@ namespace KryptKeeper
                        MessageBoxButtons.OKCancel,
                        MessageBoxIcon.Question) == DialogResult.OK;
             return true;
+        }
+
+        private void gridFileList_SelectionChanged(object sender, EventArgs e)
+        {
+            btnRemoveFiles.Enabled = gridFileList.SelectedRows.Count > 0;
         }
     }
 }

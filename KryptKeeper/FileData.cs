@@ -5,11 +5,6 @@ namespace KryptKeeper
 {
     public class FileData
     {
-        public string Name { get; }
-        public string Extension { get; }
-        public string Size { get; }
-        public string Path { get; }
-
         public FileData(string filePath)
         {
             var fileInfo = new FileInfo(filePath);
@@ -19,6 +14,11 @@ namespace KryptKeeper
             Path = fileInfo.DirectoryName;
         }
 
+        public string Extension { get; }
+        public string Name { get; }
+        public string Path { get; }
+        public string Size { get; }
+
         public string GetFilePath()
         {
             return Path + (Path[Path.Length - 1] == '\\' ? "" : "\\") + Name;
@@ -26,7 +26,7 @@ namespace KryptKeeper
 
         private static string bytesToString(long byteCount)
         {
-            string[] suf = {"B", "KB", "MB", "GB", "TB", "PB", "EB"}; //Longs run out around EB
+            string[] suf = { "B", "KB", "MB", "GB", "TB", "PB", "EB" }; //Longs run out around EB
             if (byteCount == 0)
                 return @"0";
             var bytes = Math.Abs(byteCount);

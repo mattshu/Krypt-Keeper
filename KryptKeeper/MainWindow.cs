@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KryptKeeper.Properties;
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -6,13 +7,12 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using KryptKeeper.Properties;
 
 namespace KryptKeeper
 {
     public partial class MainWindow : Form
     {
-        /* 
+        /*
          * TODO *
          * - Fix column resize problem when resizing past border
         */
@@ -29,6 +29,14 @@ namespace KryptKeeper
             InitializeComponent();
         }
 
+        private void mainWindow_Shown(object sender, EventArgs e)
+        {
+            loadSettings();
+            status = new Status(txtStatus, progressBar);
+            backgroundWorker.RunWorkerCompleted += backgroundWorker_RunWorkerCompleted;
+            Cipher.SetBackgroundWorker(backgroundWorker);
+        }
+
         private void loadFileListColumnWidths()
         {
             var widths = Settings.Default.fileListColumnWidths;
@@ -36,12 +44,19 @@ namespace KryptKeeper
                 FileListGridView.Columns[i].Width = int.Parse(widths[i]);
         }
 
-        private void mainWindow_Shown(object sender, EventArgs e)
+        private void saveFileListColumnWidths()
         {
-            loadSettings();
-            status = new Status(txtStatus, progressBar);
-            backgroundWorker.RunWorkerCompleted += backgroundWorker_RunWorkerCompleted;
-            Cipher.SetBackgroundWorker(backgroundWorker);
+            var enumer = FileListGridView.Columns.GetEnumerator();
+            var widths = new StringCollection();
+            while (enumer.MoveNext())
+            {
+                var header = (DataGridViewTextBoxColumn)enumer.Current;
+                if (header == null) break;
+                widths.Add(header.Width.ToString());
+            }
+            if (widths.Count <= 0) return;
+            Settings.Default.fileListColumnWidths = widths;
+            Settings.Default.Save();
         }
 
         private void loadSettings()
@@ -58,146 +73,6 @@ namespace KryptKeeper
             chkSaveKey.Checked = settings.saveKey;
             if (settings.saveKey)
                 txtCipherKey.Text = settings.cipherKey;
-        }
-
-        private void saveSettings()
-        {
-            var settings = Settings.Default;
-            settings.saveKey = chkSaveKey.Checked;
-            settings.cipherKey = chkSaveKey.Checked ? txtCipherKey.Text : "";
-            settings.cipherKeyType = cbxCipherKeyType.SelectedIndex;
-            settings.encryptionMaskInformation = chkMaskInformation.Checked;
-            settings.encryptionMaskInfoType = cbxMaskInformation.SelectedIndex;
-            settings.encryptionRemoveAfterEncrypt = chkRemoveAfterEncrypt.Checked;
-            settings.rememberSettings = chkRememberSettings.Checked;
-            settings.confirmOnExit = chkConfirmOnExit.Checked;
-            settings.Save();
-        }
-
-        private bool confirmSettings()
-        {
-            if (!_settingsNeedConfirmed) return true;
-            var confirmSettingsDialog = new ConfirmSettingsDialog();
-            var confirmSettingsResult = confirmSettingsDialog.ShowDialog();
-            _settingsNeedConfirmed = confirmSettingsDialog.ShowAgain;
-            if (confirmSettingsResult != DialogResult.No) return true;
-            tabMain.SelectTab(1);
-            return false;
-        }
-
-        private bool settingsAreDefault()
-        {
-            if (_settingsNotViewed) return true;
-            return !txtCipherKey.Modified;
-        }
-
-        private static void resetSettings()
-        {
-            var settings = Settings.Default;
-            settings.cipherKeyType = settings.cipherKeyType = -1;
-            settings.cipherKey = "";
-            settings.encryptionMaskInfoType = -1;
-            settings.encryptionMaskInformation = false;
-            settings.encryptionRemoveAfterEncrypt = true;
-            settings.rememberSettings = false;
-            settings.saveKey = false;
-            settings.confirmOnExit = true;
-            settings.Save();
-        }
-
-        private void setDefaultCbxIndexes()
-        {
-            cbxMaskInformation.SelectedIndex = 0;
-            cbxCipherKeyType.SelectedIndex = 0;
-        }
-
-        private void resetFileList()
-        {
-            FileListGridView.DataSource = null;
-        }
-
-        private void refreshFileListGridView()
-        {
-            FileListGridView.DataSource = null;
-            FileListGridView.DataSource = _fileList;
-        }
-
-        private void enableControls(bool state)
-        {
-            btnEncrypt.Enabled = btnDecrypt.Enabled = state;
-        }
-
-        private void btnAddFilesOrCancelOperation_Click(object sender, EventArgs e)
-        {
-            if (backgroundWorker.IsBusy)
-                backgroundWorker.CancelAsync();
-            else
-                buildFileList();
-        }
-
-        private void backgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            btnAddFilesOrCancelOperation.Invoke((Action) delegate
-            {
-                btnAddFilesOrCancelOperation.Text = @"Add Files...";
-            });
-        }
-
-        private void buildFileList()
-        {
-            var openFileDialog = new OpenFileDialog { Multiselect = true };
-            var openResult = openFileDialog.ShowDialog();
-            if (openResult != DialogResult.OK) return;
-            FileListGridView.Columns.Clear();
-            _fileList = openFileDialog.FileNames.Select(path => new FileData(path)).ToList();
-            FileListGridView.DataSource = _fileList;
-            loadFileListColumnWidths();
-            enableControls(FileListGridView.RowCount > 0);
-            tabMain.SelectedIndex = 0;
-        }
-
-        private void btnRemoveSelectedFiles_Click(object sender, EventArgs e)
-        {
-            removeSelectedFiles();
-        }
-
-        private void removeSelectedFiles()
-        {
-            var selectedCount = FileListGridView.SelectedRows.Count;
-            if (selectedCount <= 0) return;
-            for (int i = FileListGridView.RowCount - 1; i >= 0; i--)
-                if (FileListGridView.Rows[i].Selected)
-                    _fileList.RemoveAt(i);
-            refreshFileListGridView();
-            FileListGridView.ClearSelection();
-        }
-
-        private void tabMain_TabIndexChanged(object sender, EventArgs e)
-        {
-            if (tabMain.TabIndex == 1)
-                _settingsNotViewed = false;
-        }
-
-        private void btnEncrypt_Click(object sender, EventArgs e)
-        {
-            if (confirmSettings())
-                processFiles(CipherOptions.ENCRYPT);
-        }
-
-        private void btnDecrypt_Click(object sender, EventArgs e)
-        {
-            if (confirmSettings())
-                processFiles(CipherOptions.DECRYPT);
-        }
-
-        private void processFiles(int cipherMode)
-        {
-            if (!validateSettings())
-                return;
-            focusStatusTab();
-            var options = generateOptions(cipherMode);
-            Cipher.ProcessFiles(options);
-            resetFileList();
         }
 
         private bool validateSettings()
@@ -232,6 +107,142 @@ namespace KryptKeeper
                 }
             }
             return true;
+        }
+
+        private void saveSettings()
+        {
+            var settings = Settings.Default;
+            settings.saveKey = chkSaveKey.Checked;
+            settings.cipherKey = chkSaveKey.Checked ? txtCipherKey.Text : "";
+            settings.cipherKeyType = cbxCipherKeyType.SelectedIndex;
+            settings.encryptionMaskInformation = chkMaskInformation.Checked;
+            settings.encryptionMaskInfoType = cbxMaskInformation.SelectedIndex;
+            settings.encryptionRemoveAfterEncrypt = chkRemoveAfterEncrypt.Checked;
+            settings.rememberSettings = chkRememberSettings.Checked;
+            settings.confirmOnExit = chkConfirmOnExit.Checked;
+            settings.Save();
+        }
+
+        private bool confirmSettings()
+        {
+            if (!_settingsNeedConfirmed) return true;
+            var confirmSettingsDialog = new ConfirmSettingsDialog();
+            var confirmSettingsResult = confirmSettingsDialog.ShowDialog();
+            _settingsNeedConfirmed = confirmSettingsDialog.ShowAgain;
+            if (confirmSettingsResult != DialogResult.No) return true;
+            tabMain.SelectTab(1);
+            return false;
+        }
+
+        private bool settingsAreDefault()
+        {
+            if (_settingsNotViewed) return true;
+            return !txtCipherKey.Modified;
+        }
+
+        private void setDefaultCbxIndexes()
+        {
+            cbxMaskInformation.SelectedIndex = 0;
+            cbxCipherKeyType.SelectedIndex = 0;
+        }
+
+        private void enableControls(bool state)
+        {
+            btnEncrypt.Enabled = btnDecrypt.Enabled = state;
+        }
+
+        private void buildFileList()
+        {
+            var openFileDialog = new OpenFileDialog { Multiselect = true };
+            var openResult = openFileDialog.ShowDialog();
+            if (openResult != DialogResult.OK) return;
+            FileListGridView.Columns.Clear();
+            _fileList = openFileDialog.FileNames.Select(path => new FileData(path)).ToList();
+            FileListGridView.DataSource = _fileList;
+            loadFileListColumnWidths();
+            enableControls(FileListGridView.RowCount > 0);
+            tabMain.SelectedIndex = 0;
+        }
+
+        private void resetFileList()
+        {
+            FileListGridView.DataSource = null;
+        }
+
+        private void refreshFileListGridView()
+        {
+            FileListGridView.DataSource = null;
+            FileListGridView.DataSource = _fileList;
+        }
+
+        private void removeSelectedFiles()
+        {
+            var selectedCount = FileListGridView.SelectedRows.Count;
+            if (selectedCount <= 0) return;
+            for (int i = FileListGridView.RowCount - 1; i >= 0; i--)
+                if (FileListGridView.Rows[i].Selected)
+                    _fileList.RemoveAt(i);
+            refreshFileListGridView();
+            FileListGridView.ClearSelection();
+        }
+
+        private void tabMain_TabIndexChanged(object sender, EventArgs e)
+        {
+            if (tabMain.TabIndex == 1)
+                _settingsNotViewed = false;
+        }
+
+        private void btnAddFilesOrCancelOperation_Click(object sender, EventArgs e)
+        {
+            if (backgroundWorker.IsBusy)
+                backgroundWorker.CancelAsync();
+            else
+                buildFileList();
+        }
+
+        private void btnRemoveSelectedFiles_Click(object sender, EventArgs e)
+        {
+            removeSelectedFiles();
+        }
+
+        private void btnEncrypt_Click(object sender, EventArgs e)
+        {
+            if (confirmSettings())
+                processFiles(CipherOptions.ENCRYPT);
+        }
+
+        private void btnDecrypt_Click(object sender, EventArgs e)
+        {
+            if (confirmSettings())
+                processFiles(CipherOptions.DECRYPT);
+        }
+
+        private void chkMaskInformation_CheckedChanged(object sender, EventArgs e)
+        {
+            cbxMaskInformation.Enabled = chkMaskInformation.Checked;
+        }
+
+        private void cbxCipherKeyType_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            txtCipherKey.UseSystemPasswordChar = cbxCipherKeyType.SelectedIndex == 0;
+        }
+
+        private void btnBrowseOrShowKey_Click(object sender, EventArgs e)
+        {
+            if (cbxCipherKeyType.SelectedIndex == 0)
+                txtCipherKey.UseSystemPasswordChar = !txtCipherKey.UseSystemPasswordChar;
+            else
+                txtCipherKey.Text = Helper.BrowseFile();
+        }
+
+        private void processFiles(int cipherMode)
+        {
+            if (!validateSettings())
+                return;
+            focusStatusTab();
+            var options = generateOptions(cipherMode);
+            Cipher.ProcessFiles(options);
+            resetFileList();
         }
 
         private void focusFilesTab()
@@ -282,31 +293,6 @@ namespace KryptKeeper
             return _fileList.Select(file => file.GetFilePath()).ToArray();
         }
 
-        private void chkMaskInformation_CheckedChanged(object sender, EventArgs e)
-        {
-            cbxMaskInformation.Enabled = chkMaskInformation.Checked;
-        }
-
-        private void cbxCipherKeyType_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            txtCipherKey.UseSystemPasswordChar = cbxCipherKeyType.SelectedIndex == 0;
-        }
-
-        private void btnBrowseOrShowKey_Click(object sender, EventArgs e)
-        {
-            if (cbxCipherKeyType.SelectedIndex == 0)
-                txtCipherKey.UseSystemPasswordChar = !txtCipherKey.UseSystemPasswordChar;
-            else
-                txtCipherKey.Text = browseForKeyFile();
-        }
-
-        private static string browseForKeyFile()
-        {
-            var openFile = new OpenFileDialog();
-            if (openFile.ShowDialog() != DialogResult.OK || !openFile.CheckFileExists) return "";
-            return openFile.FileName;
-        }
-
         private void fileListGridView_DataSourceChanged(object sender, EventArgs e)
         {
             enableControls(FileListGridView.RowCount > 0);
@@ -329,38 +315,24 @@ namespace KryptKeeper
 
         private void exportStatusLog()
         {
-            var saveFileDialog = new SaveFileDialog {DefaultExt = "log", Filter = @"Log files(*.log)|*.*", FileName = $"kryptlog-{DateTime.Now:yyMMdd-HHmm}"};
+            var saveFileDialog = new SaveFileDialog { DefaultExt = "log", Filter = @"Log files(*.log)|*.*", FileName = $"kryptlog-{DateTime.Now:yyMMdd-HHmm}" };
             var dialogResult = saveFileDialog.ShowDialog();
             if (dialogResult != DialogResult.OK || string.IsNullOrWhiteSpace(saveFileDialog.FileName)) return;
             using (var fStream = saveFileDialog.OpenFile())
             {
-                var logHeader = generateLogHeader();
+                var logHeader = Helper.GenerateLogHeader();
                 fStream.Write(logHeader, 0, logHeader.Length);
                 fStream.Write(Encoding.Default.GetBytes(txtStatus.Text), 0, txtStatus.TextLength);
             }
             status.WriteLine("Exported log to " + saveFileDialog.FileName);
         }
 
-        private static byte[] generateLogHeader()
+        private void backgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            var timestamp = DateTime.Now;
-            string header = "KryptKeeper Status Log" + Environment.NewLine + "Generated on " + timestamp + Environment.NewLine; // TODO INSERT VERSION INFORMATION
-            return Encoding.Default.GetBytes(header);
-        }
-
-        private void saveFileListColumnWidths()
-        {
-            var enumer = FileListGridView.Columns.GetEnumerator();
-            var widths = new StringCollection();
-            while (enumer.MoveNext())
+            btnAddFilesOrCancelOperation.Invoke((Action)delegate
             {
-                var header = (DataGridViewTextBoxColumn) enumer.Current;
-                if (header == null) break;
-                widths.Add(header.Width.ToString());
-            }
-            if (widths.Count <= 0) return;
-            Settings.Default.fileListColumnWidths = widths;
-            Settings.Default.Save();
+                btnAddFilesOrCancelOperation.Text = @"Add Files...";
+            });
         }
 
         private void btnExit_Click(object sender, EventArgs e)
@@ -383,7 +355,7 @@ namespace KryptKeeper
             }
             if (settingsAreDefault())
             {
-                resetSettings();
+                Helper.ResetSettings();
                 return;
             }
             var result = MessageBox.Show(@"Do you want to save your settings?", @"Save Settings?",
@@ -393,7 +365,7 @@ namespace KryptKeeper
                 if (result == DialogResult.Cancel)
                     e.Cancel = true;
                 else
-                    resetSettings();
+                    Helper.ResetSettings();
             }
             else
                 saveSettings();
@@ -407,7 +379,5 @@ namespace KryptKeeper
                        MessageBoxIcon.Question) == DialogResult.OK;
             return true;
         }
-
-
     }
 }

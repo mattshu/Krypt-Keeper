@@ -8,6 +8,7 @@ namespace KryptKeeper
     internal static class Cipher
     {
         public const string FILE_EXTENSION = ".krpt";
+        public const string WORKING_FILE_EXTENSION = ".krpt.tmp";
         public static BackgroundWorker backgroundWorker;
         private const int CHUNK_SIZE = 64 * 1024 * 1024; // 64MB
         private static readonly Status status = Status.GetInstance();
@@ -102,20 +103,19 @@ namespace KryptKeeper
                     aes.Mode = CipherMode.CBC;
                     aes.Padding = PaddingMode.PKCS7;
                     var decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
-                    var decryptedPath = path.Replace(FILE_EXTENSION, "");
+                    var decryptedPath = path.ReplaceLastOccurrence(FILE_EXTENSION, WORKING_FILE_EXTENSION);
                     var footer = new Footer();
                     using (var rStream = new FileStream(path, FileMode.Open, FileAccess.Read))
-                    {
-                        if (File.Exists(decryptedPath)) decryptedPath = Helper.RenameExistingFile(decryptedPath);
                         using (var wStream = new FileStream(decryptedPath, FileMode.CreateNew, FileAccess.Write))
-                        {
                             using (var cStream = new CryptoStream(wStream, decryptor, CryptoStreamMode.Write))
-                            {
                                 initializeDecryption(rStream, cStream);
-                            }
-                        }
+                    if (File.Exists(decryptedPath) && new FileInfo(decryptedPath).Length > 0)
+                        Helper.SafeFileDelete(path);
+                    else
+                    {
+                        status.WriteLine("*** Error: Failed to decrypt file: " + path);
+                        return;
                     }
-                    Helper.SafeFileDelete(path);
                     postDecryptionFileHandling(decryptedPath, footer);
                 }
             }
@@ -222,10 +222,10 @@ namespace KryptKeeper
             {
                 fOpen.SetLength(fOpen.Length - footer.ToArray().Length);
             }
-            var projectedPath = decryptedPath.Replace(Path.GetFileName(decryptedPath), footer.Name);
-            //if (File.Exists(projectedPath.Replace(Path.GetFileName(decryptedPath), footer.Name))) //TODO fucked up 
-               // projectedPath = Helper.RenameExistingFile(projectedPath);
-            //File.Move(decryptedPath, projectedPath);
+            var projectedPath = decryptedPath.Replace(Path.GetFileName(decryptedPath), footer.Name).Replace(WORKING_FILE_EXTENSION, "");
+            if (File.Exists(projectedPath))
+                projectedPath = Helper.RenameExistingFile(projectedPath);
+            File.Move(decryptedPath, projectedPath);
             Helper.SetFileTimesFromFooter(projectedPath, footer);
         }
 

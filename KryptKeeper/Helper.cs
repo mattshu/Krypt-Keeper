@@ -11,6 +11,17 @@ namespace KryptKeeper
     internal static class Helper
     {
 
+        public static string ReplaceLastOccurrence(this string source, string find, string replace)
+        {
+            int place = source.LastIndexOf(find, StringComparison.Ordinal);
+
+            if (place == -1)
+                return source;
+
+            var result = source.Remove(place, find.Length).Insert(place, replace);
+            return result;
+        }
+
         public static string BrowseFile()
         {
             var openFile = new OpenFileDialog();

@@ -24,7 +24,7 @@ namespace KryptKeeper
 
         public static Status GetInstance()
         {
-            return instance;
+            return instance ?? throw new Exception(@"Unable to get instance of status window!");
         }
 
         public void PendingComplete()

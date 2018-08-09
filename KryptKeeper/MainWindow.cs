@@ -16,23 +16,40 @@ namespace KryptKeeper
          * TODO *
          * - Fix column resize problem when resizing past border
         */
-
-        private Status status;
+        
+        
+        private Status _status;
 
         private bool _settingsNeedConfirmed = true;
         private bool _settingsNotViewed = false;
 
         private List<FileData> _fileList = new List<FileData>();
 
+        private CustomProgressBar _customProgressBar;
+
         public MainWindow()
         {
+
+
             InitializeComponent();
+            buildCustomProgressBar();
+        }
+
+        private void buildCustomProgressBar()
+        {
+            _customProgressBar = new CustomProgressBar();
+            tabPage3.Controls.Add(_customProgressBar);
+            _customProgressBar.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            _customProgressBar.Location = new System.Drawing.Point(6, 6);
+            _customProgressBar.Name = "_customProgressBar";
+            _customProgressBar.Size = new System.Drawing.Size(499, 23);
+            _customProgressBar.TabIndex = 6;
         }
 
         private void mainWindow_Shown(object sender, EventArgs e)
         {
             loadSettings();
-            status = new Status(txtStatus, progressBar);
+            _status = new Status(txtStatus, _customProgressBar);
             backgroundWorker.RunWorkerCompleted += backgroundWorker_RunWorkerCompleted;
             Cipher.SetBackgroundWorker(backgroundWorker);
         }
@@ -198,7 +215,7 @@ namespace KryptKeeper
             {
                 backgroundWorker.CancelAsync();
                 btnAddFilesOrCancelOperation.Enabled = false;
-                status.WritePending("Canceling operations");
+                _status.WritePending("Canceling operations");
             }
             else
                 buildFileList();
@@ -329,9 +346,10 @@ namespace KryptKeeper
                 fStream.Write(logHeader, 0, logHeader.Length);
                 fStream.Write(Encoding.Default.GetBytes(txtStatus.Text), 0, txtStatus.TextLength);
             }
-            status.WriteLine("Exported log to " + saveFileDialog.FileName);
+            _status.WriteLine("Exported log to " + saveFileDialog.FileName);
         }
 
+        private bool requestedCloseDuringOperation = false;
         private void backgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             btnAddFilesOrCancelOperation.Invoke((Action)delegate
@@ -339,6 +357,8 @@ namespace KryptKeeper
                 btnAddFilesOrCancelOperation.Text = @"Add Files...";
                 btnAddFilesOrCancelOperation.Enabled = true;
             });
+            if (requestedCloseDuringOperation)
+                Close();
         }
 
         private void btnExit_Click(object sender, EventArgs e)
@@ -354,11 +374,13 @@ namespace KryptKeeper
                 return;
             }
             saveFileListColumnWidths();
+
             if (chkRememberSettings.Checked)
             {
                 saveSettings();
                 return;
             }
+
             if (settingsAreDefault())
             {
                 Helper.ResetSettings();
@@ -375,6 +397,13 @@ namespace KryptKeeper
             }
             else
                 saveSettings();
+
+            if (!backgroundWorker.IsBusy) return; // TODO Needs work! Also give user option to cancel operations before exiting
+            _status.WriteLine("Finishing operations before exiting...");
+            e.Cancel = true;
+            requestedCloseDuringOperation = true;
+            backgroundWorker.CancelAsync();
+            Hide();
         }
 
         private bool confirmExit()

@@ -7,12 +7,12 @@ namespace KryptKeeper
     {
         private static Status instance;
         private readonly string newLine = Environment.NewLine;
-        private readonly ProgressBar progressBar;
+        private readonly CustomProgressBar progressBar;
         private readonly TextBox statusBox;
         private bool isPending;
         private DateTime pendingStartTime;
 
-        public Status(TextBox statusBox, ProgressBar progressBar)
+        public Status(TextBox statusBox, CustomProgressBar progressBar)
         {
             if (instance != null) return;
             instance = this;
@@ -36,6 +36,7 @@ namespace KryptKeeper
 
         public void UpdateProgress(int progress)
         {
+            if (instance == null) return;
             progressBar.Invoke((Action)delegate
            {
                progressBar.Maximum = 100;

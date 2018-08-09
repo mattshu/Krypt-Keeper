@@ -48,7 +48,6 @@
             this.chkRemoveAfterEncrypt = new System.Windows.Forms.CheckBox();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.txtStatus = new System.Windows.Forms.TextBox();
-            this.progressBar = new System.Windows.Forms.ProgressBar();
             this.btnExport = new System.Windows.Forms.Button();
             this.btnClear = new System.Windows.Forms.Button();
             this.btnEncrypt = new System.Windows.Forms.Button();
@@ -281,7 +280,6 @@
             // tabPage3
             // 
             this.tabPage3.Controls.Add(this.txtStatus);
-            this.tabPage3.Controls.Add(this.progressBar);
             this.tabPage3.Controls.Add(this.btnExport);
             this.tabPage3.Controls.Add(this.btnClear);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
@@ -305,15 +303,6 @@
             this.txtStatus.Size = new System.Drawing.Size(499, 179);
             this.txtStatus.TabIndex = 7;
             this.txtStatus.TextChanged += new System.EventHandler(this.txtStatus_TextChanged);
-            // 
-            // progressBar
-            // 
-            this.progressBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.progressBar.Location = new System.Drawing.Point(6, 6);
-            this.progressBar.Name = "progressBar";
-            this.progressBar.Size = new System.Drawing.Size(499, 23);
-            this.progressBar.TabIndex = 6;
             // 
             // btnExport
             // 
@@ -435,7 +424,6 @@
         private System.Windows.Forms.Button btnExport;
         private System.Windows.Forms.Button btnClear;
         private System.Windows.Forms.TextBox txtCipherKey;
-        private System.Windows.Forms.ProgressBar progressBar;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ComboBox cbxCipherKeyType;
         private System.Windows.Forms.CheckBox chkRememberSettings;

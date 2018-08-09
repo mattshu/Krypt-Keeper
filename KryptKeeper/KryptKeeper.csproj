@@ -85,6 +85,9 @@
     <Compile Include="ConfirmSettingsDialog.Designer.cs">
       <DependentUpon>ConfirmSettingsDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="CustomProgressBar.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="FileData.cs" />
     <Compile Include="Footer.cs" />
     <Compile Include="Helper.cs" />

@@ -147,6 +147,7 @@ namespace KryptKeeper
                     return;
                 }
                 var pathWithExt = path + FILE_EXTENSION;
+                if (File.Exists(pathWithExt)) pathWithExt = Helper.PadExistingFileName(pathWithExt);
                 using (var aes = Aes.Create())
                 {
                     if (aes == null)

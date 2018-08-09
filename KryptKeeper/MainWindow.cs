@@ -195,7 +195,10 @@ namespace KryptKeeper
         private void btnAddFilesOrCancelOperation_Click(object sender, EventArgs e)
         {
             if (backgroundWorker.IsBusy)
+            {
                 backgroundWorker.CancelAsync();
+                status.WritePending("Cancel requested. Finishing up last operation");
+            }
             else
                 buildFileList();
         }
@@ -239,6 +242,7 @@ namespace KryptKeeper
         {
             if (!validateSettings())
                 return;
+            btnAddFilesOrCancelOperation.Invoke((Action) delegate { btnAddFilesOrCancelOperation.Text = @"Cancel"; });
             focusStatusTab();
             var options = generateOptions(cipherMode);
             Cipher.ProcessFiles(options);

@@ -34,12 +34,12 @@ namespace KryptKeeper
             finishPending();
         }
 
-        public void UpdateProgress(int progress, int limit)
+        public void UpdateProgress(int progress)
         {
             progressBar.Invoke((Action)delegate
            {
-               progressBar.Maximum = limit;
-               progressBar.Step = 5;
+               progressBar.Maximum = 100;
+               progressBar.Step = 1;
                progressBar.Value = progress;
            });
         }

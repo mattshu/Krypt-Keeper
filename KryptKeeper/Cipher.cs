@@ -37,17 +37,14 @@ namespace KryptKeeper
                 for (int i = 0; i < options.Files.Length; i++)
                 {
                     if (backgroundWorker.CancellationPending)
-                    {
-                        status.WriteLine("Stopping operation.");
                         break;
-                    }
                     var path = options.Files[i];
+                    //backgroundWorker.ReportProgress(i + 1, options.Files.Length);
                     if (!File.Exists(path))
                     {
                         status.WriteLine("* Unable to find: " + path);
                         continue;
                     }
-                    backgroundWorker.ReportProgress(i + 1, options.Files.Length);
                     status.WritePending($"{options.GetCipherModeOfOperation()}: " + path);
                     if (options.Mode == CipherOptions.ENCRYPT)
                         encrypt(path, options);
@@ -73,13 +70,13 @@ namespace KryptKeeper
 
         private static void backgroundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            status.UpdateProgress(e.ProgressPercentage, (int)e.UserState);
+            status.UpdateProgress(e.ProgressPercentage);
         }
 
         private static void backgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             status.WriteLine("Operation completed. " + Helper.GetSpannedTime(cipherStartTime.Ticks));
-            status.UpdateProgress(0, 0);
+            status.UpdateProgress(0);
         }
 
         private static void decrypt(string path, CipherOptions options)
@@ -104,19 +101,31 @@ namespace KryptKeeper
                     aes.Padding = PaddingMode.PKCS7;
                     var decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
                     var decryptedPath = path.ReplaceLastOccurrence(FILE_EXTENSION, WORKING_FILE_EXTENSION);
-                    var footer = new Footer();
                     using (var rStream = new FileStream(path, FileMode.Open, FileAccess.Read))
-                        using (var wStream = new FileStream(decryptedPath, FileMode.CreateNew, FileAccess.Write))
-                            using (var cStream = new CryptoStream(wStream, decryptor, CryptoStreamMode.Write))
-                                initializeDecryption(rStream, cStream);
-                    if (File.Exists(decryptedPath) && new FileInfo(decryptedPath).Length > 0)
-                        Helper.SafeFileDelete(path);
-                    else
                     {
-                        status.WriteLine("*** Error: Failed to decrypt file: " + path);
+                        using (var wStream = new FileStream(decryptedPath, FileMode.CreateNew, FileAccess.Write))
+                        {
+
+                            using (var cStream = new CryptoStream(wStream, decryptor, CryptoStreamMode.Write))
+                            {
+                                initializeDecryption(path, rStream, cStream);
+                            }
+                        }
+                    }
+
+                    if (backgroundWorker.CancellationPending)
+                    {
+                        status.WriteLine("");
+                        Helper.SafeFileDelete(decryptedPath);
                         return;
                     }
-                    postDecryptionFileHandling(decryptedPath, footer);
+                    if (File.Exists(decryptedPath) && new FileInfo(decryptedPath).Length > 0)
+                    {
+                        Helper.SafeFileDelete(path);
+                        postDecryptionFileHandling(decryptedPath);
+                        return;
+                    }
+                    status.WriteLine("*** Error: Failed to decrypt file: " + path);
                 }
             }
             catch (CryptographicException)
@@ -163,6 +172,12 @@ namespace KryptKeeper
                         }
                     }
                 }
+
+                if (backgroundWorker.CancellationPending)
+                {
+                    Helper.SafeFileDelete(pathWithExt);
+                    return;
+                }
                 postEncryptionFileHandling(pathWithExt, options);
             }
             catch (CryptographicException)
@@ -186,36 +201,44 @@ namespace KryptKeeper
             }
         }
 
-        private static void initializeDecryption(FileStream rStream, CryptoStream cStream)
+        private static void initializeDecryption(string path, Stream readStream, Stream cryptoStream)
         {
-            var buffer = new byte[CHUNK_SIZE];
-            rStream.Seek(16, SeekOrigin.Begin); // 16 to skip IV
-            int bytesRead = rStream.Read(buffer, 0, CHUNK_SIZE);
-            while (bytesRead > 0)
-            {
-                cStream.Write(buffer, 0, bytesRead);
-                bytesRead = rStream.Read(buffer, 0, bytesRead);
-            }
+            readStream.Seek(16, SeekOrigin.Begin); // 16 to skip IV
+            processStreams(path, readStream, cryptoStream);
         }
 
         private static void initializeEncryption(string path, Stream readStream, Stream cryptoStream)
         {
-            var buffer = new byte[CHUNK_SIZE];
             readStream.Seek(0, SeekOrigin.Begin);
-            int bytesRead = readStream.Read(buffer, 0, CHUNK_SIZE);
-            while (bytesRead > 0)
-            {
-                cryptoStream.Write(buffer, 0, bytesRead);
-                bytesRead = readStream.Read(buffer, 0, bytesRead);
-            }
+            processStreams(path, readStream, cryptoStream);
+            if (backgroundWorker.CancellationPending)
+                return;
             var footer = new Footer();
             footer.Build(path);
             var footerData = footer.ToArray();
             cryptoStream.Write(footerData, 0, footerData.Length);
         }
 
-        private static void postDecryptionFileHandling(string decryptedPath, Footer footer)
+        private static void processStreams(string path, Stream readStream, Stream cryptoStream)
         {
+            var buffer = new byte[CHUNK_SIZE];
+            int bytesRead = readStream.Read(buffer, 0, CHUNK_SIZE);
+            var totalBytes = new FileInfo(path).Length;
+            long progressBytes = 0;
+            while (bytesRead > 0)
+            {
+                if (backgroundWorker.CancellationPending)
+                    break;
+                progressBytes += bytesRead;
+                backgroundWorker.ReportProgress((int) Math.Round((double) (100 * progressBytes) / totalBytes));
+                cryptoStream.Write(buffer, 0, bytesRead);
+                bytesRead = readStream.Read(buffer, 0, bytesRead);
+            }
+        }
+
+        private static void postDecryptionFileHandling(string decryptedPath)
+        {
+            var footer = new Footer();
             if (!footer.TryExtract(decryptedPath))
                 throw new Exception("Unable to generate file information from " + decryptedPath);
             using (var fOpen = new FileStream(decryptedPath, FileMode.Open))

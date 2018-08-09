@@ -197,7 +197,8 @@ namespace KryptKeeper
             if (backgroundWorker.IsBusy)
             {
                 backgroundWorker.CancelAsync();
-                status.WritePending("Cancel requested. Finishing up last operation");
+                btnAddFilesOrCancelOperation.Enabled = false;
+                status.WritePending("Canceling operations");
             }
             else
                 buildFileList();
@@ -336,6 +337,7 @@ namespace KryptKeeper
             btnAddFilesOrCancelOperation.Invoke((Action)delegate
             {
                 btnAddFilesOrCancelOperation.Text = @"Add Files...";
+                btnAddFilesOrCancelOperation.Enabled = true;
             });
         }
 

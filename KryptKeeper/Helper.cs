@@ -67,18 +67,12 @@ namespace KryptKeeper
             return "(" + sb + ")";
         }
 
-        public static string RemoveFileExt(this string path)
+        public static string RemoveDefaultFileExt(this string path)
         {
-            return path.Replace(Cipher.FILE_EXTENSION, "");
+            return path.Replace(Cipher.WORKING_FILE_EXTENSION, "").Replace(Cipher.FILE_EXTENSION, "");
         }
 
-        public static void RemoveTempFile(string path)
-        {
-            var tempFile = path.Replace(Cipher.FILE_EXTENSION, "");
-            SafeFileDelete(tempFile);
-        }
-
-        public static string RenameExistingFile(string path)
+        public static string PadExistingFileName(string path)
         {
             int i = 1;
             do

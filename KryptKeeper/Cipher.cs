@@ -9,8 +9,9 @@ namespace KryptKeeper
     {
         public const string FILE_EXTENSION = ".krpt";
         public const string WORKING_FILE_EXTENSION = ".krpt.tmp";
-        public static BackgroundWorker backgroundWorker;
-        private const int CHUNK_SIZE = 64 * 1024 * 1024; // 64MB
+        private const int MINIMUM_FILE_LENGTH = 16; // IV
+        private static BackgroundWorker backgroundWorker;
+        private const int CHUNK_SIZE = 16 * 1024 * 1024; // 16MB
         private static readonly Status status = Status.GetInstance();
         private static DateTime cipherStartTime;
 
@@ -34,12 +35,10 @@ namespace KryptKeeper
             try
             {
                 var options = (CipherOptions)e.Argument;
-                for (int i = 0; i < options.Files.Length; i++)
+                foreach (var path in options.Files)
                 {
                     if (backgroundWorker.CancellationPending)
                         break;
-                    var path = options.Files[i];
-                    //backgroundWorker.ReportProgress(i + 1, options.Files.Length);
                     if (!File.Exists(path))
                     {
                         status.WriteLine("* Unable to find: " + path);
@@ -54,12 +53,10 @@ namespace KryptKeeper
             }
             catch (CryptographicException ex)
             {
-                Helper.RemoveTempFile(ex.Message);
-                status.WriteLine($"*** Invalid password for {Path.GetFileName(ex.Message)}");
+                status.WriteLine($"*** Unable to decrypt {Path.GetFileName(ex.Message)}. Check your key or the file format.");
             }
             catch (UnauthorizedAccessException ex)
             {
-                Helper.RemoveTempFile(ex.Message);
                 status.WriteLine($"*** Unable to access {Path.GetFileName(ex.Message)}");
             }
             catch (Exception ex)
@@ -75,17 +72,18 @@ namespace KryptKeeper
 
         private static void backgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            status.WriteLine("Operation completed. " + Helper.GetSpannedTime(cipherStartTime.Ticks));
+            status.WriteLine("Operation finished. " + Helper.GetSpannedTime(cipherStartTime.Ticks));
             status.UpdateProgress(0);
         }
 
         private static void decrypt(string path, CipherOptions options)
         {
+            var decryptedPath = "";
             try
             {
-                if (!File.Exists(path))
+                if (!File.Exists(path) || Path.GetExtension(path) != FILE_EXTENSION || new FileInfo(path).Length <= MINIMUM_FILE_LENGTH)
                 {
-                    status.WriteLine("* File not found: " + path);
+                    status.WriteLine("* File not found or not in correct format for decryption: " + path);
                     return;
                 }
                 using (var aes = Aes.Create())
@@ -100,22 +98,21 @@ namespace KryptKeeper
                     aes.Mode = CipherMode.CBC;
                     aes.Padding = PaddingMode.PKCS7;
                     var decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
-                    var decryptedPath = path.ReplaceLastOccurrence(FILE_EXTENSION, WORKING_FILE_EXTENSION);
+                    decryptedPath = path.ReplaceLastOccurrence(FILE_EXTENSION, WORKING_FILE_EXTENSION);
+                    if (File.Exists(decryptedPath)) decryptedPath = Helper.PadExistingFileName(decryptedPath);
                     using (var rStream = new FileStream(path, FileMode.Open, FileAccess.Read))
                     {
                         using (var wStream = new FileStream(decryptedPath, FileMode.CreateNew, FileAccess.Write))
                         {
-
                             using (var cStream = new CryptoStream(wStream, decryptor, CryptoStreamMode.Write))
                             {
                                 initializeDecryption(path, rStream, cStream);
                             }
                         }
                     }
-
                     if (backgroundWorker.CancellationPending)
                     {
-                        status.WriteLine("");
+                        status.WriteLine("Deleting temp file: " + decryptedPath);
                         Helper.SafeFileDelete(decryptedPath);
                         return;
                     }
@@ -130,10 +127,12 @@ namespace KryptKeeper
             }
             catch (CryptographicException)
             {
+                Helper.SafeFileDelete(decryptedPath);
                 throw new CryptographicException(path);
             }
             catch (UnauthorizedAccessException)
             {
+                Helper.SafeFileDelete(decryptedPath);
                 throw new UnauthorizedAccessException(path);
             }
         }
@@ -147,7 +146,7 @@ namespace KryptKeeper
                     status.WriteLine("* File not found: " + path);
                     return;
                 }
-                string pathWithExt = path + FILE_EXTENSION;
+                var pathWithExt = path + FILE_EXTENSION;
                 using (var aes = Aes.Create())
                 {
                     if (aes == null)
@@ -175,6 +174,7 @@ namespace KryptKeeper
 
                 if (backgroundWorker.CancellationPending)
                 {
+                    status.WriteLine("Deleting temp file: " + pathWithExt);
                     Helper.SafeFileDelete(pathWithExt);
                     return;
                 }
@@ -211,8 +211,12 @@ namespace KryptKeeper
         {
             readStream.Seek(0, SeekOrigin.Begin);
             processStreams(path, readStream, cryptoStream);
-            if (backgroundWorker.CancellationPending)
-                return;
+            if (!backgroundWorker.CancellationPending)
+                buildAndWriteFooter(path, cryptoStream);
+        }
+
+        private static void buildAndWriteFooter(string path, Stream cryptoStream)
+        {
             var footer = new Footer();
             footer.Build(path);
             var footerData = footer.ToArray();
@@ -240,14 +244,18 @@ namespace KryptKeeper
         {
             var footer = new Footer();
             if (!footer.TryExtract(decryptedPath))
-                throw new Exception("Unable to generate file information from " + decryptedPath);
+            {
+                Helper.SafeFileDelete(decryptedPath);
+                status.WriteLine("* Error: Unable to generate file information from " + decryptedPath);
+                return;
+            }
             using (var fOpen = new FileStream(decryptedPath, FileMode.Open))
             {
                 fOpen.SetLength(fOpen.Length - footer.ToArray().Length);
             }
             var projectedPath = decryptedPath.Replace(Path.GetFileName(decryptedPath), footer.Name).Replace(WORKING_FILE_EXTENSION, "");
             if (File.Exists(projectedPath))
-                projectedPath = Helper.RenameExistingFile(projectedPath);
+                projectedPath = Helper.PadExistingFileName(projectedPath);
             File.Move(decryptedPath, projectedPath);
             Helper.SetFileTimesFromFooter(projectedPath, footer);
         }
@@ -255,14 +263,12 @@ namespace KryptKeeper
         private static void postEncryptionFileHandling(string pathWithExt, CipherOptions options)
         {
             if (options.RemoveOriginal)
-                Helper.SafeFileDelete(pathWithExt.RemoveFileExt());
+                Helper.SafeFileDelete(pathWithExt.RemoveDefaultFileExt());
             if (options.MaskFileName)
                 File.Move(pathWithExt,
-                    pathWithExt = pathWithExt.Replace(Path.GetFileName(pathWithExt).RemoveFileExt(), Helper.GetRandomAlphanumericString(16)));
+                    pathWithExt = pathWithExt.Replace(Path.GetFileName(pathWithExt).RemoveDefaultFileExt(), Helper.GetRandomAlphanumericString(16)));
             if (options.MaskFileTimes)
                 Helper.SetRandomFileTimes(pathWithExt);
         }
-
-
     }
 }

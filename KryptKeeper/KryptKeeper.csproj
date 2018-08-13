@@ -79,6 +79,12 @@
   <ItemGroup>
     <Compile Include="Cipher.cs" />
     <Compile Include="CipherOptions.cs" />
+    <Compile Include="ConfirmExitWhileBusyDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ConfirmExitWhileBusyDialog.Designer.cs">
+      <DependentUpon>ConfirmExitWhileBusyDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="ConfirmSettingsDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -100,6 +106,9 @@
     <Compile Include="Status.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="ConfirmExitWhileBusyDialog.resx">
+      <DependentUpon>ConfirmExitWhileBusyDialog.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ConfirmSettingsDialog.resx">
       <DependentUpon>ConfirmSettingsDialog.cs</DependentUpon>
     </EmbeddedResource>

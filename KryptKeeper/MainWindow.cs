@@ -16,9 +16,11 @@ namespace KryptKeeper
          * TODO *
          * - Fix column resize problem when resizing past border
         */
-        
-        
+
+
         private Status _status;
+
+        public static bool CloseAfterCurrentOperation { get; private set; }
 
         private bool _settingsNeedConfirmed = true;
         private bool _settingsNotViewed = false;
@@ -27,11 +29,11 @@ namespace KryptKeeper
 
         private CustomProgressBar _customProgressBar;
 
+        public static int MainHandleInt;
         public MainWindow()
         {
-
-
             InitializeComponent();
+            MainHandleInt = Handle.ToInt32();
             buildCustomProgressBar();
         }
 
@@ -213,6 +215,12 @@ namespace KryptKeeper
         {
             if (backgroundWorker.IsBusy)
             {
+                var dlgConfirmCancel = MessageBox.Show(@"Do you want to abort the current job?\nSelect 'No' to finish current job and cancel remaining tasks.",
+                    @"Operation in Progress", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
+                if (dlgConfirmCancel == DialogResult.Yes)
+                    Cipher.CancelProcessing = true;
+                else if (dlgConfirmCancel == DialogResult.Cancel)
+                    return;
                 backgroundWorker.CancelAsync();
                 btnAddFilesOrCancelOperation.Enabled = false;
                 _status.WritePending("Canceling operations");
@@ -258,8 +266,7 @@ namespace KryptKeeper
 
         private void processFiles(int cipherMode)
         {
-            if (!validateSettings())
-                return;
+            if (!validateSettings()) return;
             btnAddFilesOrCancelOperation.Invoke((Action) delegate { btnAddFilesOrCancelOperation.Text = @"Cancel"; });
             focusStatusTab();
             var options = generateOptions(cipherMode);
@@ -289,13 +296,9 @@ namespace KryptKeeper
         {
             var key = new byte[0];
             if (cbxCipherKeyType.SelectedIndex == 0)
-            {
-                key = Encoding.Default.GetBytes(txtCipherKey.Text);
-            }
+                key = Encoding.UTF8.GetBytes(txtCipherKey.Text);
             else if (cbxCipherKeyType.SelectedIndex == 1)
-            {
                 key = File.ReadAllBytes(txtCipherKey.Text);
-            }
             var maskInfoIndex = cbxMaskInformation.SelectedIndex;
             var options = new CipherOptions
             {
@@ -349,16 +352,21 @@ namespace KryptKeeper
             _status.WriteLine("Exported log to " + saveFileDialog.FileName);
         }
 
-        private bool requestedCloseDuringOperation = false;
         private void backgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
+            // TODO this needs some work especially after cancelling an operation without closing
+            if (CloseAfterCurrentOperation)
+            {
+                Close();
+                return;
+            }
             btnAddFilesOrCancelOperation.Invoke((Action)delegate
             {
                 btnAddFilesOrCancelOperation.Text = @"Add Files...";
                 btnAddFilesOrCancelOperation.Enabled = true;
             });
-            if (requestedCloseDuringOperation)
-                Close();
+            _status.UpdateProgress(0);
+            
         }
 
         private void btnExit_Click(object sender, EventArgs e)
@@ -368,42 +376,53 @@ namespace KryptKeeper
 
         private void mainWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (!confirmExit())
+            if (backgroundWorker.IsBusy)
             {
                 e.Cancel = true;
-                return;
-            }
-            saveFileListColumnWidths();
-
-            if (chkRememberSettings.Checked)
-            {
-                saveSettings();
-                return;
-            }
-
-            if (settingsAreDefault())
-            {
-                Helper.ResetSettings();
-                return;
-            }
-            var result = MessageBox.Show(@"Do you want to save your settings?", @"Save Settings?",
-                MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
-            if (result != DialogResult.Yes)
-            {
-                if (result == DialogResult.Cancel)
-                    e.Cancel = true;
-                else
-                    Helper.ResetSettings();
+                switch (new ConfirmExitWhileBusyDialog().ShowDialog())
+                {
+                    case DialogResult.Abort: // Abort and Exit
+                        Cipher.CancelProcessing = true;
+                        CloseAfterCurrentOperation = true;
+                        backgroundWorker.CancelAsync();
+                        break;
+                    case DialogResult.Ignore: // Finish and Exit
+                        CloseAfterCurrentOperation = true;
+                        backgroundWorker.CancelAsync();
+                        Hide();
+                        break;
+                }
             }
             else
-                saveSettings();
-
-            if (!backgroundWorker.IsBusy) return; // TODO Needs work! Also give user option to cancel operations before exiting
-            _status.WriteLine("Finishing operations before exiting...");
-            e.Cancel = true;
-            requestedCloseDuringOperation = true;
-            backgroundWorker.CancelAsync();
-            Hide();
+            {
+                e.Cancel = false;
+                if (CloseAfterCurrentOperation)
+                    return;
+                if (!confirmExit())
+                {
+                    e.Cancel = true;
+                    return;
+                }
+                saveFileListColumnWidths();
+                if (chkRememberSettings.Checked)
+                    saveSettings();
+                else if (!settingsAreDefault())
+                {
+                    switch (MessageBox.Show(@"Do you want to save your settings?", @"Save Settings?",
+                        MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question))
+                    {
+                        case DialogResult.Yes:
+                            saveSettings();
+                            break;
+                        case DialogResult.No:
+                            Helper.ResetSettings();
+                            break;
+                        default:
+                            e.Cancel = true;
+                            break;
+                    }
+                }
+            }
         }
 
         private bool confirmExit()

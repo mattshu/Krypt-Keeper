@@ -36,7 +36,6 @@ namespace KryptKeeper
 
         public void UpdateProgress(int progress)
         {
-            if (instance == null) return;
             progressBar.Invoke((Action)delegate
            {
                progressBar.Maximum = 100;

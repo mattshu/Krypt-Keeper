@@ -29,23 +29,21 @@ namespace KryptKeeper
 
         private CustomProgressBar _customProgressBar;
 
-        public static int MainHandleInt;
         public MainWindow()
         {
             InitializeComponent();
-            MainHandleInt = Handle.ToInt32();
             buildCustomProgressBar();
         }
 
         private void buildCustomProgressBar()
         {
             _customProgressBar = new CustomProgressBar();
-            tabPage3.Controls.Add(_customProgressBar);
             _customProgressBar.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             _customProgressBar.Location = new System.Drawing.Point(6, 6);
             _customProgressBar.Name = "_customProgressBar";
             _customProgressBar.Size = new System.Drawing.Size(499, 23);
             _customProgressBar.TabIndex = 6;
+            tabPage3.Controls.Add(_customProgressBar);
         }
 
         private void mainWindow_Shown(object sender, EventArgs e)
@@ -215,8 +213,8 @@ namespace KryptKeeper
         {
             if (backgroundWorker.IsBusy)
             {
-                var dlgConfirmCancel = MessageBox.Show(@"Do you want to abort the current job?\nSelect 'No' to finish current job and cancel remaining tasks.",
-                    @"Operation in Progress", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
+                var dlgConfirmCancel = MessageBox.Show(Resources.AbortOperationDlgMsg,
+                    Resources.OperationBusyTitleMsg, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
                 if (dlgConfirmCancel == DialogResult.Yes)
                     Cipher.CancelProcessing = true;
                 else if (dlgConfirmCancel == DialogResult.Cancel)
@@ -354,7 +352,7 @@ namespace KryptKeeper
 
         private void backgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            // TODO this needs some work especially after cancelling an operation without closing
+            // TODO this needs some work especially aftsw5er cancelling an operation without closing
             if (CloseAfterCurrentOperation)
             {
                 Close();
@@ -408,7 +406,7 @@ namespace KryptKeeper
                     saveSettings();
                 else if (!settingsAreDefault())
                 {
-                    switch (MessageBox.Show(@"Do you want to save your settings?", @"Save Settings?",
+                    switch (MessageBox.Show(Resources.SaveSettingsMsg, Resources.SaveSettingsTitle,
                         MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question))
                     {
                         case DialogResult.Yes:
@@ -428,7 +426,7 @@ namespace KryptKeeper
         private bool confirmExit()
         {
             if (chkConfirmOnExit.Checked)
-                return MessageBox.Show(@"Are you sure you want to exit?", @"Exit KryptKeeper",
+                return MessageBox.Show(Resources.ExitApplicationMsg, Resources.ExitApplicationTitle,
                        MessageBoxButtons.OKCancel,
                        MessageBoxIcon.Question) == DialogResult.OK;
             return true;

@@ -29,7 +29,7 @@ namespace KryptKeeper
             }
         }
 
-        public string GetCipherModeOfOperation()
+        public string GetModeOfOperation()
         {
             return Mode == ENCRYPT ? "Encryption" : "Decryption";
         }

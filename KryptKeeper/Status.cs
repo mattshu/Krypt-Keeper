@@ -6,6 +6,7 @@ namespace KryptKeeper
     public class Status
     {
         private static Status _instance;
+        private readonly MainWindow _mainWindow;
         private readonly string newLine = Environment.NewLine;
         private readonly CustomProgressBar _progressCurrent;
         private readonly CustomProgressBar _progressTotal;
@@ -13,13 +14,14 @@ namespace KryptKeeper
         private bool _isPending;
         private DateTime _pendingStartTime;
 
-        public Status(TextBox statusBox, CustomProgressBar progressCurrent, CustomProgressBar progressTotal)
+        public Status(MainWindow mainWindow)
         {
             if (_instance != null) return;
             _instance = this;
-            _statusBox = statusBox;
-            _progressCurrent = progressCurrent;
-            _progressTotal = progressTotal;
+            _mainWindow = mainWindow;
+            _statusBox = mainWindow.GetStatusBox();
+            _progressCurrent = mainWindow.GetProgressBarCurrent();
+            _progressTotal = mainWindow.GetProgressBarTotal();
         }
 
         private static string Timestamp => "[" + DateTime.Now.ToString("HH:mm:ss.fff") + "]: ";
@@ -36,31 +38,12 @@ namespace KryptKeeper
             finishPending();
         }
 
-        public void UpdateProgress(int progressCurrent, int progressTotal)
-        {
-            _progressCurrent.Invoke((Action)delegate
-            {
-                _progressCurrent.Maximum = 100;
-                _progressCurrent.Step = 1;
-                _progressCurrent.Value = progressCurrent;
-            });
-            _progressTotal.Invoke((Action)delegate
-            {
-                _progressTotal.Maximum = 100;
-                _progressTotal.Step = 1;
-                _progressTotal.Value = progressTotal;
-            });
-        }
-
         public void WriteLine(string msg)
         {
             if (_isPending)
                 finishPending();
             _isPending = false;
-            _statusBox.Invoke((Action)delegate
-           {
-               _statusBox.AppendText(Timestamp + msg + newLine);
-           });
+            _mainWindow.Invoke((Action)(() => _statusBox.AppendText(Timestamp + msg + newLine)));
         }
 
         public void WritePending(string msg)
@@ -70,18 +53,12 @@ namespace KryptKeeper
             else
                 _isPending = true;
             _pendingStartTime = DateTime.Now;
-            _statusBox.Invoke((Action)delegate
-           {
-               _statusBox.AppendText(Timestamp + msg + "...");
-           });
+            _mainWindow.Invoke((Action)(() => _statusBox.AppendText(Timestamp + msg + "...")));
         }
 
         private void finishPending()
         {
-            _statusBox.Invoke((Action)delegate
-           {
-               _statusBox.AppendText("done! " + Helper.GetSpannedTime(_pendingStartTime.Ticks) + newLine);
-           });
+            _mainWindow.Invoke((Action)(() => _statusBox.AppendText("done! " + Helper.GetSpannedTime(_pendingStartTime.Ticks) + newLine)));
         }
     }
 }

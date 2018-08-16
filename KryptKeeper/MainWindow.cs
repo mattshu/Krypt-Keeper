@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -17,10 +18,9 @@ namespace KryptKeeper
          * - Fix column resize problem when resizing past border
         */
 
-
         private Status _status;
 
-        public static bool CloseAfterCurrentOperation { get; private set; }
+        private static bool CloseAfterCurrentOperation;
 
         private bool _settingsNeedConfirmed = true;
         private bool _settingsNotViewed = false;
@@ -42,17 +42,21 @@ namespace KryptKeeper
                 new CustomProgressBar
                 {
                     Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
-                    Location = new System.Drawing.Point(6, 6),
+                    Location = new Point(6, 6),
                     Name = "_progressCurrent",
-                    Size = new System.Drawing.Size(353, 23)
+                    Size = new Size(353, 23),
+                    Step = 1,
+                    Maximum = 100
                 };
             _progressTotal =
                 new CustomProgressBar
                 {
-                    Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
-                    Location = new System.Drawing.Point(365, 6),
+                    Anchor = AnchorStyles.Top | AnchorStyles.Right,
+                    Location = new Point(365, 6),
                     Name = "_progressTotal",
-                    Size = new System.Drawing.Size(140, 23)
+                    Size = new Size(140, 23),
+                    Step = 1,
+                    Maximum = 100
                 };
             tabPage3.Controls.Add(_progressCurrent);
             tabPage3.Controls.Add(_progressTotal);
@@ -61,7 +65,8 @@ namespace KryptKeeper
         private void mainWindow_Shown(object sender, EventArgs e)
         {
             loadSettings();
-            _status = new Status(txtStatus, _progressCurrent, _progressTotal);
+            _status = new Status(this);
+            backgroundWorker.ProgressChanged += backgroundWorker_ProgressChanged;
             backgroundWorker.RunWorkerCompleted += backgroundWorker_RunWorkerCompleted;
             Cipher.SetBackgroundWorker(backgroundWorker);
         }
@@ -106,36 +111,28 @@ namespace KryptKeeper
 
         private bool validateSettings()
         {
-            if (string.IsNullOrWhiteSpace(txtCipherKey.Text))
-            {
-                Helper.ShowErrorBox("The passkey cannot be blank.");
-                focusSettingsTab();
-                return false;
-            }
             if (_fileList.Count <= 0)
             {
                 Helper.ShowErrorBox("There are no files to work.");
                 focusFilesTab();
                 return false;
             }
-            if (cbxCipherKeyType.SelectedIndex == 1)
+            if (cbxCipherKeyType.SelectedIndex == 0)
             {
-                if (File.Exists(txtCipherKey.Text))
-                {
-                    if (new FileInfo(txtCipherKey.Text).Length <= 0)
-                    {
-                        Helper.ShowErrorBox($"Keyfile is empty: {Path.GetFileName(txtCipherKey.Text)}");
-                        return false;
-                    }
-                }
-                else
-                {
-                    Helper.ShowErrorBox($"Unable to find keyfile: {Path.GetFileName(txtCipherKey.Text)}");
-                    focusSettingsTab();
-                    return false;
-                }
+                if (!string.IsNullOrWhiteSpace(txtCipherKey.Text)) return true;
+                Helper.ShowErrorBox("The passkey cannot be blank.");
+                focusSettingsTab();
+                return false;
             }
-            return true;
+            if (File.Exists(txtCipherKey.Text))
+            {
+                if (new FileInfo(txtCipherKey.Text).Length > 0) return true;
+                Helper.ShowErrorBox($"Keyfile is empty: {Path.GetFileName(txtCipherKey.Text)}");
+                return false;
+            }
+            Helper.ShowErrorBox($"Unable to find keyfile: {Path.GetFileName(txtCipherKey.Text)}");
+            focusSettingsTab();
+            return false;
         }
 
         private void saveSettings()
@@ -228,7 +225,7 @@ namespace KryptKeeper
                 var dlgConfirmCancel = MessageBox.Show(Resources.AbortOperationDlgMsg,
                     Resources.OperationBusyTitleMsg, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
                 if (dlgConfirmCancel == DialogResult.Yes)
-                    Cipher.CancelProcessing = true;
+                    Cipher.CancelProcessing();
                 else if (dlgConfirmCancel == DialogResult.Cancel)
                     return;
                 backgroundWorker.CancelAsync();
@@ -276,7 +273,7 @@ namespace KryptKeeper
         private void processFiles(int cipherMode)
         {
             if (!validateSettings()) return;
-            btnAddFilesOrCancelOperation.Invoke((Action) delegate { btnAddFilesOrCancelOperation.Text = @"Cancel"; });
+            btnAddFilesOrCancelOperation.Text = @"Cancel";
             focusStatusTab();
             var options = generateOptions(cipherMode);
             Cipher.ProcessFiles(options);
@@ -361,19 +358,29 @@ namespace KryptKeeper
             _status.WriteLine("Exported log to " + saveFileDialog.FileName);
         }
 
+        private void backgroundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            if (CloseAfterCurrentOperation) return;
+            updateProgress(e.ProgressPercentage, (int)e.UserState);
+        }
+
+        private void updateProgress(int progressCurrent, int progressTotal)
+        {
+            _progressCurrent.Value = progressCurrent;
+            _progressTotal.Value = progressTotal;
+        }
+
         private void backgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            // TODO this needs some work especially aftsw5er cancelling an operation without closing
             if (CloseAfterCurrentOperation)
             {
                 Close();
                 return;
             }
-            btnAddFilesOrCancelOperation.Invoke((Action)delegate
-            {
-                btnAddFilesOrCancelOperation.Text = @"Add Files...";
-                btnAddFilesOrCancelOperation.Enabled = true;
-            });
+            _status.WriteLine("Operation finished. " + Cipher.GetElapsedTime());
+            btnAddFilesOrCancelOperation.Text = @"Add Files...";
+            btnAddFilesOrCancelOperation.Enabled = true;
+            updateProgress(0, 100);
         }
 
         private void btnExit_Click(object sender, EventArgs e)
@@ -389,10 +396,11 @@ namespace KryptKeeper
                 switch (new ConfirmExitWhileBusyDialog().ShowDialog())
                 {
                     case DialogResult.Abort: // Abort and Exit
-                        Cipher.CancelProcessing = true;
+                        Cipher.CancelProcessing();
                         CloseAfterCurrentOperation = true;
                         backgroundWorker.CancelAsync();
                         break;
+
                     case DialogResult.Ignore: // Finish and Exit
                         CloseAfterCurrentOperation = true;
                         backgroundWorker.CancelAsync();
@@ -421,9 +429,11 @@ namespace KryptKeeper
                         case DialogResult.Yes:
                             saveSettings();
                             break;
+
                         case DialogResult.No:
                             Helper.ResetSettings();
                             break;
+
                         default:
                             e.Cancel = true;
                             break;
@@ -444,6 +454,21 @@ namespace KryptKeeper
         private void gridFileList_SelectionChanged(object sender, EventArgs e)
         {
             btnRemoveFiles.Enabled = gridFileList.SelectedRows.Count > 0;
+        }
+
+        public TextBox GetStatusBox()
+        {
+            return txtStatus;
+        }
+
+        public CustomProgressBar GetProgressBarCurrent()
+        {
+            return _progressCurrent;
+        }
+
+        public CustomProgressBar GetProgressBarTotal()
+        {
+            return _progressTotal;
         }
     }
 }

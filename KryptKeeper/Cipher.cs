@@ -13,9 +13,14 @@ namespace KryptKeeper
         public const string WORKING_FILE_EXTENSION = ".krpt.tmp";
         private const int MINIMUM_FILE_LENGTH = 16; // IV
         private const int CHUNK_SIZE = 16 * 1024 * 1024; // 16MB
-        public static bool CancelProcessing = false;
+        public static void CancelProcessing() => _cancelProcessing = true;
+        private static bool _cancelProcessing;
         private static BackgroundWorker _backgroundWorker;
         private static readonly Status _status = Status.GetInstance();
+        public static string GetElapsedTime()
+        {
+            return Helper.GetSpannedTime(_cipherStartTime.Ticks);
+        }
         private static DateTime _cipherStartTime;
         private static long _progressBytesOverall;
         private static long _progressBytesTotal;
@@ -33,8 +38,6 @@ namespace KryptKeeper
         {
             _backgroundWorker = bgWorker;
             _backgroundWorker.DoWork += backgroundWorker_DoWork;
-            _backgroundWorker.ProgressChanged += backgroundWorker_ProgressChanged;
-            _backgroundWorker.RunWorkerCompleted += backgroundWorker_RunWorkerCompleted;
         }
 
         private static void backgroundWorker_DoWork(object sender, DoWorkEventArgs e)
@@ -52,19 +55,6 @@ namespace KryptKeeper
                 else
                     _status.WriteLine("* Unable to find: " + path);
             }
-        }
-
-        private static void backgroundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
-        {
-            if (MainWindow.CloseAfterCurrentOperation) return;
-            _status.UpdateProgress(e.ProgressPercentage, (int) e.UserState);
-        }
-
-        private static void backgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            if (MainWindow.CloseAfterCurrentOperation) return;
-            _status.WriteLine("Operation finished. " + Helper.GetSpannedTime(_cipherStartTime.Ticks));
-            _status.UpdateProgress(0, 100);
         }
 
         private static void process(string path, CipherOptions options)
@@ -118,7 +108,7 @@ namespace KryptKeeper
                         }
                     }
                 }
-                if (CancelProcessing)
+                if (_cancelProcessing)
                 {
                     _status.WriteLine("Process cancelled, deleting temp file: " + workingPath);
                     if (!Helper.TryDeleteFile(workingPath))
@@ -178,14 +168,14 @@ namespace KryptKeeper
 
         private static void processStreams(string path, Stream readStream, Stream cryptoStream)
         {
-            CancelProcessing = false;
+            _cancelProcessing = false;
             var buffer = new byte[CHUNK_SIZE];
             int bytesRead = readStream.Read(buffer, 0, CHUNK_SIZE);
             var totalBytes = new FileInfo(path).Length;
             long progressBytes = 0;
             while (bytesRead > 0)
             {
-                if (CancelProcessing)
+                if (_cancelProcessing)
                     break;
                 progressBytes += bytesRead;
                 _progressBytesOverall += bytesRead;
@@ -194,8 +184,6 @@ namespace KryptKeeper
                 bytesRead = readStream.Read(buffer, 0, bytesRead);
             }
         }
-
-
 
         private static void postProcessFileHandling(string path, string workingPath, CipherOptions options)
         {

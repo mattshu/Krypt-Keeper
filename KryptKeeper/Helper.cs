@@ -10,6 +10,10 @@ namespace KryptKeeper
 {
     internal static class Helper
     {
+        public static int GetPercentProgress(long current, long total)
+        {
+            return (int)Math.Round((double)(100 * current) / total);
+        }
 
         public static string ReplaceLastOccurrence(this string source, string find, string replace)
         {
@@ -99,16 +103,17 @@ namespace KryptKeeper
             settings.Save();
         }
 
-        public static void SafeFileDelete(string path)
+        public static bool TryDeleteFile(string path)
         {
             try
             {
                 if (File.Exists(path))
                     File.Delete(path);
+                return true;
             }
             catch (Exception)
             {
-                // ignore
+                return false;
             }
         }
 

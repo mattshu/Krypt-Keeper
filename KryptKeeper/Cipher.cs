@@ -39,7 +39,7 @@ namespace KryptKeeper
             for (int i = 0; i < options.Files.Length; i++)
             {
                 var path = options.Files[i];
-                _status.UpdateProgressTotal((int) Math.Round((double) (100 * i) / options.Files.Length));
+                _status.UpdateProgressTotal(Helper.GetPercentProgress(i, options.Files.Length));
                 if (_backgroundWorker.CancellationPending)
                     break;
                 if (File.Exists(path))
@@ -120,7 +120,8 @@ namespace KryptKeeper
                 if (CancelProcessing)
                 {
                     _status.WriteLine("Process cancelled, deleting temp file: " + workingPath);
-                    Helper.SafeFileDelete(workingPath);
+                    if (!Helper.TryDeleteFile(workingPath))
+                        _status.WriteLine("Unable to remove temp file: " + workingPath);
                     return;
                 }
                 postProcessFileHandling(path, workingPath, options);
@@ -132,7 +133,8 @@ namespace KryptKeeper
                         StringComparison.InvariantCultureIgnoreCase))
                 {
                     _status.WriteLine("*** Failed to decrypt file: " + path);
-                    Helper.SafeFileDelete(workingPath); // Remove temp file
+                    if (!Helper.TryDeleteFile(workingPath))
+                        _status.WriteLine("Unable to remove temp file: " + workingPath);
                 }
                 else
                 {
@@ -143,7 +145,8 @@ namespace KryptKeeper
             catch (UnauthorizedAccessException ex)
             {
                 _status.WriteLine("*** Unauthorized access: " + ex.Message);
-                Helper.SafeFileDelete(workingPath); // Remove temp file
+                if (!Helper.TryDeleteFile(workingPath))
+                    _status.WriteLine("Unable to remove temp file: " + workingPath);
             }
             catch (Exception ex)
             {
@@ -184,18 +187,20 @@ namespace KryptKeeper
                 if (CancelProcessing)
                     break;
                 progressBytes += bytesRead;
-                _backgroundWorker.ReportProgress((int) Math.Round((double) (100 * progressBytes) / totalBytes));
+                _backgroundWorker.ReportProgress(Helper.GetPercentProgress(progressBytes, totalBytes));
                 cryptoStream.Write(buffer, 0, bytesRead);
                 bytesRead = readStream.Read(buffer, 0, bytesRead);
             }
         }
 
+
+
         private static void postProcessFileHandling(string path, string workingPath, CipherOptions options)
         {
             if (options.Mode == ENCRYPT)
             {
-                if (options.RemoveOriginal)
-                    Helper.SafeFileDelete(path);
+                if (options.RemoveOriginal && !Helper.TryDeleteFile(path))
+                    _status.WriteLine("Unable to remove original (access denied): " + path);
                 if (options.MaskFileName)
                     File.Move(workingPath,
                         workingPath = workingPath.Replace(Path.GetFileName(workingPath).RemoveDefaultFileExt(),
@@ -224,8 +229,10 @@ namespace KryptKeeper
                 Helper.SetFileTimesFromFooter(originalPath, footer);
                 if (new FileInfo(originalPath).Length > 0)
                 {
-                    Helper.SafeFileDelete(path); // Delete original encrypted file
-                    Helper.SafeFileDelete(workingPath); // Delete temp file
+                    if (!Helper.TryDeleteFile(path))
+                        _status.WriteLine("Unable to remove original file: " + path);
+                    if (!Helper.TryDeleteFile(workingPath))
+                        _status.WriteLine("Unable to remove temp file: " + workingPath);
                 }
                 else
                 {

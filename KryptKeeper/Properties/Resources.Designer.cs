@@ -61,7 +61,8 @@ namespace KryptKeeper.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Do you want to abort the current job?\nSelect &apos;No&apos; to finish current job and cancel remaining tasks..
+        ///   Looks up a localized string similar to Do you want to abort the current job?
+        ///Select &apos;No&apos; to finish current job and cancel remaining tasks..
         /// </summary>
         internal static string AbortOperationDlgMsg {
             get {

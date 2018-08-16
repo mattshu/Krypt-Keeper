@@ -37,12 +37,15 @@ namespace KryptKeeper
 
         private void buildCustomProgressBar()
         {
-            _customProgressBar = new CustomProgressBar();
-            _customProgressBar.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            _customProgressBar.Location = new System.Drawing.Point(6, 6);
-            _customProgressBar.Name = "_customProgressBar";
-            _customProgressBar.Size = new System.Drawing.Size(499, 23);
-            _customProgressBar.TabIndex = 6;
+            _customProgressBar =
+                new CustomProgressBar
+                {
+                    Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
+                    Location = new System.Drawing.Point(6, 6),
+                    Name = "_customProgressBar",
+                    Size = new System.Drawing.Size(499, 23),
+                    TabIndex = 6
+                };
             tabPage3.Controls.Add(_customProgressBar);
         }
 
@@ -221,7 +224,6 @@ namespace KryptKeeper
                     return;
                 backgroundWorker.CancelAsync();
                 btnAddFilesOrCancelOperation.Enabled = false;
-                _status.WritePending("Canceling operations");
             }
             else
                 buildFileList();

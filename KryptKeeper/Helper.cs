@@ -77,6 +77,8 @@ namespace KryptKeeper
             int i = 1;
             do
             {
+                if (Path.GetExtension(path)?.Length <= 0)
+                    return path + $" ({i})";
                 path = path.Replace(Path.GetExtension(path), $" ({i})" + Path.GetExtension(path));
                 i++;
             } while (File.Exists(path));

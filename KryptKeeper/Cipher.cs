@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.IO;
 using System.Security.Cryptography;
+using System.Windows.Forms;
 
 namespace KryptKeeper
 {
@@ -40,11 +41,7 @@ namespace KryptKeeper
             foreach (var path in options.Files)
             {
                 if (_backgroundWorker.CancellationPending)
-                {
-                    _status.WriteLine("Stopping operations.");
                     break;
-                }
-
                 if (File.Exists(path))
                 {
                     _status.WritePending($"{options.GetModeOfOperation()}: " + path);
@@ -78,12 +75,15 @@ namespace KryptKeeper
                     _status.WriteLine("* File not found: " + path);
                     return;
                 }
-                if (options.Mode == DECRYPT && (Path.GetExtension(path) != FILE_EXTENSION || new FileInfo(path).Length <= MINIMUM_FILE_LENGTH))
+                if (options.Mode == DECRYPT && (Path.GetExtension(path) != FILE_EXTENSION ||
+                                                new FileInfo(path).Length <= MINIMUM_FILE_LENGTH))
                 {
                     _status.WriteLine("* File not in correct format for decryption: " + path);
                     return;
                 }
-                workingPath = options.Mode == ENCRYPT ? path + FILE_EXTENSION : path.ReplaceLastOccurrence(FILE_EXTENSION, WORKING_FILE_EXTENSION);
+                workingPath = options.Mode == ENCRYPT
+                    ? path + FILE_EXTENSION
+                    : path.ReplaceLastOccurrence(FILE_EXTENSION, WORKING_FILE_EXTENSION);
                 if (File.Exists(workingPath)) workingPath = Helper.PadExistingFileName(workingPath);
                 using (var aes = Aes.Create())
                 {
@@ -103,9 +103,12 @@ namespace KryptKeeper
                     {
                         using (var wStream = new FileStream(workingPath, FileMode.CreateNew, FileAccess.Write))
                         {
+                            if (options.Mode == ENCRYPT)
+                                wStream.Write(options.IV, 0, options.IV.Length); // Insert IV
                             using (var cStream = new CryptoStream(wStream, transformer, CryptoStreamMode.Write))
                             {
-                                rStream.Seek(options.Mode == ENCRYPT ? 0 : 16, SeekOrigin.Begin); // 16 skips IV
+                                rStream.Seek(options.Mode == ENCRYPT ? 0 : 16,
+                                    SeekOrigin.Begin); // 16 skips IV if decrypting
                                 processStreams(path, rStream, cStream);
                                 if (options.Mode == ENCRYPT)
                                     buildAndWriteFooter(path, cStream);
@@ -119,28 +122,38 @@ namespace KryptKeeper
                     Helper.SafeFileDelete(workingPath);
                     return;
                 }
-                if (options.Mode == DECRYPT)
-                {
-                    if (File.Exists(workingPath) && new FileInfo(workingPath).Length > 0)
-                        Helper.SafeFileDelete(path);
-                    else
-                    {
-                        _status.WriteLine("* Error decrypting file: " + path);
-                        _status.WriteLine("* File possibly corrupt: " + workingPath);
-                        return;
-                    }
-                }
                 postProcessFileHandling(path, workingPath, options);
             }
             catch (CryptographicException ex)
             {
-                _status.WriteLine("*** Cryptographic exception: " + ex.Message);
-                _status.WriteLine("Stacktrace: " + ex.StackTrace);
+                if (ex.Message.Equals("The input data is not a complete block.",
+                    StringComparison.InvariantCultureIgnoreCase))
+                {
+                    _status.WriteLine("*** Failed to decrypt file: " + path);
+                    Helper.SafeFileDelete(workingPath); // Remove temp file
+                }
+                else if (ex.Message.Equals("Padding is invalid and cannot be removed",
+                    StringComparison.InvariantCultureIgnoreCase))
+                {
+                    _status.WriteLine("*** Invalid password: " + path);
+                    Helper.SafeFileDelete(workingPath); // Remove temp file
+                }
+                else
+                {
+                    _status.WriteLine("*** Cryptographic exception: " + ex.Message);
+                    _status.WriteLine("Stacktrace: " + ex.StackTrace);
+                }
             }
             catch (UnauthorizedAccessException ex)
             {
                 _status.WriteLine("*** Unauthorized access: " + ex.Message);
-                _status.WriteLine("Stacktrace: " + ex.StackTrace);
+                Helper.SafeFileDelete(workingPath); // Remove temp file
+            }
+            catch (Exception ex)
+            {
+                _status.WriteLine("*** UNHANDLED EXCEPTION: " + ex.Message);
+                _status.WriteLine("* STACKTRACE: " + ex.StackTrace);
+                _status.WriteLine("Preserving " + workingPath + " for debugging purposes."); // Keep temp file
             }
         }
 
@@ -197,20 +210,31 @@ namespace KryptKeeper
             else
             {
                 var footer = new Footer();
-                if (!footer.TryExtract(path))
+                if (!footer.TryExtract(workingPath))
                 {
-                    _status.WriteLine("* Error: Unable to generate file information from " + path);
+                    _status.WriteLine("*** Error: Unable to generate decrypted file information from " + path);
+                    _status.WriteLine("* File possibly corrupt: " + workingPath);
                     return;
                 }
                 using (var fOpen = new FileStream(workingPath, FileMode.Open))
                 {
                     fOpen.SetLength(fOpen.Length - footer.ToArray().Length);
                 }
-                var projectedPath = workingPath.Replace(Path.GetFileName(workingPath), footer.Name).Replace(WORKING_FILE_EXTENSION, "");
-                if (File.Exists(projectedPath))
-                    projectedPath = Helper.PadExistingFileName(projectedPath);
-                File.Move(workingPath, projectedPath);
-                Helper.SetFileTimesFromFooter(projectedPath, footer);
+                var originalPath = workingPath.Replace(Path.GetFileName(workingPath), footer.Name).Replace(WORKING_FILE_EXTENSION, "");
+                if (File.Exists(originalPath))
+                    originalPath = Helper.PadExistingFileName(originalPath);
+                File.Move(workingPath, originalPath); // Copy temp file to original file
+                Helper.SetFileTimesFromFooter(originalPath, footer);
+                if (new FileInfo(originalPath).Length > 0)
+                {
+                    Helper.SafeFileDelete(path); // Delete original encrypted file
+                    Helper.SafeFileDelete(workingPath); // Delete temp file
+                }
+                else
+                {
+                    _status.WriteLine("* Error decrypting file: " + path);
+                    _status.WriteLine("* File possibly corrupt: " + originalPath);
+                }
             }
         }
     }

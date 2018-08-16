@@ -327,3 +327,6 @@ ASALocalRun/
 
 # MFractors (Xamarin productivity tool) working folder
 .mfractor/
+/KryptKeeper/FlatMainWindow.cs
+/KryptKeeper/FlatMainWindow.Designer.cs
+/KryptKeeper/FlatMainWindow.resx

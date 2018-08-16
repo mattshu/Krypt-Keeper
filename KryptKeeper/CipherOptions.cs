@@ -4,8 +4,6 @@ namespace KryptKeeper
 {
     internal class CipherOptions
     {
-        public static readonly int DECRYPT = 1;
-        public static readonly int ENCRYPT = 0;
         public string[] Files { get; set; }
         public byte[] IV { get; set; }
         public byte[] Key
@@ -31,7 +29,7 @@ namespace KryptKeeper
 
         public string GetModeOfOperation()
         {
-            return Mode == ENCRYPT ? "Encryption" : "Decryption";
+            return Mode == Cipher.ENCRYPT ? "Encryption" : "Decryption";
         }
 
         private static byte[] getMD5(byte[] value)

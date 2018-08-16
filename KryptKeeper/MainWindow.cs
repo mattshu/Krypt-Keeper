@@ -27,7 +27,8 @@ namespace KryptKeeper
 
         private List<FileData> _fileList = new List<FileData>();
 
-        private CustomProgressBar _customProgressBar;
+        private CustomProgressBar _progressCurrent;
+        private CustomProgressBar _progressTotal;
 
         public MainWindow()
         {
@@ -37,22 +38,30 @@ namespace KryptKeeper
 
         private void buildCustomProgressBar()
         {
-            _customProgressBar =
+            _progressCurrent =
                 new CustomProgressBar
                 {
                     Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
                     Location = new System.Drawing.Point(6, 6),
-                    Name = "_customProgressBar",
-                    Size = new System.Drawing.Size(499, 23),
-                    TabIndex = 6
+                    Name = "_progressCurrent",
+                    Size = new System.Drawing.Size(353, 23)
                 };
-            tabPage3.Controls.Add(_customProgressBar);
+            _progressTotal =
+                new CustomProgressBar
+                {
+                    Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
+                    Location = new System.Drawing.Point(365, 6),
+                    Name = "_progressTotal",
+                    Size = new System.Drawing.Size(140, 23)
+                };
+            tabPage3.Controls.Add(_progressCurrent);
+            tabPage3.Controls.Add(_progressTotal);
         }
 
         private void mainWindow_Shown(object sender, EventArgs e)
         {
             loadSettings();
-            _status = new Status(txtStatus, _customProgressBar);
+            _status = new Status(txtStatus, _progressCurrent, _progressTotal);
             backgroundWorker.RunWorkerCompleted += backgroundWorker_RunWorkerCompleted;
             Cipher.SetBackgroundWorker(backgroundWorker);
         }
@@ -237,13 +246,13 @@ namespace KryptKeeper
         private void btnEncrypt_Click(object sender, EventArgs e)
         {
             if (confirmSettings())
-                processFiles(CipherOptions.ENCRYPT);
+                processFiles(Cipher.ENCRYPT);
         }
 
         private void btnDecrypt_Click(object sender, EventArgs e)
         {
             if (confirmSettings())
-                processFiles(CipherOptions.DECRYPT);
+                processFiles(Cipher.DECRYPT);
         }
 
         private void chkMaskInformation_CheckedChanged(object sender, EventArgs e)
@@ -365,8 +374,8 @@ namespace KryptKeeper
                 btnAddFilesOrCancelOperation.Text = @"Add Files...";
                 btnAddFilesOrCancelOperation.Enabled = true;
             });
-            _status.UpdateProgress(0);
-            
+            _status.UpdateProgressCurrent(0);
+            _status.UpdateProgressTotal(100);
         }
 
         private void btnExit_Click(object sender, EventArgs e)

@@ -5,74 +5,85 @@ namespace KryptKeeper
 {
     public class Status
     {
-        private static Status instance;
+        private static Status _instance;
         private readonly string newLine = Environment.NewLine;
-        private readonly CustomProgressBar progressBar;
-        private readonly TextBox statusBox;
-        private bool isPending;
-        private DateTime pendingStartTime;
+        private readonly CustomProgressBar _progressCurrent;
+        private readonly CustomProgressBar _progressTotal;
+        private readonly TextBox _statusBox;
+        private bool _isPending;
+        private DateTime _pendingStartTime;
 
-        public Status(TextBox statusBox, CustomProgressBar progressBar)
+        public Status(TextBox statusBox, CustomProgressBar progressCurrent, CustomProgressBar progressTotal)
         {
-            if (instance != null) return;
-            instance = this;
-            this.statusBox = statusBox;
-            this.progressBar = progressBar;
+            if (_instance != null) return;
+            _instance = this;
+            _statusBox = statusBox;
+            _progressCurrent = progressCurrent;
+            _progressTotal = progressTotal;
         }
 
         private static string Timestamp => "[" + DateTime.Now.ToString("HH:mm:ss.fff") + "]: ";
 
         public static Status GetInstance()
         {
-            return instance ?? throw new Exception(@"Unable to get instance of status window!");
+            return _instance ?? throw new Exception(@"Unable to get _instance of status window!");
         }
 
         public void PendingComplete()
         {
-            if (!isPending) return;
-            isPending = false;
+            if (!_isPending) return;
+            _isPending = false;
             finishPending();
         }
 
-        public void UpdateProgress(int progress)
+        public void UpdateProgressCurrent(int progress)
         {
-            progressBar.Invoke((Action)delegate
-           {
-               progressBar.Maximum = 100;
-               progressBar.Step = 1;
-               progressBar.Value = progress;
-           });
+            _progressCurrent.Invoke((Action)delegate
+            {
+                _progressCurrent.Maximum = 100;
+                _progressCurrent.Step = 1;
+                _progressCurrent.Value = progress;
+            });
+        }
+        public void UpdateProgressTotal(int progress)
+        {
+            _progressTotal.Invoke((Action)delegate
+            {
+                _progressTotal.Maximum = 100;
+                _progressTotal.Step = 1;
+                _progressTotal.Value = progress;
+            });
         }
 
         public void WriteLine(string msg)
         {
-            if (isPending)
+            if (_isPending)
                 finishPending();
-            isPending = false;
-            statusBox.Invoke((Action)delegate
+            _isPending = false;
+            _statusBox.Invoke((Action)delegate
            {
-               statusBox.AppendText(Timestamp + msg + newLine);
+               _statusBox.AppendText(Timestamp + msg + newLine);
            });
         }
 
         public void WritePending(string msg)
         {
-            if (isPending)
+            if (_isPending)
                 finishPending();
             else
-                isPending = true;
-            pendingStartTime = DateTime.Now;
-            statusBox.Invoke((Action)delegate
+                _isPending = true;
+            _pendingStartTime = DateTime.Now;
+            _statusBox.Invoke((Action)delegate
            {
-               statusBox.AppendText(Timestamp + msg + "...");
+               _statusBox.AppendText(Timestamp + msg + "...");
            });
         }
 
         private void finishPending()
         {
-            statusBox.Invoke((Action)delegate
+            _statusBox.Invoke((Action)delegate
            {
-               statusBox.AppendText("done! " + Helper.GetSpannedTime(pendingStartTime.Ticks) + newLine);
+               _statusBox.AppendText("done! " + Helper.GetSpannedTime(_pendingStartTime.Ticks) + newLine);
            });
         }
     }

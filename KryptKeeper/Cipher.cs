@@ -2,28 +2,26 @@
 using System.ComponentModel;
 using System.IO;
 using System.Security.Cryptography;
-using System.Windows.Forms;
 
 namespace KryptKeeper
 {
     internal static class Cipher
     {
-
-        public static bool CancelProcessing = false;
+        public const int ENCRYPT = 0;
+        public const int DECRYPT = 1;
         public const string FILE_EXTENSION = ".krpt";
         public const string WORKING_FILE_EXTENSION = ".krpt.tmp";
         private const int MINIMUM_FILE_LENGTH = 16; // IV
-        private static BackgroundWorker _backgroundWorker;
         private const int CHUNK_SIZE = 16 * 1024 * 1024; // 16MB
+        public static bool CancelProcessing = false;
+        private static BackgroundWorker _backgroundWorker;
         private static readonly Status _status = Status.GetInstance();
-        private static DateTime cipherStartTime;
-        private static readonly int ENCRYPT = CipherOptions.ENCRYPT;
-        private static readonly int DECRYPT = CipherOptions.DECRYPT;
+        private static DateTime _cipherStartTime;
 
         public static void ProcessFiles(CipherOptions options)
         {
             if (options.Files.Length <= 0) return;
-            cipherStartTime = DateTime.Now;
+            _cipherStartTime = DateTime.Now;
             _backgroundWorker.RunWorkerAsync(options);
         }
 
@@ -37,9 +35,11 @@ namespace KryptKeeper
 
         private static void backgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            var options = (CipherOptions)e.Argument;
-            foreach (var path in options.Files)
+            var options = (CipherOptions) e.Argument;
+            for (int i = 0; i < options.Files.Length; i++)
             {
+                var path = options.Files[i];
+                _status.UpdateProgressTotal((int) Math.Round((double) (100 * i) / options.Files.Length));
                 if (_backgroundWorker.CancellationPending)
                     break;
                 if (File.Exists(path))
@@ -55,14 +55,15 @@ namespace KryptKeeper
         private static void backgroundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             if (MainWindow.CloseAfterCurrentOperation) return;
-            _status.UpdateProgress(e.ProgressPercentage);
+            _status.UpdateProgressCurrent(e.ProgressPercentage);
         }
 
         private static void backgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             if (MainWindow.CloseAfterCurrentOperation) return;
-            _status.WriteLine("Operation finished. " + Helper.GetSpannedTime(cipherStartTime.Ticks));
-            _status.UpdateProgress(0);
+            _status.WriteLine("Operation finished. " + Helper.GetSpannedTime(_cipherStartTime.Ticks));
+            _status.UpdateProgressCurrent(0);
+            _status.UpdateProgressTotal(0);
         }
 
         private static void process(string path, CipherOptions options)
@@ -127,15 +128,10 @@ namespace KryptKeeper
             catch (CryptographicException ex)
             {
                 if (ex.Message.Equals("The input data is not a complete block.",
-                    StringComparison.InvariantCultureIgnoreCase))
+                    StringComparison.InvariantCultureIgnoreCase) || ex.Message.Equals("Padding is invalid and cannot be removed.",
+                        StringComparison.InvariantCultureIgnoreCase))
                 {
                     _status.WriteLine("*** Failed to decrypt file: " + path);
-                    Helper.SafeFileDelete(workingPath); // Remove temp file
-                }
-                else if (ex.Message.Equals("Padding is invalid and cannot be removed",
-                    StringComparison.InvariantCultureIgnoreCase))
-                {
-                    _status.WriteLine("*** Invalid password: " + path);
                     Helper.SafeFileDelete(workingPath); // Remove temp file
                 }
                 else
@@ -220,7 +216,8 @@ namespace KryptKeeper
                 {
                     fOpen.SetLength(fOpen.Length - footer.ToArray().Length);
                 }
-                var originalPath = workingPath.Replace(Path.GetFileName(workingPath), footer.Name).Replace(WORKING_FILE_EXTENSION, "");
+                var originalPath = workingPath.Replace(Path.GetFileName(workingPath), footer.Name)
+                    .Replace(WORKING_FILE_EXTENSION, "");
                 if (File.Exists(originalPath))
                     originalPath = Helper.PadExistingFileName(originalPath);
                 File.Move(workingPath, originalPath); // Copy temp file to original file

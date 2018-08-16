@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.IO;
 using System.Security.Cryptography;
+using System.Text;
 
 namespace KryptKeeper
 {
@@ -11,16 +12,16 @@ namespace KryptKeeper
         public const int DECRYPT = 1;
         public const string FILE_EXTENSION = ".krpt";
         public const string WORKING_FILE_EXTENSION = ".krpt.tmp";
-        private const int MINIMUM_FILE_LENGTH = 16; // IV
+        public const long MAX_FILE_LENGTH = 0x800000000; // 4GB
+        private const int MINIMUM_FILE_LENGTH = IV_SIZE + SALT_SIZE;
+        private const int IV_SIZE = 16;
+        private const int SALT_SIZE = 29;
         private const int CHUNK_SIZE = 16 * 1024 * 1024; // 16MB
         public static void CancelProcessing() => _cancelProcessing = true;
         private static bool _cancelProcessing;
         private static BackgroundWorker _backgroundWorker;
         private static readonly Status _status = Status.GetInstance();
-        public static string GetElapsedTime()
-        {
-            return Helper.GetSpannedTime(_cipherStartTime.Ticks);
-        }
+        public static string GetElapsedTime() => Helper.GetSpannedTime(_cipherStartTime.Ticks);
         private static DateTime _cipherStartTime;
         private static long _progressBytesOverall;
         private static long _progressBytesTotal;
@@ -67,11 +68,13 @@ namespace KryptKeeper
                     _status.WriteLine("* File not found: " + path);
                     return;
                 }
-                if (options.Mode == DECRYPT && (Path.GetExtension(path) != FILE_EXTENSION ||
-                                                new FileInfo(path).Length <= MINIMUM_FILE_LENGTH))
+                if (options.Mode == DECRYPT)
                 {
-                    _status.WriteLine("* File not in correct format for decryption: " + path);
-                    return;
+                    if (Path.GetExtension(path) != FILE_EXTENSION || new FileInfo(path).Length <= MINIMUM_FILE_LENGTH)
+                    {
+                        _status.WriteLine("* File not in correct format for decryption: " + path);
+                        return;
+                    }
                 }
                 workingPath = options.Mode == ENCRYPT
                     ? path + FILE_EXTENSION
@@ -84,7 +87,21 @@ namespace KryptKeeper
                         _status.WriteLine("*** Error: Failed to create AES object!");
                         return;
                     }
-                    aes.Key = options.Key;
+                    var key = new byte[32];
+                    if (options.Mode == ENCRYPT)
+                        key = Helper.GenerateSaltedKey(options.Key, options.Salt);
+                    if (options.Mode == DECRYPT)
+                    {
+                        var saltString = extractSaltString(path);
+                        if (saltString == null)
+                        {
+                            _status.WriteLine("*** Error: Unable to extract salt from: " + path);
+                            return;
+                        }
+                        key = Helper.GenerateSaltedKey(options.Key, Helper.GetBytes(saltString));
+                    }
+                    aes.KeySize = 256;
+                    aes.Key = key;
                     aes.IV = options.Mode == ENCRYPT ? options.IV : extractIV(path);
                     aes.Mode = CipherMode.CBC;
                     aes.Padding = PaddingMode.PKCS7;
@@ -96,11 +113,14 @@ namespace KryptKeeper
                         using (var wStream = new FileStream(workingPath, FileMode.CreateNew, FileAccess.Write))
                         {
                             if (options.Mode == ENCRYPT)
+                            {
                                 wStream.Write(options.IV, 0, options.IV.Length); // Insert IV
+                                wStream.Write(options.Salt, 0, options.Salt.Length); // Insert Salt
+                            }
                             using (var cStream = new CryptoStream(wStream, transformer, CryptoStreamMode.Write))
                             {
-                                rStream.Seek(options.Mode == ENCRYPT ? 0 : 16,
-                                    SeekOrigin.Begin); // 16 skips IV if decrypting
+                                // 45 skips IV (16 bytes) and salt (29 bytes) if decrypting
+                                rStream.Seek(options.Mode == ENCRYPT ? 0 : 45, SeekOrigin.Begin); 
                                 processStreams(path, rStream, cStream);
                                 if (options.Mode == ENCRYPT)
                                     buildAndWriteFooter(path, cStream);
@@ -154,6 +174,18 @@ namespace KryptKeeper
                 using (var bReader = new BinaryReader(fStream))
                 {
                     return bReader.ReadBytes(16);
+                }
+            }
+        }
+
+        private static string extractSaltString(string path)
+        {
+            using (var fStream = new FileStream(path, FileMode.Open, FileAccess.Read))
+            {
+                using (var bReader = new BinaryReader(fStream))
+                {
+                    fStream.Seek(16, SeekOrigin.Begin);
+                    return Encoding.UTF8.GetString(bReader.ReadBytes(29));
                 }
             }
         }

@@ -8,7 +8,7 @@ namespace KryptKeeper
     internal class Footer
     {
         public static readonly string FOOTER_TAG = "[KRYPTKEEPER]";
-        private static readonly byte[] FOOTER_SIGNATURE = Encoding.Default.GetBytes(FOOTER_TAG);
+        private static readonly byte[] FOOTER_SIGNATURE = Helper.GetBytes(FOOTER_TAG);
 
         public DateTime AccessedTime { get; set; }
         public DateTime CreationTime { get; set; }
@@ -64,7 +64,7 @@ namespace KryptKeeper
 
         public byte[] ToArray()
         {
-            return Encoding.Default.GetBytes(ToString());
+            return Helper.GetBytes(ToString());
         }
 
         public override string ToString()
@@ -91,7 +91,7 @@ namespace KryptKeeper
                 {
                     if (footerArray[i] != FOOTER_SIGNATURE[0]) continue;
                     if (!FOOTER_SIGNATURE.SequenceEqual(footerArray.Skip(i).Take(FOOTER_SIGNATURE.Length))) continue;
-                    var newFooter = FromString(Encoding.Default.GetString(footerArray.Skip(i).ToArray()));
+                    var newFooter = FromString(Encoding.UTF8.GetString(footerArray.Skip(i).ToArray()));
                     Name = newFooter.Name;
                     CreationTime = newFooter.CreationTime;
                     ModifiedTime = newFooter.ModifiedTime;

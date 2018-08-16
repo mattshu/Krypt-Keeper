@@ -7,22 +7,19 @@ namespace KryptKeeper
     internal class CipherOptions
     {
         public string[] Files { get; set; }
-
-        public byte[] IV { get; set; }
-        public byte[] Key
-        {
-            get => key;
-            set => key = getMD5(value);
-        }
-        private byte[] key;
         public bool MaskFileName { get; set; }
         public bool MaskFileTimes { get; set; }
-        public int Mode { get; set; }
         public bool RemoveOriginal { get; set; }
+        public int Mode { get; set; }
+        public byte[] IV { get; set; }
+        public byte[] Salt { get; set; }
+        public byte[] Key { get; set; }
+
         public long CalculateTotalPayload()
         {
             return Files.Length > 0 ? Files.Sum(f => new FileInfo(f).Length) : 0;
         }
+
         public void GenerateIV()
         {
             using (var aes = Aes.Create())
@@ -33,14 +30,6 @@ namespace KryptKeeper
             }
         }
 
-        public string GetModeOfOperation()
-        {
-            return Mode == Cipher.ENCRYPT ? "Encrypting" : "Decrypting";
-        }
-
-        private static byte[] getMD5(byte[] value)
-        {
-            return MD5.Create().ComputeHash(value);
-        }
+        public string GetModeOfOperation() => Mode == Cipher.ENCRYPT ? "Encrypting" : "Decrypting";
     }
 }

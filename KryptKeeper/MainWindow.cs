@@ -143,11 +143,9 @@ namespace KryptKeeper
 
         private void arrangeFileListColumns()
         {
-            fileListDataGridView.AutoGenerateColumns = false;
-            var columns = fileListDataGridView.Columns;
             var columnOrderFromSettings = Settings.Default.fileListColumnOrder;
             for (int i = 0; i < columnOrderFromSettings.Count; i++)
-                columns[i].DisplayIndex = int.Parse(columnOrderFromSettings[i]);
+                fileListDataGridView.Columns[i].DisplayIndex = int.Parse(columnOrderFromSettings[i]);
         }
 
         private void loadFileListColumnWidths()
@@ -193,12 +191,23 @@ namespace KryptKeeper
 
         private void processFiles(int cipherMode)
         {
-            if (!validateSettings()) return;
-            btnAddFilesOrCancelOperation.Text = @"Cancel";
-            focusStatusTab();
-            var options = generateOptions(cipherMode);
-            Cipher.ProcessFiles(options);
-            resetFileList();
+            try
+            {
+                if (!validateSettings()) return;
+                btnAddFilesOrCancelOperation.Text = @"Cancel";
+                focusStatusTab();
+                var options = generateOptions(cipherMode);
+                Cipher.ProcessFiles(options);
+                resetFileList();
+            }
+            catch (FileNotFoundException ex)
+            {
+                _status.WriteLine("* Error: Unable to find keyfile: " + ex.Message);
+            }
+            catch (FileLoadException ex)
+            {
+                _status.WriteLine("* Error: Keyfile is either empty or too large (>=4GB): " + ex.Message);
+            }
         }
 
         private void focusStatusTab()
@@ -209,17 +218,25 @@ namespace KryptKeeper
 
         private CipherOptions generateOptions(int cipherMode)
         {
-            var key = new byte[0];
+            byte[] key;
             if (cbxCipherKeyType.SelectedIndex == 0)
-                key = Encoding.UTF8.GetBytes(txtCipherKey.Text);
-            else if (cbxCipherKeyType.SelectedIndex == 1)
-                key = File.ReadAllBytes(txtCipherKey.Text);
+                key = Helper.GetBytes(txtCipherKey.Text);
+            else if (cbxCipherKeyType.SelectedIndex == 1 && File.Exists(txtCipherKey.Text))
+            {
+                if (new FileInfo(txtCipherKey.Text).Length < Cipher.MAX_FILE_LENGTH)
+                    key = File.ReadAllBytes(txtCipherKey.Text);
+                else
+                    throw new FileLoadException(txtCipherKey.Text);
+            }
+            else
+                throw new FileNotFoundException(txtCipherKey.Text);
             var maskInfoIndex = cbxMaskInformation.SelectedIndex;
             var options = new CipherOptions
             {
                 Mode = cipherMode,
                 Files = getPathsFromFileList(),
                 Key = key,
+                Salt = Helper.GenerateSalt(),
                 MaskFileName = chkMaskInformation.Checked && (maskInfoIndex == 0 || maskInfoIndex == 2),
                 MaskFileTimes = chkMaskInformation.Checked && (maskInfoIndex == 1 || maskInfoIndex == 2),
                 RemoveOriginal = chkRemoveAfterEncrypt.Checked
@@ -329,7 +346,7 @@ namespace KryptKeeper
             {
                 var logHeader = Helper.GenerateLogHeader();
                 fStream.Write(logHeader, 0, logHeader.Length);
-                fStream.Write(Encoding.Default.GetBytes(txtStatus.Text), 0, txtStatus.TextLength);
+                fStream.Write(Helper.GetBytes(txtStatus.Text), 0, txtStatus.TextLength);
             }
             _status.WriteLine("Exported log to " + saveFileDialog.FileName);
         }

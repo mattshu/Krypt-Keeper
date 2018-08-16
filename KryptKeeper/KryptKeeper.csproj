@@ -135,6 +135,7 @@
     <Compile Include="Status.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ThirdPartyTools\BCrypt.cs" />
     <EmbeddedResource Include="ConfirmExitWhileBusyDialog.resx">
       <DependentUpon>ConfirmExitWhileBusyDialog.cs</DependentUpon>
     </EmbeddedResource>

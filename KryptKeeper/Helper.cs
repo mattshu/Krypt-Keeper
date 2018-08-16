@@ -10,22 +10,6 @@ namespace KryptKeeper
 {
     internal static class Helper
     {
-        public static int GetPercentProgress(long current, long total)
-        {
-            return (int)Math.Round((double)(100 * current) / total);
-        }
-
-        public static string ReplaceLastOccurrence(this string source, string find, string replace)
-        {
-            int place = source.LastIndexOf(find, StringComparison.Ordinal);
-
-            if (place == -1)
-                return source;
-
-            var result = source.Remove(place, find.Length).Insert(place, replace);
-            return result;
-        }
-
         public static string BrowseFile()
         {
             var openFile = new OpenFileDialog();
@@ -37,7 +21,29 @@ namespace KryptKeeper
         {
             var timestamp = DateTime.Now;
             string header = "KryptKeeper Status Log" + Environment.NewLine + "Generated on " + timestamp + Environment.NewLine; // TODO INSERT VERSION INFORMATION
-            return Encoding.Default.GetBytes(header);
+            return GetBytes(header);
+        }
+
+        public static byte[] GenerateSalt(int size = 10)
+        { // for Encryption
+            var salt = BCrypt.GenerateSalt(size);
+            return GetBytes(salt);
+        }
+
+        public static byte[] GenerateSaltedKey(byte[] key, byte[] salt)
+        { // for Decryption
+            var saltedKey = BCrypt.HashPassword(Encoding.UTF8.GetString(key), Encoding.UTF8.GetString(salt));
+            return GetSHA256(GetBytes(saltedKey));
+        }
+
+        public static byte[] GetBytes(string value)
+        {
+            return Encoding.UTF8.GetBytes(value);
+        }
+
+        public static int GetPercentProgress(long current, long total)
+        {
+            return (int)Math.Round((double)(100 * current) / total);
         }
 
         public static string GetRandomAlphanumericString(int length)
@@ -54,6 +60,16 @@ namespace KryptKeeper
             return Regex.Replace(GetRandomAlphanumericString(length), @"[A-F]", "0");
         }
 
+        public static byte[] GetSHA256(string value)
+        {
+            return SHA256.Create().ComputeHash(GetBytes(value));
+        }
+
+        public static byte[] GetSHA256(byte[] value)
+        {
+            return SHA256.Create().ComputeHash(value);
+
+        }
         public static string GetSpannedTime(long ticks)
         {
             var time = TimeSpan.FromTicks(Math.Max(1, DateTime.Now.Ticks - ticks));
@@ -71,24 +87,36 @@ namespace KryptKeeper
             return "(" + sb + ")";
         }
 
+        public static string PadExistingFileName(string fullPath)
+        {
+            int count = 1;
+            string path = Path.GetDirectoryName(fullPath);
+            string fileNameOnly = Path.GetFileNameWithoutExtension(fullPath);
+            string extension = Path.GetExtension(fullPath);
+            string newFullPath = fullPath;
+            while (File.Exists(newFullPath))
+            {
+                string tempFileName = $"{fileNameOnly} ({count++})";
+                newFullPath = Path.Combine(path, tempFileName + extension);
+            }
+            return newFullPath;
+        }
+
         public static string RemoveDefaultFileExt(this string path)
         {
             return path.Replace(Cipher.WORKING_FILE_EXTENSION, "").Replace(Cipher.FILE_EXTENSION, "");
         }
 
-        public static string PadExistingFileName(string path)
+        public static string ReplaceLastOccurrence(this string source, string find, string replace)
         {
-            int i = 1;
-            do
-            {
-                if (Path.GetExtension(path)?.Length <= 0)
-                    return path + $" ({i})";
-                path = path.Replace(Path.GetExtension(path), $" ({i})" + Path.GetExtension(path));
-                i++;
-            } while (File.Exists(path));
-            return path;
-        }
+            int place = source.LastIndexOf(find, StringComparison.Ordinal);
 
+            if (place == -1)
+                return source;
+
+            var result = source.Remove(place, find.Length).Insert(place, replace);
+            return result;
+        }
         public static void ResetSettings()
         {
             var settings = Settings.Default;
@@ -101,20 +129,6 @@ namespace KryptKeeper
             settings.saveKey = false;
             settings.confirmOnExit = true;
             settings.Save();
-        }
-
-        public static bool TryDeleteFile(string path)
-        {
-            try
-            {
-                if (File.Exists(path))
-                    File.Delete(path);
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
         }
 
         public static void SetFileTimesFromFooter(string path, Footer footer)
@@ -136,6 +150,19 @@ namespace KryptKeeper
             MessageBox.Show(msg, @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
+        public static bool TryDeleteFile(string path)
+        {
+            try
+            {
+                if (File.Exists(path))
+                    File.Delete(path);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
         private static DateTime getRandomFileTime()
         {
             const long minTicks = 0x1;

@@ -374,8 +374,6 @@ namespace KryptKeeper
                 btnAddFilesOrCancelOperation.Text = @"Add Files...";
                 btnAddFilesOrCancelOperation.Enabled = true;
             });
-            _status.UpdateProgressCurrent(0);
-            _status.UpdateProgressTotal(100);
         }
 
         private void btnExit_Click(object sender, EventArgs e)

@@ -36,22 +36,19 @@ namespace KryptKeeper
             finishPending();
         }
 
-        public void UpdateProgressCurrent(int progress)
+        public void UpdateProgress(int progressCurrent, int progressTotal)
         {
             _progressCurrent.Invoke((Action)delegate
             {
                 _progressCurrent.Maximum = 100;
                 _progressCurrent.Step = 1;
-                _progressCurrent.Value = progress;
+                _progressCurrent.Value = progressCurrent;
             });
-        }
-        public void UpdateProgressTotal(int progress)
-        {
             _progressTotal.Invoke((Action)delegate
             {
                 _progressTotal.Maximum = 100;
                 _progressTotal.Step = 1;
-                _progressTotal.Value = progress;
+                _progressTotal.Value = progressTotal;
             });
         }
 

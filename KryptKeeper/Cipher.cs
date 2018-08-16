@@ -17,10 +17,14 @@ namespace KryptKeeper
         private static BackgroundWorker _backgroundWorker;
         private static readonly Status _status = Status.GetInstance();
         private static DateTime _cipherStartTime;
+        private static long _progressBytesOverall;
+        private static long _progressBytesTotal;
 
         public static void ProcessFiles(CipherOptions options)
         {
             if (options.Files.Length <= 0) return;
+            _progressBytesOverall = 0;
+            _progressBytesTotal = options.CalculateTotalPayload();
             _cipherStartTime = DateTime.Now;
             _backgroundWorker.RunWorkerAsync(options);
         }
@@ -36,10 +40,8 @@ namespace KryptKeeper
         private static void backgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             var options = (CipherOptions) e.Argument;
-            for (int i = 0; i < options.Files.Length; i++)
+            foreach (var path in options.Files)
             {
-                var path = options.Files[i];
-                _status.UpdateProgressTotal(Helper.GetPercentProgress(i, options.Files.Length));
                 if (_backgroundWorker.CancellationPending)
                     break;
                 if (File.Exists(path))
@@ -55,20 +57,19 @@ namespace KryptKeeper
         private static void backgroundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             if (MainWindow.CloseAfterCurrentOperation) return;
-            _status.UpdateProgressCurrent(e.ProgressPercentage);
+            _status.UpdateProgress(e.ProgressPercentage, (int) e.UserState);
         }
 
         private static void backgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             if (MainWindow.CloseAfterCurrentOperation) return;
             _status.WriteLine("Operation finished. " + Helper.GetSpannedTime(_cipherStartTime.Ticks));
-            _status.UpdateProgressCurrent(0);
-            _status.UpdateProgressTotal(0);
+            _status.UpdateProgress(0, 100);
         }
 
         private static void process(string path, CipherOptions options)
         {
-            var workingPath = "";
+            string workingPath = "";
             try
             {
                 if (!File.Exists(path))
@@ -187,7 +188,8 @@ namespace KryptKeeper
                 if (CancelProcessing)
                     break;
                 progressBytes += bytesRead;
-                _backgroundWorker.ReportProgress(Helper.GetPercentProgress(progressBytes, totalBytes));
+                _progressBytesOverall += bytesRead;
+                _backgroundWorker.ReportProgress(Helper.GetPercentProgress(progressBytes, totalBytes), Helper.GetPercentProgress(_progressBytesOverall, _progressBytesTotal));
                 cryptoStream.Write(buffer, 0, bytesRead);
                 bytesRead = readStream.Read(buffer, 0, bytesRead);
             }

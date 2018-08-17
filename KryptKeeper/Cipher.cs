@@ -16,7 +16,8 @@ namespace KryptKeeper
         private const int MINIMUM_FILE_LENGTH = IV_SIZE + SALT_SIZE;
         private const int IV_SIZE = 16;
         private const int SALT_SIZE = 29;
-        private const int CHUNK_SIZE = 16 * 1024 * 1024; // 16MB
+        private const int KEY_SIZE = 256; 
+        private const int CHUNK_SIZE = 0x1000000; // 16MB
         public static void CancelProcessing() => _cancelProcessing = true;
         private static bool _cancelProcessing;
         private static BackgroundWorker _backgroundWorker;
@@ -100,7 +101,7 @@ namespace KryptKeeper
                         }
                         key = Helper.GenerateSaltedKey(options.Key, Helper.GetBytes(saltString));
                     }
-                    aes.KeySize = 256;
+                    aes.KeySize = KEY_SIZE;
                     aes.Key = key;
                     aes.IV = options.Mode == ENCRYPT ? options.IV : extractIV(path);
                     aes.Mode = CipherMode.CBC;

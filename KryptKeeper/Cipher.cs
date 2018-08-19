@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.IO;
+using System.Runtime.ExceptionServices;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -88,27 +89,7 @@ namespace KryptKeeper
                         _status.WriteLine("*** Error: Failed to create AES object!");
                         return;
                     }
-                    var key = new byte[32];
-                    if (options.Mode == ENCRYPT)
-                        key = Helper.GenerateSaltedKey(options.Key, options.Salt);
-                    if (options.Mode == DECRYPT)
-                    {
-                        var saltString = extractSaltString(path);
-                        if (saltString == null)
-                        {
-                            _status.WriteLine("*** Error: Unable to extract salt from: " + path);
-                            return;
-                        }
-                        key = Helper.GenerateSaltedKey(options.Key, Helper.GetBytes(saltString));
-                    }
-                    aes.KeySize = KEY_SIZE;
-                    aes.Key = key;
-                    aes.IV = options.Mode == ENCRYPT ? options.IV : extractIV(path);
-                    aes.Mode = CipherMode.CBC;
-                    aes.Padding = PaddingMode.PKCS7;
-                    var transformer = options.Mode == ENCRYPT
-                        ? aes.CreateEncryptor(aes.Key, aes.IV)
-                        : aes.CreateDecryptor(aes.Key, aes.IV);
+                    var transformer = createCryptoTransform(path, options, aes);
                     using (var rStream = new FileStream(path, FileMode.Open, FileAccess.Read))
                     {
                         using (var wStream = new FileStream(workingPath, FileMode.CreateNew, FileAccess.Write))
@@ -138,12 +119,13 @@ namespace KryptKeeper
                 }
                 postProcessFileHandling(path, workingPath, options);
             }
-            catch (CryptographicException ex)
+            /*catch (CryptographicException ex)
             {
                 if (ex.Message.Equals("The input data is not a complete block.",
                     StringComparison.InvariantCultureIgnoreCase) || ex.Message.Equals("Padding is invalid and cannot be removed.",
                         StringComparison.InvariantCultureIgnoreCase))
                 {
+                    
                     _status.WriteLine("*** Failed to decrypt file: " + path);
                     if (!Helper.TryDeleteFile(workingPath))
                         _status.WriteLine("Unable to remove temp file: " + workingPath);
@@ -159,35 +141,84 @@ namespace KryptKeeper
                 _status.WriteLine("*** Unauthorized access: " + ex.Message);
                 if (!Helper.TryDeleteFile(workingPath))
                     _status.WriteLine("Unable to remove temp file: " + workingPath);
-            }
+            }*/
             catch (Exception ex)
             {
-                _status.WriteLine("*** UNHANDLED EXCEPTION: " + ex.Message);
-                _status.WriteLine("* STACKTRACE: " + ex.StackTrace);
-                _status.WriteLine("Preserving " + workingPath + " for debugging purposes."); // Keep temp file
+                ExceptionController.Handle(ex, path, workingPath);
             }
+        }
+
+        private static ICryptoTransform createCryptoTransform(string path, CipherOptions options, SymmetricAlgorithm aes)
+        {
+            if (options.Mode == ENCRYPT)
+                aes.Key = Helper.GenerateSaltedKey(options.Key, options.Salt);
+            if (options.Mode == DECRYPT)
+            {
+                var saltString = extractSaltString(path);
+                if (saltString.Length <= 0)
+                {
+                    _status.WriteLine("*** Error: Unable to extract salt from: " + path);
+                    throw new CryptographicException();
+                }
+                aes.Key = Helper.GenerateSaltedKey(options.Key, Helper.GetBytes(saltString));
+            }
+            aes.KeySize = KEY_SIZE;
+            aes.IV = options.IV;
+            if (options.Mode == DECRYPT)
+            {
+                aes.IV = extractIV(path);
+                if (aes.IV.Length <= 0)
+                {
+                    _status.WriteLine("*** Error: Unable to extract IV from: " + path);
+                    throw new CryptographicException();
+                }
+            }
+
+            aes.IV = options.Mode == ENCRYPT ? options.IV : extractIV(path);
+            aes.Mode = CipherMode.CBC;
+            aes.Padding = PaddingMode.PKCS7;
+            var transformer = options.Mode == ENCRYPT
+                ? aes.CreateEncryptor(aes.Key, aes.IV)
+                : aes.CreateDecryptor(aes.Key, aes.IV);
+            return transformer;
         }
 
         private static byte[] extractIV(string path)
         {
-            using (var fStream = new FileStream(path, FileMode.Open, FileAccess.Read))
+            try
             {
-                using (var bReader = new BinaryReader(fStream))
+                using (var fStream = new FileStream(path, FileMode.Open, FileAccess.Read))
                 {
-                    return bReader.ReadBytes(16);
+                    using (var bReader = new BinaryReader(fStream))
+                    {
+                        return bReader.ReadBytes(16);
+                    }
                 }
+            }
+            catch (Exception)
+            {
+                _status.WriteLine("There was a problem extracting the salt from: " + path);
+                return new byte[0];
             }
         }
 
         private static string extractSaltString(string path)
         {
-            using (var fStream = new FileStream(path, FileMode.Open, FileAccess.Read))
+            try
             {
-                using (var bReader = new BinaryReader(fStream))
+                using (var fStream = new FileStream(path, FileMode.Open, FileAccess.Read))
                 {
-                    fStream.Seek(16, SeekOrigin.Begin);
-                    return Encoding.UTF8.GetString(bReader.ReadBytes(29));
+                    using (var bReader = new BinaryReader(fStream))
+                    {
+                        fStream.Seek(16, SeekOrigin.Begin);
+                        return Encoding.UTF8.GetString(bReader.ReadBytes(29));
+                    }
                 }
+            }
+            catch (Exception)
+            {
+                _status.WriteLine("There was a problem extracting the salt from: " + path);
+                return "";
             }
         }
 

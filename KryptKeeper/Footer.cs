@@ -18,7 +18,7 @@ namespace KryptKeeper
         public static Footer FromString(string footerString)
         {
             var footerSplit = footerString.Replace(FOOTER_TAG, "").Split(',');
-            string name = "";
+            string name = Helper.GetRandomAlphanumericString(8) + ".krpt.place"; // Default if name's blank
             long created = 0, modified = 0, accessed = 0;
             foreach (var data in footerSplit)
             {
@@ -85,8 +85,6 @@ namespace KryptKeeper
                 }
                 var footerArray = new byte[1024];
                 rStream.Read(footerArray, 0, 1024);
-                if (rStream.Length < 1024)
-                    Array.Resize(ref footerArray, (int)rStream.Length);
                 for (int i = footerArray.Length - 1; i >= 0; i--)
                 {
                     if (footerArray[i] != FOOTER_SIGNATURE[0]) continue;

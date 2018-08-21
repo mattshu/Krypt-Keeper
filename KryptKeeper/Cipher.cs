@@ -70,17 +70,8 @@ namespace KryptKeeper
                     _status.WriteLine("* File not found: " + path);
                     return;
                 }
-                if (options.Mode == DECRYPT)
-                {
-                    if (Path.GetExtension(path) != FILE_EXTENSION || new FileInfo(path).Length <= MINIMUM_FILE_LENGTH)
-                    {
-                        _status.WriteLine("* File not in correct format for decryption: " + path);
-                        return;
-                    }
-                }
-                workingPath = options.Mode == ENCRYPT
-                    ? path + FILE_EXTENSION
-                    : path.ReplaceLastOccurrence(FILE_EXTENSION, WORKING_FILE_EXTENSION);
+                if (options.Mode == DECRYPT && !isFileValidForDecryption(path)) return;
+                workingPath = options.Mode == ENCRYPT ? path + FILE_EXTENSION : path.ReplaceLastOccurrence(FILE_EXTENSION, WORKING_FILE_EXTENSION);
                 if (File.Exists(workingPath)) workingPath = Helper.PadExistingFileName(workingPath);
                 using (var aes = Aes.Create())
                 {
@@ -115,79 +106,43 @@ namespace KryptKeeper
                     _status.WriteLine("Process cancelled, deleting temp file: " + workingPath);
                     if (!Helper.TryDeleteFile(workingPath))
                         _status.WriteLine("Unable to remove temp file: " + workingPath);
-                    return;
-                }
-                postProcessFileHandling(path, workingPath, options);
-            }
-            /*catch (CryptographicException ex)
-            {
-                if (ex.Message.Equals("The input data is not a complete block.",
-                    StringComparison.InvariantCultureIgnoreCase) || ex.Message.Equals("Padding is invalid and cannot be removed.",
-                        StringComparison.InvariantCultureIgnoreCase))
-                {
-                    
-                    _status.WriteLine("*** Failed to decrypt file: " + path);
-                    if (!Helper.TryDeleteFile(workingPath))
-                        _status.WriteLine("Unable to remove temp file: " + workingPath);
                 }
                 else
-                {
-                    _status.WriteLine("*** Cryptographic exception: " + ex.Message);
-                    _status.WriteLine("Stacktrace: " + ex.StackTrace);
-                }
+                    postProcessFileHandling(path, workingPath, options);
             }
-            catch (UnauthorizedAccessException ex)
-            {
-                _status.WriteLine("*** Unauthorized access: " + ex.Message);
-                if (!Helper.TryDeleteFile(workingPath))
-                    _status.WriteLine("Unable to remove temp file: " + workingPath);
-            }*/
             catch (Exception ex)
             {
-                handleCipherExceptions(ex, path, workingPath);
+                handleCipherExceptions(ex, path, workingPath, options);
             }
         }
 
-        private static void handleCipherExceptions(Exception ex, string path, string workingPath)
+        private static bool isFileValidForDecryption(string path)
         {
-            _status.WriteLine("*** UNHANDLED EXCEPTION: " + ex.Message);
-            _status.WriteLine("* STACKTRACE: " + ex.StackTrace);
-            _status.WriteLine("Preserving " + workingPath + " for debugging purposes."); // Keep temp file
-        }
+            if (Path.GetExtension(path) == FILE_EXTENSION && new FileInfo(path).Length >= MINIMUM_FILE_LENGTH)
+                return true;
+            _status.WriteLine("* File not in correct format for decryption: " + path);
+            return false;
 
+        }
 
         private static ICryptoTransform createCryptoTransform(string path, CipherOptions options, SymmetricAlgorithm aes)
         {
-            if (options.Mode == ENCRYPT)
-                aes.Key = Helper.GenerateSaltedKey(options.Key, options.Salt);
-            if (options.Mode == DECRYPT)
-            {
-                var saltString = extractSaltString(path);
-                if (saltString.Length <= 0)
-                {
-                    _status.WriteLine("*** Error: Unable to extract salt from: " + path);
-                    throw new CryptographicException();
-                }
-                aes.Key = Helper.GenerateSaltedKey(options.Key, Helper.GetBytes(saltString));
-            }
             aes.KeySize = KEY_SIZE;
-            aes.IV = options.IV;
-            if (options.Mode == DECRYPT)
-            {
-                aes.IV = extractIV(path);
-                if (aes.IV.Length <= 0)
-                {
-                    _status.WriteLine("*** Error: Unable to extract IV from: " + path);
-                    throw new CryptographicException();
-                }
-            }
-
-            aes.IV = options.Mode == ENCRYPT ? options.IV : extractIV(path);
             aes.Mode = CipherMode.CBC;
             aes.Padding = PaddingMode.PKCS7;
-            var transformer = options.Mode == ENCRYPT
-                ? aes.CreateEncryptor(aes.Key, aes.IV)
-                : aes.CreateDecryptor(aes.Key, aes.IV);
+            ICryptoTransform transformer;
+            if (options.Mode == ENCRYPT)
+            {
+                aes.Key = Helper.GenerateSaltedKey(options.Key, options.Salt);
+                aes.IV = options.IV;
+                transformer = aes.CreateEncryptor(aes.Key, aes.IV);
+            }
+            else
+            {
+                aes.Key = Helper.GenerateSaltedKey(options.Key, extractSalt(path));
+                aes.IV = extractIV(path);
+                transformer = aes.CreateDecryptor(aes.Key, aes.IV);
+            }
             return transformer;
         }
 
@@ -199,18 +154,21 @@ namespace KryptKeeper
                 {
                     using (var bReader = new BinaryReader(fStream))
                     {
-                        return bReader.ReadBytes(16);
+                        var read = bReader.ReadBytes(16);
+                        if (read.Length > 0)
+                            return read;
+                        throw new CryptographicException();
                     }
                 }
             }
             catch (Exception)
             {
-                _status.WriteLine("There was a problem extracting the salt from: " + path);
+                _status.WriteLine("*** Error: Unable to extract IV from: " + path);
                 return new byte[0];
             }
         }
 
-        private static string extractSaltString(string path)
+        private static byte[] extractSalt(string path)
         {
             try
             {
@@ -219,14 +177,17 @@ namespace KryptKeeper
                     using (var bReader = new BinaryReader(fStream))
                     {
                         fStream.Seek(16, SeekOrigin.Begin);
-                        return Encoding.UTF8.GetString(bReader.ReadBytes(29));
+                        var read = bReader.ReadBytes(29);
+                        if (read.Length > 0)
+                            return read;
+                        throw new CryptographicException();
                     }
                 }
             }
             catch (Exception)
             {
                 _status.WriteLine("There was a problem extracting the salt from: " + path);
-                return "";
+                return new byte[0];
             }
         }
 
@@ -260,48 +221,84 @@ namespace KryptKeeper
         private static void postProcessFileHandling(string path, string workingPath, CipherOptions options)
         {
             if (options.Mode == ENCRYPT)
+                encryptionPostProcess(path, workingPath, options);
+            else
+                decryptionPostProcess(path, workingPath);
+        }
+
+        private static void encryptionPostProcess(string path, string workingPath, CipherOptions options)
+        {
+            if (options.RemoveOriginal && !Helper.TryDeleteFile(path))
+                _status.WriteLine("Unable to remove original (access denied): " + path);
+            if (options.MaskFileName)
+                File.Move(workingPath,
+                    workingPath = workingPath.Replace(Path.GetFileName(workingPath).RemoveDefaultFileExt(),
+                        Helper.GetRandomAlphanumericString(16)));
+            if (options.MaskFileTimes)
+                Helper.SetRandomFileTimes(workingPath);
+        }
+
+        private static void decryptionPostProcess(string path, string workingPath)
+        {
+            var footer = new Footer();
+            if (!footer.TryExtract(workingPath))
             {
-                if (options.RemoveOriginal && !Helper.TryDeleteFile(path))
-                    _status.WriteLine("Unable to remove original (access denied): " + path);
-                if (options.MaskFileName)
-                    File.Move(workingPath,
-                        workingPath = workingPath.Replace(Path.GetFileName(workingPath).RemoveDefaultFileExt(),
-                            Helper.GetRandomAlphanumericString(16)));
-                if (options.MaskFileTimes)
-                    Helper.SetRandomFileTimes(workingPath);
+                _status.WriteLine("*** Error: Unable to get decrypted file information from " + path);
+                _status.WriteLine("* File possibly corrupt: " + workingPath);
+                return;
+            }
+            using (var fOpen = new FileStream(workingPath, FileMode.Open))
+                fOpen.SetLength(fOpen.Length - footer.ToArray().Length);
+            var originalPath = workingPath.Replace(Path.GetFileName(workingPath), footer.Name)
+                .Replace(WORKING_FILE_EXTENSION, "");
+            if (File.Exists(originalPath))
+                originalPath = Helper.PadExistingFileName(originalPath);
+            File.Move(workingPath, originalPath); // Copy worked file to original file
+            Helper.SetFileTimesFromFooter(originalPath, footer);
+            if (new FileInfo(originalPath).Length > 0)
+            {
+                if (!Helper.TryDeleteFile(path))
+                    _status.WriteLine("Unable to remove original file: " + path);
             }
             else
             {
-                var footer = new Footer();
-                if (!footer.TryExtract(workingPath))
-                {
-                    _status.WriteLine("*** Error: Unable to generate decrypted file information from " + path);
-                    _status.WriteLine("* File possibly corrupt: " + workingPath);
-                    return;
-                }
-                using (var fOpen = new FileStream(workingPath, FileMode.Open))
-                {
-                    fOpen.SetLength(fOpen.Length - footer.ToArray().Length);
-                }
-                var originalPath = workingPath.Replace(Path.GetFileName(workingPath), footer.Name)
-                    .Replace(WORKING_FILE_EXTENSION, "");
-                if (File.Exists(originalPath))
-                    originalPath = Helper.PadExistingFileName(originalPath);
-                File.Move(workingPath, originalPath); // Copy temp file to original file
-                Helper.SetFileTimesFromFooter(originalPath, footer);
-                if (new FileInfo(originalPath).Length > 0)
-                {
-                    if (!Helper.TryDeleteFile(path))
-                        _status.WriteLine("Unable to remove original file: " + path);
-                    if (!Helper.TryDeleteFile(workingPath))
-                        _status.WriteLine("Unable to remove temp file: " + workingPath);
-                }
-                else
-                {
-                    _status.WriteLine("* Error decrypting file: " + path);
-                    _status.WriteLine("* File possibly corrupt: " + originalPath);
-                }
+                _status.WriteLine("* Error decrypting file: " + path);
+                _status.WriteLine("* File possibly corrupt: " + originalPath);
             }
+            if (!Helper.TryDeleteFile(workingPath))
+                _status.WriteLine("Unable to remove temp file: " + workingPath);
+        }
+
+        private static void handleCipherExceptions(Exception ex, string path, string workingPath, CipherOptions options)
+        {
+            var baseExceptionRaw = ex.GetBaseException().ToString();
+            var baseExceptionPart = baseExceptionRaw.Substring(0, baseExceptionRaw.IndexOf(':'));
+            var baseException = baseExceptionPart.Substring(baseExceptionPart.LastIndexOf('.') + 1);
+            var preserveTempFile = false;
+            switch (baseException)
+            {
+                case "CryptographicException":
+                    if (ex.Message.Equals("The input data is not a complete block.") ||
+                        ex.Message.Equals("Padding is invalid and cannot be removed."))
+                        _status.WriteLine("*** Failed to decrypt file: " + path);
+                    else
+                        _status.WriteLine("*** Cryptographic exception: " + ex.Message + Environment.NewLine +
+                                          ex.StackTrace);
+                    break;
+                case "ArgumentException":
+                    _status.WriteLine("*** Failed to decrypt file: " + path);
+                    break;
+                case "UnauthorizedAccessException":
+                    _status.WriteLine("*** Unauthorized access: " + ex.Message);
+                    break;
+                default:
+                    _status.WriteLine("*** UNHANDLED EXCEPTION: " + ex.Message + Environment.NewLine + ex.StackTrace);
+                    _status.WriteLine("Partially processed file will be preserved: " + workingPath);
+                    preserveTempFile = true;
+                    break;
+            }
+            if (!preserveTempFile && !Helper.TryDeleteFile(workingPath))
+                _status.WriteLine("Unable to remove temp file: " + workingPath);
         }
     }
 }

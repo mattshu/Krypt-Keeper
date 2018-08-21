@@ -3,7 +3,6 @@ using System;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 namespace KryptKeeper
@@ -20,7 +19,7 @@ namespace KryptKeeper
         public static byte[] GenerateLogHeader()
         {
             var timestamp = DateTime.Now;
-            string header = "KryptKeeper Status Log" + Environment.NewLine + "Generated on " + timestamp + Environment.NewLine; // TODO INSERT VERSION INFORMATION
+            var header = "KryptKeeper Status Log" + Environment.NewLine + "Generated on " + timestamp + Environment.NewLine; // TODO INSERT VERSION INFORMATION
             return GetBytes(header);
         }
 
@@ -50,26 +49,20 @@ namespace KryptKeeper
         {
             if (length <= 0) return "";
             var random = new byte[length];
-            var rng = new RNGCryptoServiceProvider();
-            rng.GetBytes(random);
-            return BitConverter.ToString(random).Replace("-", "").Substring(0, length);
-        }
-
-        public static string GetRandomNumericString(int length)
-        {
-            return Regex.Replace(GetRandomAlphanumericString(length), @"[A-F]", "0");
-        }
-
-        public static byte[] GetSHA256(string value)
-        {
-            return SHA256.Create().ComputeHash(GetBytes(value));
+            using (var rng = new RNGCryptoServiceProvider())
+            {
+                rng.GetBytes(random);
+                return BitConverter.ToString(random).Replace("-", "").Substring(0, length);
+            }
         }
 
         public static byte[] GetSHA256(byte[] value)
         {
-            return SHA256.Create().ComputeHash(value);
+            using (var sha = SHA256.Create())
+                return sha.ComputeHash(value);
 
         }
+
         public static string GetSpannedTime(long ticks)
         {
             var time = TimeSpan.FromTicks(Math.Max(1, DateTime.Now.Ticks - ticks));
@@ -89,15 +82,15 @@ namespace KryptKeeper
 
         public static string PadExistingFileName(string fullPath)
         {
-            int count = 1;
-            string path = Path.GetDirectoryName(fullPath);
-            string fileNameOnly = Path.GetFileNameWithoutExtension(fullPath);
-            string extension = Path.GetExtension(fullPath);
-            string newFullPath = fullPath;
+            var count = 1;
+            var path = Path.GetDirectoryName(fullPath);
+            var fileNameOnly = Path.GetFileNameWithoutExtension(fullPath);
+            var extension = Path.GetExtension(fullPath);
+            var newFullPath = fullPath;
             while (File.Exists(newFullPath))
             {
-                string tempFileName = $"{fileNameOnly} ({count++})";
-                newFullPath = Path.Combine(path, tempFileName + extension);
+                var tempFileName = $"{fileNameOnly} ({count++})";
+                newFullPath = Path.Combine(path ?? "", tempFileName + extension);
             }
             return newFullPath;
         }
@@ -109,14 +102,13 @@ namespace KryptKeeper
 
         public static string ReplaceLastOccurrence(this string source, string find, string replace)
         {
-            int place = source.LastIndexOf(find, StringComparison.Ordinal);
-
+            var place = source.LastIndexOf(find, StringComparison.Ordinal);
             if (place == -1)
                 return source;
-
             var result = source.Remove(place, find.Length).Insert(place, replace);
             return result;
         }
+
         public static void ResetSettings()
         {
             var settings = Settings.Default;
@@ -163,6 +155,7 @@ namespace KryptKeeper
                 return false;
             }
         }
+
         private static DateTime getRandomFileTime()
         {
             const long minTicks = 0x1;

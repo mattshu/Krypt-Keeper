@@ -116,7 +116,6 @@
     <Compile Include="CustomProgressBar.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="ExceptionController.cs" />
     <Compile Include="FileData.cs" />
     <Compile Include="FlatMainWindow.cs">
       <SubType>Form</SubType>
@@ -125,7 +124,6 @@
       <DependentUpon>FlatMainWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Footer.cs" />
-    <Compile Include="HandledExceptions.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="MainWindow.cs">
       <SubType>Form</SubType>

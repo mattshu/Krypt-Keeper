@@ -144,9 +144,17 @@ namespace KryptKeeper
             }*/
             catch (Exception ex)
             {
-                ExceptionController.Handle(ex, path, workingPath);
+                handleCipherExceptions(ex, path, workingPath);
             }
         }
+
+        private static void handleCipherExceptions(Exception ex, string path, string workingPath)
+        {
+            _status.WriteLine("*** UNHANDLED EXCEPTION: " + ex.Message);
+            _status.WriteLine("* STACKTRACE: " + ex.StackTrace);
+            _status.WriteLine("Preserving " + workingPath + " for debugging purposes."); // Keep temp file
+        }
+
 
         private static ICryptoTransform createCryptoTransform(string path, CipherOptions options, SymmetricAlgorithm aes)
         {

@@ -6,8 +6,6 @@ using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Text;
 using System.Windows.Forms;
 
 namespace KryptKeeper
@@ -236,7 +234,7 @@ namespace KryptKeeper
                 Mode = cipherMode,
                 Files = getPathsFromFileList(),
                 Key = key,
-                Salt = Helper.GenerateSalt(),
+                Salt = Helper.GetBytes(BCrypt.GenerateSalt()),
                 MaskFileName = chkMaskInformation.Checked && (maskInfoIndex == 0 || maskInfoIndex == 2),
                 MaskFileTimes = chkMaskInformation.Checked && (maskInfoIndex == 1 || maskInfoIndex == 2),
                 RemoveOriginal = chkRemoveAfterEncrypt.Checked

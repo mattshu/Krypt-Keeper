@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
 using System.IO;
-using System.Runtime.ExceptionServices;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -133,17 +132,23 @@ namespace KryptKeeper
             ICryptoTransform transformer;
             if (options.Mode == ENCRYPT)
             {
-                aes.Key = Helper.GenerateSaltedKey(options.Key, options.Salt);
+                aes.Key = GenerateSaltedKey(options.Key, options.Salt);
                 aes.IV = options.IV;
                 transformer = aes.CreateEncryptor(aes.Key, aes.IV);
             }
             else
             {
-                aes.Key = Helper.GenerateSaltedKey(options.Key, extractSalt(path));
+                aes.Key = GenerateSaltedKey(options.Key, extractSalt(path));
                 aes.IV = extractIV(path);
                 transformer = aes.CreateDecryptor(aes.Key, aes.IV);
             }
             return transformer;
+        }
+
+        public static byte[] GenerateSaltedKey(byte[] key, byte[] salt)
+        { // for Decryption
+            var saltedKey = BCrypt.HashPassword(Encoding.UTF8.GetString(key), Encoding.UTF8.GetString(salt));
+            return Helper.GetSHA256(Helper.GetBytes(saltedKey));
         }
 
         private static byte[] extractIV(string path)
@@ -157,13 +162,14 @@ namespace KryptKeeper
                         var read = bReader.ReadBytes(16);
                         if (read.Length > 0)
                             return read;
-                        throw new CryptographicException();
+                        throw new CryptographicException("There was a problem extracting the IV from: " + path);
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                _status.WriteLine("*** Error: Unable to extract IV from: " + path);
+                _status.WriteLine("There was a problem extracting the IV from: " + path);
+                _status.WriteLine("* Error: " + ex.Message);
                 return new byte[0];
             }
         }
@@ -180,13 +186,14 @@ namespace KryptKeeper
                         var read = bReader.ReadBytes(29);
                         if (read.Length > 0)
                             return read;
-                        throw new CryptographicException();
+                        throw new CryptographicException("There was a problem extracting the salt from: " + path);
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 _status.WriteLine("There was a problem extracting the salt from: " + path);
+                _status.WriteLine("* Error: " + ex.Message);
                 return new byte[0];
             }
         }

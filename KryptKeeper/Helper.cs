@@ -23,18 +23,6 @@ namespace KryptKeeper
             return GetBytes(header);
         }
 
-        public static byte[] GenerateSalt(int size = 10)
-        { // for Encryption
-            var salt = BCrypt.GenerateSalt(size);
-            return GetBytes(salt);
-        }
-
-        public static byte[] GenerateSaltedKey(byte[] key, byte[] salt)
-        { // for Decryption
-            var saltedKey = BCrypt.HashPassword(Encoding.UTF8.GetString(key), Encoding.UTF8.GetString(salt));
-            return GetSHA256(GetBytes(saltedKey));
-        }
-
         public static byte[] GetBytes(string value)
         {
             return Encoding.UTF8.GetBytes(value);
@@ -60,7 +48,6 @@ namespace KryptKeeper
         {
             using (var sha = SHA256.Create())
                 return sha.ComputeHash(value);
-
         }
 
         public static string GetSpannedTime(long ticks)

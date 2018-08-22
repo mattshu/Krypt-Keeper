@@ -105,6 +105,12 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="FileData.cs" />
+    <Compile Include="FlatMainWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FlatMainWindow.Designer.cs">
+      <DependentUpon>FlatMainWindow.cs</DependentUpon>
+    </Compile>
     <Compile Include="Footer.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="MainWindow.cs">
@@ -122,6 +128,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ConfirmSettingsDialog.resx">
       <DependentUpon>ConfirmSettingsDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FlatMainWindow.resx">
+      <DependentUpon>FlatMainWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainWindow.resx">
       <DependentUpon>MainWindow.cs</DependentUpon>

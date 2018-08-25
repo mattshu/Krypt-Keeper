@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 
@@ -6,7 +7,7 @@ namespace KryptKeeper
 {
     internal class CipherOptions
     {
-        public string[] Files { get; set; }
+        public List<FileData> Files { get; set; }
         public bool MaskFileName { get; set; }
         public bool MaskFileDate { get; set; }
         public bool RemoveOriginalDecryption { get; set; }
@@ -15,11 +16,6 @@ namespace KryptKeeper
         public byte[] IV { get; set; }
         public byte[] Salt { get; set; }
         public byte[] Key { get; set; }
-
-        public long CalculateTotalPayload()
-        {
-            return Files.Length > 0 ? Files.Sum(f => new FileInfo(f).Length) : 0;
-        }
 
         public void GenerateIV()
         {

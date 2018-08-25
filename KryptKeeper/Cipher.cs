@@ -29,9 +29,9 @@ namespace KryptKeeper
 
         public static void ProcessFiles(CipherOptions options)
         {
-            if (options.Files.Length <= 0) return;
+            if (options.Files.Count <= 0) return;
             _progressBytesOverall = 0;
-            _progressBytesTotal = options.CalculateTotalPayload();
+            _progressBytesTotal = options.Files.CalculateTotalPayloadBytes();
             _cipherStartTime = DateTime.Now;
             _backgroundWorker.RunWorkerAsync(options);
         }
@@ -45,17 +45,18 @@ namespace KryptKeeper
         private static void backgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             var options = (CipherOptions) e.Argument;
-            foreach (var path in options.Files)
+            foreach (var fileData in options.Files)
             {
                 if (_backgroundWorker.CancellationPending)
                     break;
-                if (File.Exists(path))
+                if (File.Exists(fileData.GetFilePath()))
                 {
-                    _status.WritePending($"{options.GetModeOfOperation()}: " + path);
-                    process(path, options);
+                    _status.WritePending($"{options.GetModeOfOperation()}: " + fileData);
+                    _status.UpdateOperationLabel(options.GetModeOfOperation());
+                    process(fileData.GetFilePath(), options);
                 }
                 else
-                    _status.WriteLine("* Unable to find: " + path);
+                    _status.WriteLine("* Unable to find: " + fileData);
             }
         }
 
@@ -69,9 +70,13 @@ namespace KryptKeeper
                     _status.WriteLine("* File not found: " + path);
                     return;
                 }
+                _status.UpdateBeforeLabel(Path.GetFileName(path));
                 if (options.Mode == DECRYPT && !isFileValidForDecryption(path)) return;
-                workingPath = options.Mode == ENCRYPT ? path + FILE_EXTENSION : path.ReplaceLastOccurrence(FILE_EXTENSION, WORKING_FILE_EXTENSION);
+                workingPath = options.Mode == ENCRYPT
+                    ? path + FILE_EXTENSION
+                    : path.ReplaceLastOccurrence(FILE_EXTENSION, WORKING_FILE_EXTENSION);
                 if (File.Exists(workingPath)) workingPath = Helper.PadExistingFileName(workingPath);
+                //_status.UpdateAfterLabel(Path.GetFileName(workingPath));
                 using (var aes = Aes.Create())
                 {
                     if (aes == null)
@@ -92,7 +97,7 @@ namespace KryptKeeper
                             using (var cStream = new CryptoStream(wStream, transformer, CryptoStreamMode.Write))
                             {
                                 // 45 skips IV (16 bytes) and salt (29 bytes) if decrypting
-                                rStream.Seek(options.Mode == ENCRYPT ? 0 : 45, SeekOrigin.Begin); 
+                                rStream.Seek(options.Mode == ENCRYPT ? 0 : 45, SeekOrigin.Begin);
                                 processStreams(path, rStream, cStream);
                                 if (options.Mode == ENCRYPT)
                                     buildAndWriteFooter(path, cStream);
@@ -107,7 +112,9 @@ namespace KryptKeeper
                         _status.WriteLine("Unable to remove temp file: " + workingPath);
                 }
                 else
+                {
                     postProcessFileHandling(path, workingPath, options);
+                }
             }
             catch (Exception ex)
             {
@@ -237,10 +244,11 @@ namespace KryptKeeper
         {
             if (options.RemoveOriginalEncryption && !Helper.TryDeleteFile(path))
                 _status.WriteLine("Unable to remove original (access denied): " + path);
-            if (options.MaskFileName)
-                File.Move(workingPath,
-                    workingPath = workingPath.Replace(Path.GetFileName(workingPath).RemoveDefaultFileExt(),
-                        Helper.GetRandomAlphanumericString(16)));
+            if (options.MaskFileName) { 
+                File.Move(workingPath, workingPath = workingPath.Replace(Path.GetFileName(workingPath).RemoveDefaultFileExt(), Helper.GetRandomAlphanumericString(16)));
+                //_status.UpdateAfterLabel(workingPath);
+            }
+
             if (options.MaskFileDate)
                 Helper.SetRandomFileTimes(workingPath);
         }
@@ -258,6 +266,7 @@ namespace KryptKeeper
                 fOpen.SetLength(fOpen.Length - footer.ToArray().Length);
             var originalPath = workingPath.Replace(Path.GetFileName(workingPath), footer.Name)
                 .Replace(WORKING_FILE_EXTENSION, "");
+            //_status.UpdateAfterLabel(Path.GetFileName(originalPath));
             if (File.Exists(originalPath))
                 originalPath = Helper.PadExistingFileName(originalPath);
             File.Move(workingPath, originalPath); // Copy worked file to original file

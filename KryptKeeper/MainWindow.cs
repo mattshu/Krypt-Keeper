@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -24,12 +23,24 @@ namespace KryptKeeper
         private enum MainTabs { Options, Files, Status }
         private Status _status;
         private bool _settingsNeedConfirmed = true;
-        private bool _cancelTabChange = false;
         private List<FileData> _fileList = new List<FileData>();
 
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        public List<Control> GetStatusObjects()
+        {
+            return new List<Control>
+            {
+                lblCurrentPercentage,
+                lblTotalPercentage,
+                lblOperationStatus,
+                lblFileBefore,
+                lblFileAfter,
+                txtStatus
+            };
         }
 
         #region Form Events
@@ -41,11 +52,6 @@ namespace KryptKeeper
             backgroundWorker.ProgressChanged += backgroundWorker_ProgressChanged;
             backgroundWorker.RunWorkerCompleted += backgroundWorker_RunWorkerCompleted;
             Cipher.SetBackgroundWorker(backgroundWorker);
-        }
-
-        private void tabMain_Selecting(object sender, TabControlCancelEventArgs e)
-        {
-            e.Cancel = _cancelTabChange;
         }
 
         private void chkMaskFileInformation_CheckedChanged(object sender, EventArgs e)
@@ -129,7 +135,12 @@ namespace KryptKeeper
             }
             _status.WriteLine("Operation finished. " + Cipher.GetElapsedTime());
             btnCancelOperation.Enabled = false;
-            updateProgress(0, 100);
+            updateProgress(100, 100);
+            lblFileAfter.Text = "";
+            lblFileBefore.Text = "";
+            lblCurrentPercentage.Text = "";
+            lblTotalPercentage.Text = "";
+            lblOperationStatus.Text = @"Awaiting instruction";
         }
 
         private void btnCancelOperation_Click(object sender, EventArgs e)
@@ -223,6 +234,8 @@ namespace KryptKeeper
 
         private void loadSettings()
         {
+            progressCurrent.Reset();
+            progressTotal.Reset();
             var settings = Settings.Default;
             if (!settings.rememberSettings)
                 Helper.ResetSettings();
@@ -242,7 +255,13 @@ namespace KryptKeeper
 
         private void buildFileList()
         {
-            if (!validateKeySettings()) return;
+            if (!validateKeySettings())
+            {
+                focusTab(MainTabs.Options);
+                if (radKeyFile.Checked)
+                    txtCipherKey.Text = Helper.BrowseFiles(false);
+                return;
+            }
             var openFileDialog = new OpenFileDialog { Multiselect = true };
             var openResult = openFileDialog.ShowDialog();
             if (openResult != DialogResult.OK) return;
@@ -252,22 +271,25 @@ namespace KryptKeeper
             arrangeFileListColumns();
             loadFileListColumnWidths();
             enableControls(datagridFileList.RowCount > 0);
+            lblFileCount.Text = $@"File count: {_fileList.Count}";
+            lblPayload.Text = $@"Payload: {Helper.BytesToString(_fileList.CalculateTotalPayloadBytes())}";
             focusTab(MainTabs.Files);
         }
 
         private bool validateKeySettings()
         {
-            if (radKeyFile.Checked && File.Exists(txtCipherKey.Text) && new FileInfo(txtCipherKey.Text).Length > 0)
+            string errorMsg = "";
+            if (radKeyFile.Checked)
             {
-                MetroMessageBox.Show(this, "The key file does not exist or is empty!", "Invalid Settings", MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-                return false;
+                if (!File.Exists(txtCipherKey.Text))
+                    errorMsg = "Key file does not exist!";
+                else if (new FileInfo(txtCipherKey.Text).Length <= 0)
+                    errorMsg = "Key file is empty!";
             }
-            if (radPlaintextKey.Checked && validatePlaintextKey()) return true;
-            MetroMessageBox.Show(this,
-                "The key is either empty or does not meet high security standards (minimum 8 characters)",
-                "Invalid Settings", MessageBoxButtons.OK,
-                MessageBoxIcon.Error);
+            else if (!validatePlaintextKey())
+                errorMsg = "Passkey does not meet complex standards (8+ characters)"; // TODO include numbers, capitals, and symbols
+            if (errorMsg.Length <= 0) return true;
+            MetroMessageBox.Show(this, errorMsg, "Invalid Settings", MessageBoxButtons.OK, MessageBoxIcon.Error);
             return false;
         }
 
@@ -300,8 +322,10 @@ namespace KryptKeeper
             for (int i = datagridFileList.RowCount - 1; i >= 0; i--)
                 if (datagridFileList.Rows[i].Selected)
                     _fileList.RemoveAt(i);
-            refreshFileListGridView();
             datagridFileList.ClearSelection();
+            refreshFileListGridView();
+            arrangeFileListColumns();
+            loadFileListColumnWidths();
         }
 
         private void refreshFileListGridView()
@@ -357,7 +381,7 @@ namespace KryptKeeper
             var options = new CipherOptions
             {
                 Mode = cipherMode,
-                Files = getPathsFromFileList(),
+                Files = _fileList,
                 Key = key,
                 Salt = Helper.GetBytes(BCrypt.GenerateSalt()),
                 MaskFileName = chkMaskFileInformation.Checked && chkMaskFileName.Checked,
@@ -369,14 +393,11 @@ namespace KryptKeeper
             return options;
         }
 
-        private string[] getPathsFromFileList()
-        {
-            return _fileList.Select(file => file.GetFilePath()).ToArray();
-        }
-
         private void resetFileList()
         {
             datagridFileList.DataSource = null;
+            lblFileCount.Text = "";
+            lblPayload.Text = "";
         }
 
         private bool confirmSettings()
@@ -456,5 +477,6 @@ namespace KryptKeeper
             return !chkMaskFileName.Checked && !chkMaskFileDate.Checked && chkRemoveAfterDecryption.Checked &&
                 chkRemoveAfterEncryption.Checked && radKeyFile.Checked && txtCipherKey.Text.Length == 0;
         }
+
     }
 }

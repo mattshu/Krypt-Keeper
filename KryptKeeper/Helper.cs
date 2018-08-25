@@ -1,7 +1,9 @@
 ﻿using KryptKeeper.Properties;
 using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Windows.Forms;
@@ -10,6 +12,24 @@ namespace KryptKeeper
 {
     internal static class Helper
     {
+
+        public static long CalculateTotalPayloadBytes(this List<FileData> fileData)
+        {
+            return fileData.Count > 0 ? fileData.Sum(f => new FileInfo(f.GetFilePath()).Length) : 0;
+        }
+
+        public static string BytesToString(long byteCount)
+        {
+            string[] suf = { "B", "KB", "MB", "GB", "TB", "PB", "EB" }; //Longs run out around EB
+            if (byteCount == 0)
+                return @"0";
+            var bytes = Math.Abs(byteCount);
+            var place = Convert.ToInt32(Math.Floor(Math.Log(bytes, 1024)));
+            if (place < 1) return @"1 KB";
+            var num = Math.Round(bytes / Math.Pow(1024, place));
+            return Math.Sign(byteCount) * num + " " + suf[place];
+        }
+
         public static string BrowseFiles(bool multiSelect = true)
         {
             var openFile = new OpenFileDialog{Multiselect = multiSelect, CheckFileExists = true};

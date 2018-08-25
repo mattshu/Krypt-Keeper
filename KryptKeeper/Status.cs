@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using MetroFramework.Controls;
 
 namespace KryptKeeper
 {
@@ -8,7 +9,7 @@ namespace KryptKeeper
         private static Status _instance;
         private readonly MainWindow _mainWindow;
         private readonly string newLine = Environment.NewLine;
-        private readonly TextBox _statusBox;
+        private readonly MetroTextBox _statusBox;
         private bool _isPending;
         private DateTime _pendingStartTime;
 

@@ -25,25 +25,13 @@ namespace KryptKeeper.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
         public int cipherKeyType {
             get {
                 return ((int)(this["cipherKeyType"]));
             }
             set {
                 this["cipherKeyType"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string cipherKey {
-            get {
-                return ((string)(this["cipherKey"]));
-            }
-            set {
-                this["cipherKey"] = value;
             }
         }
         
@@ -68,36 +56,24 @@ namespace KryptKeeper.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool encryptionMaskInformation {
+        public bool encryptionMaskFileName {
             get {
-                return ((bool)(this["encryptionMaskInformation"]));
+                return ((bool)(this["encryptionMaskFileName"]));
             }
             set {
-                this["encryptionMaskInformation"] = value;
+                this["encryptionMaskFileName"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1")]
-        public int encryptionMaskInfoType {
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool removeAfterDecryption {
             get {
-                return ((int)(this["encryptionMaskInfoType"]));
+                return ((bool)(this["removeAfterDecryption"]));
             }
             set {
-                this["encryptionMaskInfoType"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool encryptionRemoveAfterEncrypt {
-            get {
-                return ((bool)(this["encryptionRemoveAfterEncrypt"]));
-            }
-            set {
-                this["encryptionRemoveAfterEncrypt"] = value;
+                this["removeAfterDecryption"] = value;
             }
         }
         
@@ -127,18 +103,6 @@ namespace KryptKeeper.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool saveKey {
-            get {
-                return ((bool)(this["saveKey"]));
-            }
-            set {
-                this["saveKey"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute(@"<?xml version=""1.0"" encoding=""utf-16""?>
 <ArrayOfString xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
   <string>0</string>
@@ -152,6 +116,30 @@ namespace KryptKeeper.Properties {
             }
             set {
                 this["fileListColumnOrder"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool encryptionMaskFileDate {
+            get {
+                return ((bool)(this["encryptionMaskFileDate"]));
+            }
+            set {
+                this["encryptionMaskFileDate"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool removeAfterEncryption {
+            get {
+                return ((bool)(this["removeAfterEncryption"]));
+            }
+            set {
+                this["removeAfterEncryption"] = value;
             }
         }
     }

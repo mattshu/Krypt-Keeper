@@ -1,5 +1,6 @@
 ﻿using KryptKeeper.Properties;
 using System;
+using System.Collections.Specialized;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
@@ -9,11 +10,10 @@ namespace KryptKeeper
 {
     internal static class Helper
     {
-        public static string BrowseFile()
+        public static string BrowseFiles(bool multiSelect = true)
         {
-            var openFile = new OpenFileDialog();
-            if (openFile.ShowDialog() != DialogResult.OK || !openFile.CheckFileExists) return "";
-            return openFile.FileName;
+            var openFile = new OpenFileDialog{Multiselect = multiSelect, CheckFileExists = true};
+            return openFile.ShowDialog() != DialogResult.OK ? "" : openFile.FileName;
         }
 
         public static byte[] GenerateLogHeader()
@@ -99,14 +99,15 @@ namespace KryptKeeper
         public static void ResetSettings()
         {
             var settings = Settings.Default;
-            settings.cipherKeyType = settings.cipherKeyType = -1;
-            settings.cipherKey = "";
-            settings.encryptionMaskInfoType = -1;
-            settings.encryptionMaskInformation = false;
-            settings.encryptionRemoveAfterEncrypt = true;
+            settings.cipherKeyType = 0;
+            settings.encryptionMaskFileName = false;
+            settings.encryptionMaskFileDate = false;
+            settings.removeAfterEncryption = true;
+            settings.removeAfterDecryption = true;
             settings.rememberSettings = false;
-            settings.saveKey = false;
             settings.confirmOnExit = true;
+            settings.fileListColumnOrder = new StringCollection {"1", "3", "0", "2"};
+            settings.fileListColumnWidths = new StringCollection {"72", "194", "164", "103"};
             settings.Save();
         }
 

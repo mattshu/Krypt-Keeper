@@ -8,8 +8,9 @@ namespace KryptKeeper
     {
         public string[] Files { get; set; }
         public bool MaskFileName { get; set; }
-        public bool MaskFileTimes { get; set; }
-        public bool RemoveOriginal { get; set; }
+        public bool MaskFileDate { get; set; }
+        public bool RemoveOriginalDecryption { get; set; }
+        public bool RemoveOriginalEncryption { get; set; }
         public int Mode { get; set; }
         public byte[] IV { get; set; }
         public byte[] Salt { get; set; }

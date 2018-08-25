@@ -132,21 +132,21 @@ namespace KryptKeeper
             ICryptoTransform transformer;
             if (options.Mode == ENCRYPT)
             {
-                aes.Key = GenerateSaltedKey(options.Key, options.Salt);
+                aes.Key = generateSaltedKey(options.Key, options.Salt);
                 aes.IV = options.IV;
                 transformer = aes.CreateEncryptor(aes.Key, aes.IV);
             }
             else
             {
-                aes.Key = GenerateSaltedKey(options.Key, extractSalt(path));
+                aes.Key = generateSaltedKey(options.Key, extractSalt(path));
                 aes.IV = extractIV(path);
                 transformer = aes.CreateDecryptor(aes.Key, aes.IV);
             }
             return transformer;
         }
 
-        public static byte[] GenerateSaltedKey(byte[] key, byte[] salt)
-        { // for Decryption
+        private static byte[] generateSaltedKey(byte[] key, byte[] salt)
+        {
             var saltedKey = BCrypt.HashPassword(Encoding.UTF8.GetString(key), Encoding.UTF8.GetString(salt));
             return Helper.GetSHA256(Helper.GetBytes(saltedKey));
         }
@@ -230,22 +230,22 @@ namespace KryptKeeper
             if (options.Mode == ENCRYPT)
                 encryptionPostProcess(path, workingPath, options);
             else
-                decryptionPostProcess(path, workingPath);
+                decryptionPostProcess(path, workingPath, options);
         }
 
         private static void encryptionPostProcess(string path, string workingPath, CipherOptions options)
         {
-            if (options.RemoveOriginal && !Helper.TryDeleteFile(path))
+            if (options.RemoveOriginalEncryption && !Helper.TryDeleteFile(path))
                 _status.WriteLine("Unable to remove original (access denied): " + path);
             if (options.MaskFileName)
                 File.Move(workingPath,
                     workingPath = workingPath.Replace(Path.GetFileName(workingPath).RemoveDefaultFileExt(),
                         Helper.GetRandomAlphanumericString(16)));
-            if (options.MaskFileTimes)
+            if (options.MaskFileDate)
                 Helper.SetRandomFileTimes(workingPath);
         }
 
-        private static void decryptionPostProcess(string path, string workingPath)
+        private static void decryptionPostProcess(string path, string workingPath, CipherOptions options)
         {
             var footer = new Footer();
             if (!footer.TryExtract(workingPath))
@@ -264,7 +264,7 @@ namespace KryptKeeper
             Helper.SetFileTimesFromFooter(originalPath, footer);
             if (new FileInfo(originalPath).Length > 0)
             {
-                if (!Helper.TryDeleteFile(path))
+                if (options.RemoveOriginalDecryption && !Helper.TryDeleteFile(path))
                     _status.WriteLine("Unable to remove original file: " + path);
             }
             else

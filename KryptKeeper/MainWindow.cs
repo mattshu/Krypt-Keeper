@@ -176,7 +176,7 @@ namespace KryptKeeper
             if (backgroundWorker.IsBusy)
             {
                 e.Cancel = true;
-                switch (new ConfirmExitWhileBusyDialog().ShowDialog())
+                switch (new ConfirmExitWhileBusy().ShowDialog())
                 {
                     case DialogResult.Abort: // Abort and Exit
                         Cipher.CancelProcessing();
@@ -184,9 +184,13 @@ namespace KryptKeeper
                         backgroundWorker.CancelAsync();
                         break;
 
-                    case DialogResult.Ignore: // Finish and Exit
+                    case DialogResult.Retry: // Finish File and Exit
                         closeAfterCurrentOperation = true;
                         backgroundWorker.CancelAsync();
+                        Hide();
+                        break;
+                    case DialogResult.Ignore: // Finish in Background
+                        closeAfterCurrentOperation = true;
                         Hide();
                         break;
                 }

@@ -98,11 +98,11 @@
   <ItemGroup>
     <Compile Include="Cipher.cs" />
     <Compile Include="CipherOptions.cs" />
-    <Compile Include="ConfirmExitWhileBusyDialog.cs">
+    <Compile Include="ConfirmExitWhileBusy.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ConfirmExitWhileBusyDialog.Designer.cs">
-      <DependentUpon>ConfirmExitWhileBusyDialog.cs</DependentUpon>
+    <Compile Include="ConfirmExitWhileBusy.Designer.cs">
+      <DependentUpon>ConfirmExitWhileBusy.cs</DependentUpon>
     </Compile>
     <Compile Include="ConfirmSettingsDialog.cs">
       <SubType>Form</SubType>
@@ -126,8 +126,8 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ThirdPartyTools\BCrypt.cs" />
-    <EmbeddedResource Include="ConfirmExitWhileBusyDialog.resx">
-      <DependentUpon>ConfirmExitWhileBusyDialog.cs</DependentUpon>
+    <EmbeddedResource Include="ConfirmExitWhileBusy.resx">
+      <DependentUpon>ConfirmExitWhileBusy.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ConfirmSettingsDialog.resx">
       <DependentUpon>ConfirmSettingsDialog.cs</DependentUpon>

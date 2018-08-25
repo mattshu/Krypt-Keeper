@@ -28,9 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle13 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle14 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle15 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
             this.tabMain = new MetroFramework.Controls.MetroTabControl();
             this.tabOptions = new MetroFramework.Controls.MetroTabPage();
             this.btnBrowseKeyFile = new MetroFramework.Controls.MetroButton();
@@ -90,7 +90,7 @@
             this.tabMain.Location = new System.Drawing.Point(20, 60);
             this.tabMain.Name = "tabMain";
             this.tabMain.SelectedIndex = 2;
-            this.tabMain.Size = new System.Drawing.Size(616, 370);
+            this.tabMain.Size = new System.Drawing.Size(746, 370);
             this.tabMain.Style = MetroFramework.MetroColorStyle.Green;
             this.tabMain.TabIndex = 0;
             this.tabMain.Theme = MetroFramework.MetroThemeStyle.Dark;
@@ -115,7 +115,7 @@
             this.tabOptions.HorizontalScrollbarSize = 10;
             this.tabOptions.Location = new System.Drawing.Point(4, 54);
             this.tabOptions.Name = "tabOptions";
-            this.tabOptions.Size = new System.Drawing.Size(608, 312);
+            this.tabOptions.Size = new System.Drawing.Size(720, 312);
             this.tabOptions.TabIndex = 0;
             this.tabOptions.Text = "Options";
             this.tabOptions.Theme = MetroFramework.MetroThemeStyle.Dark;
@@ -336,7 +336,7 @@
             this.tabFileProcessing.Margin = new System.Windows.Forms.Padding(30, 344, 3, 3);
             this.tabFileProcessing.Name = "tabFileProcessing";
             this.tabFileProcessing.Padding = new System.Windows.Forms.Padding(130, 0, 0, 0);
-            this.tabFileProcessing.Size = new System.Drawing.Size(608, 312);
+            this.tabFileProcessing.Size = new System.Drawing.Size(720, 312);
             this.tabFileProcessing.TabIndex = 1;
             this.tabFileProcessing.Text = "File Processing";
             this.tabFileProcessing.Theme = MetroFramework.MetroThemeStyle.Dark;
@@ -382,7 +382,7 @@
             this.btnDecrypt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnDecrypt.Enabled = false;
             this.btnDecrypt.FontSize = MetroFramework.MetroButtonSize.Medium;
-            this.btnDecrypt.Location = new System.Drawing.Point(477, 228);
+            this.btnDecrypt.Location = new System.Drawing.Point(589, 228);
             this.btnDecrypt.Name = "btnDecrypt";
             this.btnDecrypt.Size = new System.Drawing.Size(128, 81);
             this.btnDecrypt.TabIndex = 3;
@@ -396,7 +396,7 @@
             this.btnEncrypt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnEncrypt.Enabled = false;
             this.btnEncrypt.FontSize = MetroFramework.MetroButtonSize.Medium;
-            this.btnEncrypt.Location = new System.Drawing.Point(343, 228);
+            this.btnEncrypt.Location = new System.Drawing.Point(455, 228);
             this.btnEncrypt.Name = "btnEncrypt";
             this.btnEncrypt.Size = new System.Drawing.Size(128, 81);
             this.btnEncrypt.TabIndex = 3;
@@ -428,7 +428,7 @@
             this.panelFiles.HorizontalScrollbarSize = 10;
             this.panelFiles.Location = new System.Drawing.Point(3, 3);
             this.panelFiles.Name = "panelFiles";
-            this.panelFiles.Size = new System.Drawing.Size(602, 219);
+            this.panelFiles.Size = new System.Drawing.Size(714, 219);
             this.panelFiles.TabIndex = 2;
             this.panelFiles.Theme = MetroFramework.MetroThemeStyle.Dark;
             this.panelFiles.VerticalScrollbarBarColor = true;
@@ -445,23 +445,23 @@
             this.datagridFileList.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.datagridFileList.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.None;
             this.datagridFileList.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
-            dataGridViewCellStyle13.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle13.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(177)))), ((int)(((byte)(89)))));
-            dataGridViewCellStyle13.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            dataGridViewCellStyle13.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(17)))), ((int)(((byte)(17)))));
-            dataGridViewCellStyle13.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(208)))), ((int)(((byte)(104)))));
-            dataGridViewCellStyle13.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(17)))), ((int)(((byte)(17)))));
-            dataGridViewCellStyle13.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.datagridFileList.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle13;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(177)))), ((int)(((byte)(89)))));
+            dataGridViewCellStyle4.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            dataGridViewCellStyle4.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(17)))), ((int)(((byte)(17)))));
+            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(208)))), ((int)(((byte)(104)))));
+            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(17)))), ((int)(((byte)(17)))));
+            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.datagridFileList.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle4;
             this.datagridFileList.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle14.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle14.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(17)))), ((int)(((byte)(17)))));
-            dataGridViewCellStyle14.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            dataGridViewCellStyle14.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(109)))), ((int)(((byte)(109)))), ((int)(((byte)(109)))));
-            dataGridViewCellStyle14.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(208)))), ((int)(((byte)(104)))));
-            dataGridViewCellStyle14.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(17)))), ((int)(((byte)(17)))));
-            dataGridViewCellStyle14.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.datagridFileList.DefaultCellStyle = dataGridViewCellStyle14;
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle5.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(17)))), ((int)(((byte)(17)))));
+            dataGridViewCellStyle5.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            dataGridViewCellStyle5.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(109)))), ((int)(((byte)(109)))), ((int)(((byte)(109)))));
+            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(208)))), ((int)(((byte)(104)))));
+            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(17)))), ((int)(((byte)(17)))));
+            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.datagridFileList.DefaultCellStyle = dataGridViewCellStyle5;
             this.datagridFileList.Dock = System.Windows.Forms.DockStyle.Fill;
             this.datagridFileList.EnableHeadersVisualStyles = false;
             this.datagridFileList.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
@@ -470,17 +470,17 @@
             this.datagridFileList.Name = "datagridFileList";
             this.datagridFileList.ReadOnly = true;
             this.datagridFileList.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
-            dataGridViewCellStyle15.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle15.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(177)))), ((int)(((byte)(89)))));
-            dataGridViewCellStyle15.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            dataGridViewCellStyle15.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(17)))), ((int)(((byte)(17)))));
-            dataGridViewCellStyle15.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(208)))), ((int)(((byte)(104)))));
-            dataGridViewCellStyle15.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(17)))), ((int)(((byte)(17)))));
-            dataGridViewCellStyle15.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.datagridFileList.RowHeadersDefaultCellStyle = dataGridViewCellStyle15;
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle6.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(177)))), ((int)(((byte)(89)))));
+            dataGridViewCellStyle6.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            dataGridViewCellStyle6.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(17)))), ((int)(((byte)(17)))));
+            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(208)))), ((int)(((byte)(104)))));
+            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(17)))), ((int)(((byte)(17)))));
+            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.datagridFileList.RowHeadersDefaultCellStyle = dataGridViewCellStyle6;
             this.datagridFileList.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.datagridFileList.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.datagridFileList.Size = new System.Drawing.Size(602, 219);
+            this.datagridFileList.Size = new System.Drawing.Size(714, 219);
             this.datagridFileList.Style = MetroFramework.MetroColorStyle.Green;
             this.datagridFileList.TabIndex = 2;
             this.datagridFileList.Theme = MetroFramework.MetroThemeStyle.Dark;
@@ -505,7 +505,7 @@
             this.tabStatus.HorizontalScrollbarSize = 10;
             this.tabStatus.Location = new System.Drawing.Point(4, 54);
             this.tabStatus.Name = "tabStatus";
-            this.tabStatus.Size = new System.Drawing.Size(608, 312);
+            this.tabStatus.Size = new System.Drawing.Size(738, 312);
             this.tabStatus.TabIndex = 2;
             this.tabStatus.Text = "Operational Status";
             this.tabStatus.Theme = MetroFramework.MetroThemeStyle.Dark;
@@ -522,7 +522,7 @@
             // 
             // 
             this.txtStatus.CustomButton.Image = null;
-            this.txtStatus.CustomButton.Location = new System.Drawing.Point(211, 2);
+            this.txtStatus.CustomButton.Location = new System.Drawing.Point(341, 2);
             this.txtStatus.CustomButton.Name = "";
             this.txtStatus.CustomButton.Size = new System.Drawing.Size(91, 91);
             this.txtStatus.CustomButton.Style = MetroFramework.MetroColorStyle.Blue;
@@ -542,7 +542,7 @@
             this.txtStatus.SelectionLength = 0;
             this.txtStatus.SelectionStart = 0;
             this.txtStatus.ShortcutsEnabled = true;
-            this.txtStatus.Size = new System.Drawing.Size(305, 96);
+            this.txtStatus.Size = new System.Drawing.Size(435, 96);
             this.txtStatus.TabIndex = 7;
             this.txtStatus.Theme = MetroFramework.MetroThemeStyle.Dark;
             this.txtStatus.UseSelectable = true;
@@ -568,7 +568,7 @@
             // 
             this.btnExport.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnExport.FontWeight = MetroFramework.MetroButtonWeight.Regular;
-            this.btnExport.Location = new System.Drawing.Point(494, 184);
+            this.btnExport.Location = new System.Drawing.Point(624, 184);
             this.btnExport.Name = "btnExport";
             this.btnExport.Size = new System.Drawing.Size(75, 18);
             this.btnExport.TabIndex = 6;
@@ -581,7 +581,7 @@
             // 
             this.btnClear.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnClear.FontWeight = MetroFramework.MetroButtonWeight.Regular;
-            this.btnClear.Location = new System.Drawing.Point(494, 208);
+            this.btnClear.Location = new System.Drawing.Point(624, 208);
             this.btnClear.Name = "btnClear";
             this.btnClear.Size = new System.Drawing.Size(75, 18);
             this.btnClear.TabIndex = 6;
@@ -594,7 +594,7 @@
             // 
             this.lblTotalPercentage.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblTotalPercentage.FontWeight = MetroFramework.MetroLabelWeight.Bold;
-            this.lblTotalPercentage.Location = new System.Drawing.Point(353, 17);
+            this.lblTotalPercentage.Location = new System.Drawing.Point(483, 17);
             this.lblTotalPercentage.Name = "lblTotalPercentage";
             this.lblTotalPercentage.Size = new System.Drawing.Size(45, 19);
             this.lblTotalPercentage.TabIndex = 5;
@@ -619,7 +619,7 @@
             this.lblOperationStatus.FontWeight = MetroFramework.MetroLabelWeight.Regular;
             this.lblOperationStatus.Location = new System.Drawing.Point(214, 116);
             this.lblOperationStatus.Name = "lblOperationStatus";
-            this.lblOperationStatus.Size = new System.Drawing.Size(179, 29);
+            this.lblOperationStatus.Size = new System.Drawing.Size(309, 29);
             this.lblOperationStatus.TabIndex = 5;
             this.lblOperationStatus.Text = "Awaiting instruction";
             this.lblOperationStatus.TextAlign = System.Drawing.ContentAlignment.TopCenter;
@@ -628,7 +628,7 @@
             // lblFileAfter
             // 
             this.lblFileAfter.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblFileAfter.Location = new System.Drawing.Point(318, 148);
+            this.lblFileAfter.Location = new System.Drawing.Point(448, 148);
             this.lblFileAfter.Name = "lblFileAfter";
             this.lblFileAfter.Size = new System.Drawing.Size(269, 23);
             this.lblFileAfter.TabIndex = 4;
@@ -648,7 +648,7 @@
             // 
             this.progressTotal.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.progressTotal.EnsureVisible = false;
-            this.progressTotal.Location = new System.Drawing.Point(399, 17);
+            this.progressTotal.Location = new System.Drawing.Point(529, 17);
             this.progressTotal.Maximum = 100;
             this.progressTotal.Name = "progressTotal";
             this.progressTotal.Size = new System.Drawing.Size(128, 128);
@@ -678,7 +678,7 @@
             // 
             this.lblVersionInformation.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.lblVersionInformation.FontSize = MetroFramework.MetroLabelSize.Small;
-            this.lblVersionInformation.Location = new System.Drawing.Point(462, 43);
+            this.lblVersionInformation.Location = new System.Drawing.Point(592, 43);
             this.lblVersionInformation.Name = "lblVersionInformation";
             this.lblVersionInformation.Size = new System.Drawing.Size(167, 14);
             this.lblVersionInformation.TabIndex = 1;
@@ -694,10 +694,10 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(656, 450);
+            this.ClientSize = new System.Drawing.Size(786, 450);
             this.Controls.Add(this.tabMain);
             this.Controls.Add(this.lblVersionInformation);
-            this.MinimumSize = new System.Drawing.Size(656, 450);
+            this.MinimumSize = new System.Drawing.Size(786, 450);
             this.Name = "MainWindow";
             this.Style = MetroFramework.MetroColorStyle.Lime;
             this.Text = "Krypt Keeper";

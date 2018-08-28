@@ -5,6 +5,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Windows.Forms;
 using MetroFramework;
 using MetroFramework.Controls;
@@ -34,17 +35,14 @@ namespace KryptKeeper
         {
             return new List<Control>
             {
-                lblCurrentPercentage,
-                lblTotalPercentage,
                 lblOperationStatus,
-                lblFileBefore,
-                lblFileAfter,
+                lblProcessingFile,
                 txtStatus
             };
         }
 
         #region Form Events
-        private void MainWindow_Shown(object sender, EventArgs e)
+        private void mainWindow_Shown(object sender, EventArgs e)
         {
             focusTab(MainTabs.Options);
             loadSettings();
@@ -70,7 +68,14 @@ namespace KryptKeeper
             txtCipherKey.ShowButton = radPlaintextKey.Checked;
             txtCipherKey.UseSystemPasswordChar = radPlaintextKey.Checked;
             if (radKeyFile.Checked)
+            {
                 txtCipherKey.Text = Helper.BrowseFiles(multiSelect: false);
+                txtCipherKey.WaterMark = @"You must browse for a key file...";
+            }
+            else
+            {
+                txtCipherKey.WaterMark = "";
+            }
         }
 
         private void txtCipherKey_ButtonClick(object sender, EventArgs e)
@@ -81,6 +86,11 @@ namespace KryptKeeper
         private void btnBrowseKeyFile_Click(object sender, EventArgs e)
         {
             txtCipherKey.Text = Helper.BrowseFiles(multiSelect: false);
+        }
+
+        private void btnSelectFiles_Click(object sender, EventArgs e)
+        {
+            buildFileList();
         }
 
         private void btnExit_Click(object sender, EventArgs e)
@@ -100,7 +110,7 @@ namespace KryptKeeper
 
         private void datagridFileList_DataSourceChanged(object sender, EventArgs e)
         {
-            enableControls(datagridFileList.RowCount > 0);
+            enableProcessButtons(datagridFileList.RowCount > 0);
         }
 
         private void btnRemoveSelectedFiles_Click(object sender, EventArgs e)
@@ -124,6 +134,8 @@ namespace KryptKeeper
         {
             if (closeAfterCurrentOperation) return;
             updateProgress(e.ProgressPercentage, (int)e.UserState);
+            lblFilesToBeProcessed.Text = Cipher.GetFileProgress();
+            lblTimeElapsed.Text = Cipher.GetElapsedTime(hideMs: true) + @"elapsed";
         }
 
         private void backgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -136,11 +148,11 @@ namespace KryptKeeper
             _status.WriteLine("Operation finished. " + Cipher.GetElapsedTime());
             btnCancelOperation.Enabled = false;
             updateProgress(100, 100);
-            lblFileAfter.Text = "";
-            lblFileBefore.Text = "";
-            lblCurrentPercentage.Text = "";
-            lblTotalPercentage.Text = "";
-            lblOperationStatus.Text = @"Awaiting instruction";
+            lblFilesToBeProcessed.Text = e.Cancelled ? "Some" : "All" + " files processed";
+            lblProcessingFile.Text = "";
+            lblCurrentPercentage.Text = @"100%";
+            lblTotalPercentage.Text = @"100%";
+            lblOperationStatus.Text = @"Done!";
         }
 
         private void btnCancelOperation_Click(object sender, EventArgs e)
@@ -171,29 +183,12 @@ namespace KryptKeeper
             txtStatus.Clear();
         }
 
-        private void MainWindow_FormClosing(object sender, FormClosingEventArgs e)
+        private void mainWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (backgroundWorker.IsBusy)
             {
                 e.Cancel = true;
-                switch (new ConfirmExitWhileBusy().ShowDialog())
-                {
-                    case DialogResult.Abort: // Abort and Exit
-                        Cipher.CancelProcessing();
-                        closeAfterCurrentOperation = true;
-                        backgroundWorker.CancelAsync();
-                        break;
-
-                    case DialogResult.Retry: // Finish File and Exit
-                        closeAfterCurrentOperation = true;
-                        backgroundWorker.CancelAsync();
-                        Hide();
-                        break;
-                    case DialogResult.Ignore: // Finish in Background
-                        closeAfterCurrentOperation = true;
-                        Hide();
-                        break;
-                }
+                handleExitWhileBusy();
             }
             else
             {
@@ -210,24 +205,11 @@ namespace KryptKeeper
                     saveSettings();
                 else if (!settingsAreDefault())
                 {
-                    switch (MessageBox.Show(Resources.SaveSettingsMsg, Resources.SaveSettingsTitle,
-                        MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question))
-                    {
-                        case DialogResult.Yes:
-                            saveSettings();
-                            break;
-
-                        case DialogResult.No:
-                            Helper.ResetSettings();
-                            break;
-
-                        default:
-                            e.Cancel = true;
-                            break;
-                    }
+                    e.Cancel = handleSettingsOnExit();
                 }
             }
         }
+
         #endregion
 
         private void focusTab(MainTabs tab)
@@ -252,7 +234,7 @@ namespace KryptKeeper
             chkConfirmExit.Checked = settings.confirmOnExit;
         }
 
-        private void enableControls(bool state)
+        private void enableProcessButtons(bool state)
         {
             btnEncrypt.Enabled = btnDecrypt.Enabled = state;
         }
@@ -274,7 +256,7 @@ namespace KryptKeeper
             datagridFileList.DataSource = _fileList;
             arrangeFileListColumns();
             loadFileListColumnWidths();
-            enableControls(datagridFileList.RowCount > 0);
+            enableProcessButtons(datagridFileList.RowCount > 0);
             lblFileCount.Text = $@"File count: {_fileList.Count}";
             lblPayload.Text = $@"Payload: {Helper.BytesToString(_fileList.CalculateTotalPayloadBytes())}";
             focusTab(MainTabs.Files);
@@ -393,7 +375,6 @@ namespace KryptKeeper
                 RemoveOriginalEncryption = chkRemoveAfterEncryption.Checked,
                 RemoveOriginalDecryption = chkRemoveAfterDecryption.Checked
             };
-            options.GenerateIV();
             return options;
         }
 
@@ -480,6 +461,47 @@ namespace KryptKeeper
         {
             return !chkMaskFileName.Checked && !chkMaskFileDate.Checked && chkRemoveAfterDecryption.Checked &&
                 chkRemoveAfterEncryption.Checked && radKeyFile.Checked && txtCipherKey.Text.Length == 0;
+        }
+
+        private bool handleSettingsOnExit()
+        {
+            switch (MessageBox.Show(Resources.SaveSettingsMsg, Resources.SaveSettingsTitle,
+                MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question))
+            {
+                case DialogResult.Yes:
+                    saveSettings();
+                    return false;
+
+                case DialogResult.No:
+                    Helper.ResetSettings();
+                    return false;
+
+                default:
+                    return true;
+            }
+        }
+
+        private void handleExitWhileBusy()
+        {
+            switch (new ConfirmExitWhileBusy().ShowDialog())
+            {
+                case DialogResult.Abort: // Abort and Exit
+                    Cipher.CancelProcessing();
+                    closeAfterCurrentOperation = true;
+                    backgroundWorker.CancelAsync();
+                    break;
+
+                case DialogResult.Retry: // Finish File and Exit
+                    closeAfterCurrentOperation = true;
+                    backgroundWorker.CancelAsync();
+                    Hide();
+                    break;
+
+                case DialogResult.Ignore: // Finish in Background
+                    closeAfterCurrentOperation = true;
+                    Hide();
+                    break;
+            }
         }
 
     }

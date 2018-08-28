@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Security.Cryptography;
 
 namespace KryptKeeper
@@ -16,8 +14,15 @@ namespace KryptKeeper
         public byte[] IV { get; set; }
         public byte[] Salt { get; set; }
         public byte[] Key { get; set; }
+        public byte[] SecureRandomFiller { get; private set; }
 
-        public void GenerateIV()
+        public CipherOptions()
+        {
+            generateSecureRandomFiller();
+            generateIV();
+        }
+
+        private void generateIV()
         {
             using (var aes = Aes.Create())
             {
@@ -25,6 +30,17 @@ namespace KryptKeeper
                 aes.GenerateIV();
                 IV = aes.IV;
             }
+        }
+
+        private void generateSecureRandomFiller()
+        {
+            var entropy = new byte[15];
+            using (var rng = new RNGCryptoServiceProvider())
+            {
+                rng.GetBytes(entropy);
+            }
+            if (entropy.Length > 0)
+                SecureRandomFiller = entropy;
         }
 
         public string GetModeOfOperation() => Mode == Cipher.ENCRYPT ? "Encrypting" : "Decrypting";

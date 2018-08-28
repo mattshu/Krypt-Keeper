@@ -13,24 +13,34 @@ namespace KryptKeeper
         public const string FILE_EXTENSION = ".krpt";
         public const string WORKING_FILE_EXTENSION = ".krpt.tmp";
         public const long MAX_FILE_LENGTH = 0x800000000; // 4GB
-        private const int MINIMUM_FILE_LENGTH = IV_SIZE + SALT_SIZE;
+        private const int MINIMUM_FILE_LENGTH = IV_SIZE + SALT_SIZE + SECURE_RANDOM_FILLER_SIZE;
         private const int IV_SIZE = 16;
         private const int SALT_SIZE = 29;
+        private const int SECURE_RANDOM_FILLER_SIZE = 15;
         private const int KEY_SIZE = 256; 
         private const int CHUNK_SIZE = 0x1000000; // 16MB
         public static void CancelProcessing() => _cancelProcessing = true;
         private static bool _cancelProcessing;
         private static BackgroundWorker _backgroundWorker;
         private static readonly Status _status = Status.GetInstance();
-        public static string GetElapsedTime() => Helper.GetSpannedTime(_cipherStartTime.Ticks);
+        public static string GetElapsedTime(bool hideMs = false) => Helper.GetSpannedTime(_cipherStartTime.Ticks, hideMs);
         private static DateTime _cipherStartTime;
         private static long _progressBytesOverall;
         private static long _progressBytesTotal;
+        private static int _progressFileIndex = 0;
+        private static int _progressFileTotal;
+
+        public static string GetFileProgress()
+        {
+            return $"{_progressFileIndex}/{_progressFileTotal} files processed";
+        }
 
         public static void ProcessFiles(CipherOptions options)
         {
             if (options.Files.Count <= 0) return;
             _progressBytesOverall = 0;
+            _progressFileIndex = 0;
+            _progressFileTotal = options.Files.Count;
             _progressBytesTotal = options.Files.CalculateTotalPayloadBytes();
             _cipherStartTime = DateTime.Now;
             _backgroundWorker.RunWorkerAsync(options);
@@ -51,9 +61,10 @@ namespace KryptKeeper
                     break;
                 if (File.Exists(fileData.GetFilePath()))
                 {
-                    _status.WritePending($"{options.GetModeOfOperation()}: " + fileData);
+                    _status.WritePending($"{options.GetModeOfOperation()}: " + fileData.GetFilePath());
                     _status.UpdateOperationLabel(options.GetModeOfOperation());
                     process(fileData.GetFilePath(), options);
+                    _progressFileIndex++;
                 }
                 else
                     _status.WriteLine("* Unable to find: " + fileData);
@@ -70,13 +81,12 @@ namespace KryptKeeper
                     _status.WriteLine("* File not found: " + path);
                     return;
                 }
-                _status.UpdateBeforeLabel(Path.GetFileName(path));
+                _status.UpdateProcessingLabel(Path.GetFileName(path));
                 if (options.Mode == DECRYPT && !isFileValidForDecryption(path)) return;
                 workingPath = options.Mode == ENCRYPT
                     ? path + FILE_EXTENSION
                     : path.ReplaceLastOccurrence(FILE_EXTENSION, WORKING_FILE_EXTENSION);
                 if (File.Exists(workingPath)) workingPath = Helper.PadExistingFileName(workingPath);
-                //_status.UpdateAfterLabel(Path.GetFileName(workingPath));
                 using (var aes = Aes.Create())
                 {
                     if (aes == null)
@@ -91,13 +101,13 @@ namespace KryptKeeper
                         {
                             if (options.Mode == ENCRYPT)
                             {
+                                wStream.Write(options.SecureRandomFiller, 0, options.SecureRandomFiller.Length); // Insert random filler bytes
                                 wStream.Write(options.IV, 0, options.IV.Length); // Insert IV
                                 wStream.Write(options.Salt, 0, options.Salt.Length); // Insert Salt
                             }
                             using (var cStream = new CryptoStream(wStream, transformer, CryptoStreamMode.Write))
                             {
-                                // 45 skips IV (16 bytes) and salt (29 bytes) if decrypting
-                                rStream.Seek(options.Mode == ENCRYPT ? 0 : 45, SeekOrigin.Begin);
+                                rStream.Seek(options.Mode == ENCRYPT ? 0 : SECURE_RANDOM_FILLER_SIZE + IV_SIZE + SALT_SIZE, SeekOrigin.Begin);
                                 processStreams(path, rStream, cStream);
                                 if (options.Mode == ENCRYPT)
                                     buildAndWriteFooter(path, cStream);
@@ -166,7 +176,8 @@ namespace KryptKeeper
                 {
                     using (var bReader = new BinaryReader(fStream))
                     {
-                        var read = bReader.ReadBytes(16);
+                        fStream.Seek(SECURE_RANDOM_FILLER_SIZE, SeekOrigin.Begin);
+                        var read = bReader.ReadBytes(IV_SIZE);
                         if (read.Length > 0)
                             return read;
                         throw new CryptographicException("There was a problem extracting the IV from: " + path);
@@ -180,7 +191,6 @@ namespace KryptKeeper
                 return new byte[0];
             }
         }
-
         private static byte[] extractSalt(string path)
         {
             try
@@ -189,8 +199,8 @@ namespace KryptKeeper
                 {
                     using (var bReader = new BinaryReader(fStream))
                     {
-                        fStream.Seek(16, SeekOrigin.Begin);
-                        var read = bReader.ReadBytes(29);
+                        fStream.Seek(IV_SIZE + SECURE_RANDOM_FILLER_SIZE, SeekOrigin.Begin);
+                        var read = bReader.ReadBytes(SALT_SIZE);
                         if (read.Length > 0)
                             return read;
                         throw new CryptographicException("There was a problem extracting the salt from: " + path);
@@ -244,11 +254,8 @@ namespace KryptKeeper
         {
             if (options.RemoveOriginalEncryption && !Helper.TryDeleteFile(path))
                 _status.WriteLine("Unable to remove original (access denied): " + path);
-            if (options.MaskFileName) { 
+            if (options.MaskFileName)  
                 File.Move(workingPath, workingPath = workingPath.Replace(Path.GetFileName(workingPath).RemoveDefaultFileExt(), Helper.GetRandomAlphanumericString(16)));
-                //_status.UpdateAfterLabel(workingPath);
-            }
-
             if (options.MaskFileDate)
                 Helper.SetRandomFileTimes(workingPath);
         }
@@ -266,7 +273,6 @@ namespace KryptKeeper
                 fOpen.SetLength(fOpen.Length - footer.ToArray().Length);
             var originalPath = workingPath.Replace(Path.GetFileName(workingPath), footer.Name)
                 .Replace(WORKING_FILE_EXTENSION, "");
-            //_status.UpdateAfterLabel(Path.GetFileName(originalPath));
             if (File.Exists(originalPath))
                 originalPath = Helper.PadExistingFileName(originalPath);
             File.Move(workingPath, originalPath); // Copy worked file to original file

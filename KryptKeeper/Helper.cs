@@ -70,7 +70,7 @@ namespace KryptKeeper
                 return sha.ComputeHash(value);
         }
 
-        public static string GetSpannedTime(long ticks)
+        public static string GetSpannedTime(long ticks, bool hideMs = false)
         {
             var time = TimeSpan.FromTicks(Math.Max(1, DateTime.Now.Ticks - ticks));
             var sb = new StringBuilder();
@@ -82,9 +82,9 @@ namespace KryptKeeper
                 sb.Append(time.Minutes + "m ");
             if (time.Seconds > 0)
                 sb.Append(time.Seconds + "s ");
-            if (time.Milliseconds > 0)
+            if (!hideMs && time.Milliseconds > 0)
                 sb.Append(time.Milliseconds + "ms");
-            return "(" + sb + ")";
+            return sb.ToString();
         }
 
         public static string PadExistingFileName(string fullPath)

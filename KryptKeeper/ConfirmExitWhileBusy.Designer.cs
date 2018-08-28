@@ -60,9 +60,9 @@
             // btnAbort
             // 
             this.btnAbort.DialogResult = System.Windows.Forms.DialogResult.Abort;
-            this.btnAbort.Location = new System.Drawing.Point(264, 150);
+            this.btnAbort.Location = new System.Drawing.Point(334, 150);
             this.btnAbort.Name = "btnAbort";
-            this.btnAbort.Size = new System.Drawing.Size(123, 23);
+            this.btnAbort.Size = new System.Drawing.Size(182, 23);
             this.btnAbort.TabIndex = 2;
             this.btnAbort.Text = "Abort and Exit";
             this.btnAbort.Theme = MetroFramework.MetroThemeStyle.Dark;
@@ -72,9 +72,9 @@
             // btnStop
             // 
             this.btnStop.DialogResult = System.Windows.Forms.DialogResult.Retry;
-            this.btnStop.Location = new System.Drawing.Point(264, 179);
+            this.btnStop.Location = new System.Drawing.Point(334, 179);
             this.btnStop.Name = "btnStop";
-            this.btnStop.Size = new System.Drawing.Size(123, 23);
+            this.btnStop.Size = new System.Drawing.Size(182, 23);
             this.btnStop.TabIndex = 2;
             this.btnStop.Text = "Finish File and Exit";
             this.btnStop.Theme = MetroFramework.MetroThemeStyle.Dark;
@@ -84,11 +84,11 @@
             // btnFinish
             // 
             this.btnFinish.DialogResult = System.Windows.Forms.DialogResult.Ignore;
-            this.btnFinish.Location = new System.Drawing.Point(264, 208);
+            this.btnFinish.Location = new System.Drawing.Point(334, 208);
             this.btnFinish.Name = "btnFinish";
-            this.btnFinish.Size = new System.Drawing.Size(123, 23);
+            this.btnFinish.Size = new System.Drawing.Size(182, 23);
             this.btnFinish.TabIndex = 2;
-            this.btnFinish.Text = "Finish in Background";
+            this.btnFinish.Text = "Finish All in Background";
             this.btnFinish.Theme = MetroFramework.MetroThemeStyle.Dark;
             this.btnFinish.UseSelectable = true;
             this.btnFinish.Click += new System.EventHandler(this.btnFinish_Click);
@@ -97,9 +97,9 @@
             // 
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.btnCancel.Highlight = true;
-            this.btnCancel.Location = new System.Drawing.Point(264, 237);
+            this.btnCancel.Location = new System.Drawing.Point(334, 237);
             this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Size = new System.Drawing.Size(123, 23);
+            this.btnCancel.Size = new System.Drawing.Size(182, 23);
             this.btnCancel.TabIndex = 2;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.Theme = MetroFramework.MetroThemeStyle.Dark;
@@ -110,7 +110,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(410, 283);
+            this.ClientSize = new System.Drawing.Size(539, 283);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnFinish);
             this.Controls.Add(this.btnStop);

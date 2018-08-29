@@ -5,10 +5,8 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Windows.Forms;
 using MetroFramework;
-using MetroFramework.Controls;
 
 namespace KryptKeeper
 {
@@ -19,7 +17,6 @@ namespace KryptKeeper
                 - If planning on storing keys, ensure key storage security
         */
         public const int MINIMUM_PLAINTEXT_KEY_LENGTH = 8;
-        public MetroTextBox GetStatusBox() => txtStatus;
         private static bool closeAfterCurrentOperation;
         private enum MainTabs { Options, Files, Status }
         private Status _status;

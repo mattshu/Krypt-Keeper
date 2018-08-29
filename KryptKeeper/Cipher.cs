@@ -17,23 +17,25 @@ namespace KryptKeeper
         private const int IV_SIZE = 16;
         private const int SALT_SIZE = 29;
         private const int SECURE_RANDOM_FILLER_SIZE = 15;
-        private const int KEY_SIZE = 256; 
+        private const int KEY_SIZE = 256;
         private const int CHUNK_SIZE = 0x1000000; // 16MB
-        public static void CancelProcessing() => _cancelProcessing = true;
+
+
         private static bool _cancelProcessing;
         private static BackgroundWorker _backgroundWorker;
         private static readonly Status _status = Status.GetInstance();
-        public static string GetElapsedTime(bool hideMs = false) => Helper.GetSpannedTime(_cipherStartTime.Ticks, hideMs);
+
+
         private static DateTime _cipherStartTime;
         private static long _progressBytesOverall;
         private static long _progressBytesTotal;
         private static int _progressFileIndex = 0;
         private static int _progressFileTotal;
 
-        public static string GetFileProgress()
-        {
-            return $"{_progressFileIndex}/{_progressFileTotal} files processed";
-        }
+        public static void CancelProcessing() => _cancelProcessing = true;
+        public static string GetElapsedTime(bool hideMs = false) => Helper.GetSpannedTime(_cipherStartTime.Ticks, hideMs);
+
+        public static string GetFileProgress() => $"{_progressFileIndex}/{_progressFileTotal} files processed";
 
         public static void ProcessFiles(CipherOptions options)
         {
@@ -54,7 +56,7 @@ namespace KryptKeeper
 
         private static void backgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            var options = (CipherOptions) e.Argument;
+            var options = (CipherOptions)e.Argument;
             foreach (var fileData in options.Files)
             {
                 if (_backgroundWorker.CancellationPending)
@@ -138,7 +140,6 @@ namespace KryptKeeper
                 return true;
             _status.WriteLine("* File not in correct format for decryption: " + path);
             return false;
-
         }
 
         private static ICryptoTransform createCryptoTransform(string path, CipherOptions options, SymmetricAlgorithm aes)
@@ -191,6 +192,7 @@ namespace KryptKeeper
                 return new byte[0];
             }
         }
+
         private static byte[] extractSalt(string path)
         {
             try
@@ -254,7 +256,7 @@ namespace KryptKeeper
         {
             if (options.RemoveOriginalEncryption && !Helper.TryDeleteFile(path))
                 _status.WriteLine("Unable to remove original (access denied): " + path);
-            if (options.MaskFileName)  
+            if (options.MaskFileName)
                 File.Move(workingPath, workingPath = workingPath.Replace(Path.GetFileName(workingPath).RemoveDefaultFileExt(), Helper.GetRandomAlphanumericString(16)));
             if (options.MaskFileDate)
                 Helper.SetRandomFileTimes(workingPath);
@@ -296,6 +298,7 @@ namespace KryptKeeper
             var baseExceptionRaw = ex.GetBaseException().ToString();
             var baseExceptionPart = baseExceptionRaw.Substring(0, baseExceptionRaw.IndexOf(':'));
             var baseException = baseExceptionPart.Substring(baseExceptionPart.LastIndexOf('.') + 1);
+            var msgWhenUnhandled = ex.Message + Environment.NewLine + ex.StackTrace;
             var preserveTempFile = false;
             switch (baseException)
             {
@@ -304,17 +307,19 @@ namespace KryptKeeper
                         ex.Message.Equals("Padding is invalid and cannot be removed."))
                         _status.WriteLine("*** Failed to decrypt file: " + path);
                     else
-                        _status.WriteLine("*** Cryptographic exception: " + ex.Message + Environment.NewLine +
-                                          ex.StackTrace);
+                        _status.WriteLine("*** Cryptographic exception: " + msgWhenUnhandled);
                     break;
+
                 case "ArgumentException":
                     _status.WriteLine("*** Failed to decrypt file: " + path);
                     break;
+
                 case "UnauthorizedAccessException":
                     _status.WriteLine("*** Unauthorized access: " + ex.Message);
                     break;
+
                 default:
-                    _status.WriteLine("*** UNHANDLED EXCEPTION: " + ex.Message + Environment.NewLine + ex.StackTrace);
+                    _status.WriteLine("*** UNHANDLED EXCEPTION: " + msgWhenUnhandled);
                     _status.WriteLine("Partially processed file will be preserved: " + workingPath);
                     preserveTempFile = true;
                     break;

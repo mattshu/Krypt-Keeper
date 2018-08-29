@@ -12,7 +12,6 @@ namespace KryptKeeper
 {
     internal static class Helper
     {
-
         public static long CalculateTotalPayloadBytes(this List<FileData> fileData)
         {
             return fileData.Count > 0 ? fileData.Sum(f => new FileInfo(f.GetFilePath()).Length) : 0;
@@ -32,7 +31,7 @@ namespace KryptKeeper
 
         public static string BrowseFiles(bool multiSelect = true)
         {
-            var openFile = new OpenFileDialog{Multiselect = multiSelect, CheckFileExists = true};
+            var openFile = new OpenFileDialog { Multiselect = multiSelect, CheckFileExists = true };
             return openFile.ShowDialog() != DialogResult.OK ? "" : openFile.FileName;
         }
 
@@ -126,8 +125,8 @@ namespace KryptKeeper
             settings.removeAfterDecryption = true;
             settings.rememberSettings = false;
             settings.confirmOnExit = true;
-            settings.fileListColumnOrder = new StringCollection {"1", "3", "0", "2"};
-            settings.fileListColumnWidths = new StringCollection {"72", "194", "164", "103"};
+            settings.fileListColumnOrder = new StringCollection { "1", "3", "0", "2" };
+            settings.fileListColumnWidths = new StringCollection { "72", "194", "164", "103" };
             settings.Save();
         }
 

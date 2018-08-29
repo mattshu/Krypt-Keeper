@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 
 namespace KryptKeeper
 {
@@ -23,6 +22,5 @@ namespace KryptKeeper
         {
             return Path + (Path[Path.Length - 1] == '\\' ? "" : "\\") + Name;
         }
-
     }
 }

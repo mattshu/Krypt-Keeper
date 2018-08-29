@@ -1,5 +1,5 @@
-﻿using System;
-using MetroFramework.Controls;
+﻿using MetroFramework.Controls;
+using System;
 
 namespace KryptKeeper
 {
@@ -22,11 +22,10 @@ namespace KryptKeeper
             var statusObjs = mainWindow.GetStatusObjects();
             if (statusObjs.Count <= 0)
                 throw new Exception(@"Unable to get status objects!");
-            _lblOperation = (MetroLabel) statusObjs[0];
-            _lblProcessingFile = (MetroLabel) statusObjs[1];
-            _statusBox = (MetroTextBox) statusObjs[2];
+            _lblOperation = (MetroLabel)statusObjs[0];
+            _lblProcessingFile = (MetroLabel)statusObjs[1];
+            _statusBox = (MetroTextBox)statusObjs[2];
         }
-
 
         public static Status GetInstance()
         {
@@ -35,12 +34,12 @@ namespace KryptKeeper
 
         public void UpdateOperationLabel(string msg)
         {
-            _mainWindow.Invoke((Action) (() => _lblOperation.Text = msg));
+            _mainWindow.Invoke((Action)(() => _lblOperation.Text = msg));
         }
 
         public void UpdateProcessingLabel(string msg)
         {
-            _mainWindow.Invoke((Action) (() => _lblProcessingFile.Text = msg));
+            _mainWindow.Invoke((Action)(() => _lblProcessingFile.Text = msg));
         }
 
         public void WriteLine(string msg)
@@ -48,7 +47,7 @@ namespace KryptKeeper
             if (_isPending)
                 finishPending();
             _isPending = false;
-            _mainWindow.Invoke((Action) (() => _statusBox.AppendText(timestamp + msg + newLine)));
+            _mainWindow.Invoke((Action)(() => _statusBox.AppendText(timestamp + msg + newLine)));
         }
 
         public void WritePending(string msg)
@@ -58,15 +57,15 @@ namespace KryptKeeper
             else
                 _isPending = true;
             _pendingStartTime = DateTime.Now;
-            _mainWindow.Invoke((Action) (() => _statusBox.AppendText(timestamp + msg + "...")));
+            _mainWindow.Invoke((Action)(() => _statusBox.AppendText(timestamp + msg + "...")));
         }
 
         private static string timestamp => $"[{DateTime.Now:HH:mm:ss.fff}]: ";
 
         private void finishPending()
         {
-            _mainWindow.Invoke((Action) (() =>
-                _statusBox.AppendText($"done! ({Helper.GetSpannedTime(_pendingStartTime.Ticks)}){newLine}")));
+            _mainWindow.Invoke((Action)(() =>
+               _statusBox.AppendText($"done! ({Helper.GetSpannedTime(_pendingStartTime.Ticks)}){newLine}")));
         }
     }
 }

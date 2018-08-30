@@ -13,8 +13,16 @@ namespace KryptKeeper
     public partial class MainWindow : MetroFramework.Forms.MetroForm
     {
         /* 
-            TODO
+            TODO * MAJOR *
                 - If planning on storing keys, ensure key storage security
+                - Add drag and drop capabilities
+                - Option: shutdown/sleep/restart after job
+                - Always work toward single responsibility principle
+            TODO * MINOR *
+                - Option: process files according to size
+                - Sort function on column click
+                - Fix column order
+                - Refactor constants to own class?
         */
         public const int MINIMUM_PLAINTEXT_KEY_LENGTH = 8;
         private static bool closeAfterCurrentOperation;

@@ -38,7 +38,7 @@ namespace KryptKeeper
         public static byte[] GenerateLogHeader()
         {
             var timestamp = DateTime.Now;
-            var header = "KryptKeeper Status Log" + Environment.NewLine + "Generated on " + timestamp + Environment.NewLine; // TODO INSERT VERSION INFORMATION
+            var header = $"KryptKeeper v{Application.ProductVersion}{Environment.NewLine}Log generated on {timestamp}{Environment.NewLine}";
             return GetBytes(header);
         }
 

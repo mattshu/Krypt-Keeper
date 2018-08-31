@@ -142,5 +142,41 @@ namespace KryptKeeper.Properties {
                 this["removeAfterEncryption"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool processInOrder {
+            get {
+                return ((bool)(this["processInOrder"]));
+            }
+            set {
+                this["processInOrder"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int processInOrderBy {
+            get {
+                return ((int)(this["processInOrderBy"]));
+            }
+            set {
+                this["processInOrderBy"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool processInOrderDesc {
+            get {
+                return ((bool)(this["processInOrderDesc"]));
+            }
+            set {
+                this["processInOrderDesc"] = value;
+            }
+        }
     }
 }

@@ -12,14 +12,15 @@ namespace KryptKeeper
 {
     internal static class Helper
     {
-        public static long CalculateTotalPayloadBytes(this List<FileData> fileData)
+
+        public static long CalculateTotalFilePayload(List<FileData> fileData)
         {
             return fileData.Count > 0 ? fileData.Sum(f => new FileInfo(f.GetFilePath()).Length) : 0;
         }
 
         public static string BytesToString(long byteCount)
         {
-            string[] suf = { "B", "KB", "MB", "GB", "TB", "PB", "EB" }; //Longs run out around EB
+            string[] suf = { "B", "KB", "MB", "GB", "TB", "PB", "EB" };
             if (byteCount == 0)
                 return @"0";
             var bytes = Math.Abs(byteCount);
@@ -124,6 +125,9 @@ namespace KryptKeeper
             settings.removeAfterEncryption = true;
             settings.removeAfterDecryption = true;
             settings.rememberSettings = false;
+            settings.processInOrder = false;
+            settings.processInOrderBy = 0;
+            settings.processInOrderDesc = false;
             settings.confirmOnExit = true;
             settings.fileListColumnOrder = new StringCollection { "1", "3", "0", "2" };
             settings.fileListColumnWidths = new StringCollection { "72", "194", "164", "103" };
@@ -165,8 +169,8 @@ namespace KryptKeeper
 
         private static DateTime getRandomFileTime()
         {
-            const long minTicks = 0x1;
-            const long maxTicks = 0x7FFF35F4F06C58F;
+            var minTicks = DateTime.Parse("01/01/2000").ToFileTime();
+            var maxTicks = DateTime.Parse("12/31/2099").ToFileTime();
             return DateTime.FromFileTime(randomTicks(Math.Max(minTicks, DateTime.MinValue.Ticks), Math.Min(maxTicks, DateTime.MaxValue.Ticks)));
         }
 

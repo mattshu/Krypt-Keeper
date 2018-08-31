@@ -119,6 +119,9 @@
     </Compile>
     <Compile Include="Footer.cs" />
     <Compile Include="Helper.cs" />
+    <Compile Include="ProcessOrder.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Status.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

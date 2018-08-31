@@ -47,7 +47,7 @@ namespace KryptKeeper
             if (_isPending)
                 finishPending();
             _isPending = false;
-            _mainWindow.Invoke((Action)(() => _statusBox.AppendText(timestamp + msg + newLine)));
+            _mainWindow.Invoke((Action)(() => _statusBox.AppendText(_timestamp + msg + newLine)));
         }
 
         public void WritePending(string msg)
@@ -57,10 +57,10 @@ namespace KryptKeeper
             else
                 _isPending = true;
             _pendingStartTime = DateTime.Now;
-            _mainWindow.Invoke((Action)(() => _statusBox.AppendText(timestamp + msg + "...")));
+            _mainWindow.Invoke((Action)(() => _statusBox.AppendText(_timestamp + msg + "...")));
         }
 
-        private static string timestamp => $"[{DateTime.Now:HH:mm:ss.fff}]: ";
+        private static string _timestamp => $"[{DateTime.Now:HH:mm:ss.fff}]: ";
 
         private void finishPending()
         {

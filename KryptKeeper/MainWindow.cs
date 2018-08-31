@@ -16,11 +16,11 @@ namespace KryptKeeper
             TODO * MAJOR *
                 - If planning on storing keys, ensure key storage security
                 - Add drag and drop capabilities
+                - Calculate processing speeds
                 - Option: shutdown/sleep/restart after job
                 - Always work toward single responsibility principle
             TODO * MINOR *
-                - Option: process files according to size
-                - Sort function on column click
+                - Option: process files according to size (*in progress)
                 - Fix column order
                 - Refactor constants to own class?
         */
@@ -88,19 +88,21 @@ namespace KryptKeeper
             txtCipherKey.UseSystemPasswordChar = !txtCipherKey.UseSystemPasswordChar;
         }
 
+        private void txtCipherKey_Click(object sender, EventArgs e)
+        {
+            if (radKeyFile.Checked && string.IsNullOrWhiteSpace(txtCipherKey.Text))
+                txtCipherKey.Text = Helper.BrowseFiles(multiSelect: false);
+        }
+
         private void btnBrowseKeyFile_Click(object sender, EventArgs e)
         {
             txtCipherKey.Text = Helper.BrowseFiles(multiSelect: false);
         }
 
+
         private void btnSelectFiles_Click(object sender, EventArgs e)
         {
             buildFileList();
-        }
-
-        private void btnExit_Click(object sender, EventArgs e)
-        {
-            Close();
         }
 
         private void btnAddFiles_Click(object sender, EventArgs e)
@@ -121,6 +123,39 @@ namespace KryptKeeper
         private void btnRemoveSelectedFiles_Click(object sender, EventArgs e)
         {
             removeSelectedFiles();
+        }
+
+        private void chkProcessInOrder_CheckedChanged(object sender, EventArgs e)
+        {
+            cbxProcessOrder.Enabled = chkProcessOrderDesc.Enabled = chkProcessInOrder.Checked;
+        }
+
+        private void cbxProcessOrder_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (_fileList.Count <= 0) return;
+            sortFiles((ProcessOrder) cbxProcessOrder.SelectedIndex, chkProcessOrderDesc.Checked);
+        }
+
+        private void chkProcessOrderDesc_CheckedChanged(object sender, EventArgs e)
+        {
+            if (_fileList.Count <= 0) return;
+            sortFiles((ProcessOrder)cbxProcessOrder.SelectedIndex, chkProcessOrderDesc.Checked);
+        }
+        private void sortFiles(ProcessOrder processOrder, bool descending = false)
+        {
+            if (_fileList.Count <= 0) return;
+            switch (processOrder)
+            {
+                case ProcessOrder.FileSize:
+                    //TODO Create IComparer to use for_fileList.Sort()
+                    break;
+                case ProcessOrder.FileName:
+                    //TODO Create IComparer to use for_fileList.Sort()
+                    break;
+                case ProcessOrder.FileDate:
+                    //TODO Create IComparer to use for_fileList.Sort()
+                    break;
+            }
         }
 
         private void btnEncrypt_Click(object sender, EventArgs e)
@@ -152,12 +187,18 @@ namespace KryptKeeper
             }
             _status.WriteLine("Operation finished. " + Cipher.GetElapsedTime());
             btnCancelOperation.Enabled = false;
+            btnSelectFilesFromStatusTab.Enabled = true;
             updateProgress(100, 100);
             lblFilesToBeProcessed.Text = e.Cancelled ? "Some" : "All" + " files processed";
             lblProcessingFile.Text = "";
             lblCurrentPercentage.Text = @"100%";
             lblTotalPercentage.Text = @"100%";
             lblOperationStatus.Text = @"Done!";
+        }
+
+        private void btnSelectFilesFromStatusTab_Click(object sender, EventArgs e)
+        {
+            buildFileList();
         }
 
         private void btnCancelOperation_Click(object sender, EventArgs e)
@@ -188,6 +229,11 @@ namespace KryptKeeper
             txtStatus.Clear();
         }
 
+        private void btnExit_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
+
         private void mainWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (backgroundWorker.IsBusy)
@@ -216,7 +262,6 @@ namespace KryptKeeper
         }
 
         #endregion
-
         private void focusTab(MainTabs tab)
         {
             tabMain.SelectedIndex = (int)tab;
@@ -233,6 +278,9 @@ namespace KryptKeeper
             chkMaskFileInformation.Checked = settings.encryptionMaskFileName || settings.encryptionMaskFileDate;
             chkMaskFileName.Checked = settings.encryptionMaskFileName;
             chkMaskFileDate.Checked = settings.encryptionMaskFileDate;
+            chkProcessInOrder.Checked = settings.processInOrder;
+            cbxProcessOrder.SelectedIndex = settings.processInOrderBy;
+            chkProcessOrderDesc.Checked = settings.processInOrderDesc;
             chkRemoveAfterEncryption.Checked = settings.removeAfterEncryption;
             chkRemoveAfterDecryption.Checked = settings.removeAfterDecryption;
             chkRememberSettings.Checked = settings.rememberSettings;
@@ -262,8 +310,7 @@ namespace KryptKeeper
             arrangeFileListColumns();
             loadFileListColumnWidths();
             enableProcessButtons(datagridFileList.RowCount > 0);
-            lblFileCount.Text = $@"File count: {_fileList.Count}";
-            lblPayload.Text = $@"Payload: {Helper.BytesToString(_fileList.CalculateTotalPayloadBytes())}";
+            lblJobInformation.Text = $@"{_fileList.Count} ({Helper.BytesToString(Helper.CalculateTotalFilePayload(_fileList))}) files to be processed.";
             focusTab(MainTabs.Files);
         }
 
@@ -332,6 +379,7 @@ namespace KryptKeeper
                 if (!validateAllSettings()) return;
                 focusTab(MainTabs.Status);
                 btnCancelOperation.Enabled = true;
+                btnSelectFilesFromStatusTab.Enabled = false;
                 var options = generateOptions(cipherMode);
                 Cipher.ProcessFiles(options);
                 resetFileList();
@@ -386,8 +434,8 @@ namespace KryptKeeper
         private void resetFileList()
         {
             datagridFileList.DataSource = null;
-            lblFileCount.Text = "";
-            lblPayload.Text = "";
+            lblJobInformation.Text = "";
+            lblTotalPayload.Text = "";
         }
 
         private bool confirmSettings()
@@ -457,7 +505,10 @@ namespace KryptKeeper
             settings.encryptionMaskFileDate = chkMaskFileInformation.Checked && chkMaskFileDate.Checked;
             settings.removeAfterDecryption = chkRemoveAfterDecryption.Checked;
             settings.removeAfterEncryption = chkRemoveAfterEncryption.Checked;
-            settings.rememberSettings = true;
+            settings.processInOrder = chkProcessInOrder.Checked;
+            settings.processInOrderBy = cbxProcessOrder.SelectedIndex;
+            settings.processInOrderDesc = chkProcessOrderDesc.Checked;
+            settings.rememberSettings = true; // always true in case user exits with saving
             settings.confirmOnExit = chkConfirmExit.Checked;
             settings.Save();
         }
@@ -508,6 +559,5 @@ namespace KryptKeeper
                     break;
             }
         }
-
     }
 }

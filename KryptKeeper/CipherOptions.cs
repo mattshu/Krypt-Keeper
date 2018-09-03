@@ -1,11 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 
 namespace KryptKeeper
 {
     internal class CipherOptions
     {
-        public List<FileData> Files { get; set; }
+        public FileList Files { get; set; }
         public bool MaskFileName { get; set; }
         public bool MaskFileDate { get; set; }
         public bool RemoveOriginalDecryption { get; set; }

@@ -28,9 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle13 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle14 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle15 = new System.Windows.Forms.DataGridViewCellStyle();
             this.tabMain = new MetroFramework.Controls.MetroTabControl();
             this.tabOptions = new MetroFramework.Controls.MetroTabPage();
             this.btnBrowseKeyFile = new MetroFramework.Controls.MetroButton();
@@ -48,7 +48,7 @@
             this.chkMaskFileInformation = new MetroFramework.Controls.MetroCheckBox();
             this.tabFileProcessing = new MetroFramework.Controls.MetroTabPage();
             this.chkProcessOrderDesc = new MetroFramework.Controls.MetroCheckBox();
-            this.cbxProcessOrder = new MetroFramework.Controls.MetroComboBox();
+            this.cbxProcessOrderBy = new MetroFramework.Controls.MetroComboBox();
             this.chkProcessInOrder = new MetroFramework.Controls.MetroCheckBox();
             this.lblJobInformation = new MetroFramework.Controls.MetroLabel();
             this.btnRemoveSelectedFiles = new MetroFramework.Controls.MetroButton();
@@ -209,7 +209,8 @@
             this.txtCipherKey.CustomButton.UseSelectable = true;
             this.txtCipherKey.CustomButton.Visible = false;
             this.txtCipherKey.FontSize = MetroFramework.MetroTextBoxSize.Medium;
-            this.txtCipherKey.Lines = new string[0];
+            this.txtCipherKey.Lines = new string[] {
+        "D:\\shu\\Pictures\\New Bitmap Image.bmp"};
             this.txtCipherKey.Location = new System.Drawing.Point(293, 130);
             this.txtCipherKey.MaxLength = 32767;
             this.txtCipherKey.Name = "txtCipherKey";
@@ -223,6 +224,7 @@
             this.txtCipherKey.ShortcutsEnabled = true;
             this.txtCipherKey.Size = new System.Drawing.Size(192, 23);
             this.txtCipherKey.TabIndex = 10;
+            this.txtCipherKey.Text = "D:\\shu\\Pictures\\New Bitmap Image.bmp";
             this.txtCipherKey.Theme = MetroFramework.MetroThemeStyle.Dark;
             this.txtCipherKey.UseSelectable = true;
             this.txtCipherKey.WaterMark = "You must browse for a key file...";
@@ -251,9 +253,9 @@
             this.chkRememberSettings.FontSize = MetroFramework.MetroCheckBoxSize.Medium;
             this.chkRememberSettings.Location = new System.Drawing.Point(74, 230);
             this.chkRememberSettings.Name = "chkRememberSettings";
-            this.chkRememberSettings.Size = new System.Drawing.Size(160, 19);
+            this.chkRememberSettings.Size = new System.Drawing.Size(242, 19);
             this.chkRememberSettings.TabIndex = 6;
-            this.chkRememberSettings.Text = "Remember all settings";
+            this.chkRememberSettings.Text = "Remember all settings (except keys)";
             this.chkRememberSettings.Theme = MetroFramework.MetroThemeStyle.Dark;
             this.chkRememberSettings.UseSelectable = true;
             // 
@@ -321,7 +323,7 @@
             // tabFileProcessing
             // 
             this.tabFileProcessing.Controls.Add(this.chkProcessOrderDesc);
-            this.tabFileProcessing.Controls.Add(this.cbxProcessOrder);
+            this.tabFileProcessing.Controls.Add(this.cbxProcessOrderBy);
             this.tabFileProcessing.Controls.Add(this.chkProcessInOrder);
             this.tabFileProcessing.Controls.Add(this.lblJobInformation);
             this.tabFileProcessing.Controls.Add(this.btnRemoveSelectedFiles);
@@ -344,11 +346,11 @@
             this.tabFileProcessing.VerticalScrollbarHighlightOnWheel = false;
             this.tabFileProcessing.VerticalScrollbarSize = 10;
             // 
-            // chkProcessOrderDesc
+            // chkProcessOrderToggle
             // 
             this.chkProcessOrderDesc.AutoSize = true;
             this.chkProcessOrderDesc.Enabled = false;
-            this.chkProcessOrderDesc.Location = new System.Drawing.Point(385, 258);
+            this.chkProcessOrderDesc.Location = new System.Drawing.Point(365, 258);
             this.chkProcessOrderDesc.Name = "chkProcessOrderDesc";
             this.chkProcessOrderDesc.Size = new System.Drawing.Size(85, 15);
             this.chkProcessOrderDesc.TabIndex = 18;
@@ -357,24 +359,23 @@
             this.chkProcessOrderDesc.UseSelectable = true;
             this.chkProcessOrderDesc.CheckedChanged += new System.EventHandler(this.chkProcessOrderDesc_CheckedChanged);
             // 
-            // cbxProcessOrder
+            // cbxProcessOrderBy
             // 
-            this.cbxProcessOrder.Enabled = false;
-            this.cbxProcessOrder.FontSize = MetroFramework.MetroComboBoxSize.Small;
-            this.cbxProcessOrder.FontWeight = MetroFramework.MetroComboBoxWeight.Light;
-            this.cbxProcessOrder.FormattingEnabled = true;
-            this.cbxProcessOrder.ItemHeight = 19;
-            this.cbxProcessOrder.Items.AddRange(new object[] {
-            "File size",
+            this.cbxProcessOrderBy.Enabled = false;
+            this.cbxProcessOrderBy.FontSize = MetroFramework.MetroComboBoxSize.Small;
+            this.cbxProcessOrderBy.FontWeight = MetroFramework.MetroComboBoxWeight.Light;
+            this.cbxProcessOrderBy.FormattingEnabled = true;
+            this.cbxProcessOrderBy.ItemHeight = 19;
+            this.cbxProcessOrderBy.Items.AddRange(new object[] {
             "File name",
-            "File date"});
-            this.cbxProcessOrder.Location = new System.Drawing.Point(365, 227);
-            this.cbxProcessOrder.Name = "cbxProcessOrder";
-            this.cbxProcessOrder.Size = new System.Drawing.Size(105, 25);
-            this.cbxProcessOrder.TabIndex = 17;
-            this.cbxProcessOrder.Theme = MetroFramework.MetroThemeStyle.Dark;
-            this.cbxProcessOrder.UseSelectable = true;
-            this.cbxProcessOrder.SelectedIndexChanged += new System.EventHandler(this.cbxProcessOrder_SelectedIndexChanged);
+            "File size"});
+            this.cbxProcessOrderBy.Location = new System.Drawing.Point(365, 227);
+            this.cbxProcessOrderBy.Name = "cbxProcessOrderBy";
+            this.cbxProcessOrderBy.Size = new System.Drawing.Size(105, 25);
+            this.cbxProcessOrderBy.TabIndex = 17;
+            this.cbxProcessOrderBy.Theme = MetroFramework.MetroThemeStyle.Dark;
+            this.cbxProcessOrderBy.UseSelectable = true;
+            this.cbxProcessOrderBy.SelectedIndexChanged += new System.EventHandler(this.cbxProcessOrderBy_SelectedIndexChanged);
             // 
             // chkProcessInOrder
             // 
@@ -480,23 +481,23 @@
             this.datagridFileList.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.datagridFileList.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.None;
             this.datagridFileList.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(177)))), ((int)(((byte)(89)))));
-            dataGridViewCellStyle4.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            dataGridViewCellStyle4.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(17)))), ((int)(((byte)(17)))));
-            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(208)))), ((int)(((byte)(104)))));
-            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(17)))), ((int)(((byte)(17)))));
-            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.datagridFileList.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle13.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle13.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(177)))), ((int)(((byte)(89)))));
+            dataGridViewCellStyle13.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            dataGridViewCellStyle13.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(17)))), ((int)(((byte)(17)))));
+            dataGridViewCellStyle13.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(208)))), ((int)(((byte)(104)))));
+            dataGridViewCellStyle13.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(17)))), ((int)(((byte)(17)))));
+            dataGridViewCellStyle13.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.datagridFileList.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle13;
             this.datagridFileList.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle5.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(17)))), ((int)(((byte)(17)))));
-            dataGridViewCellStyle5.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            dataGridViewCellStyle5.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(109)))), ((int)(((byte)(109)))), ((int)(((byte)(109)))));
-            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(208)))), ((int)(((byte)(104)))));
-            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(17)))), ((int)(((byte)(17)))));
-            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.datagridFileList.DefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle14.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle14.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(17)))), ((int)(((byte)(17)))));
+            dataGridViewCellStyle14.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            dataGridViewCellStyle14.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(109)))), ((int)(((byte)(109)))), ((int)(((byte)(109)))));
+            dataGridViewCellStyle14.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(208)))), ((int)(((byte)(104)))));
+            dataGridViewCellStyle14.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(17)))), ((int)(((byte)(17)))));
+            dataGridViewCellStyle14.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.datagridFileList.DefaultCellStyle = dataGridViewCellStyle14;
             this.datagridFileList.Dock = System.Windows.Forms.DockStyle.Fill;
             this.datagridFileList.EnableHeadersVisualStyles = false;
             this.datagridFileList.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
@@ -505,14 +506,14 @@
             this.datagridFileList.Name = "datagridFileList";
             this.datagridFileList.ReadOnly = true;
             this.datagridFileList.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
-            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle6.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(177)))), ((int)(((byte)(89)))));
-            dataGridViewCellStyle6.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            dataGridViewCellStyle6.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(17)))), ((int)(((byte)(17)))));
-            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(208)))), ((int)(((byte)(104)))));
-            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(17)))), ((int)(((byte)(17)))));
-            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.datagridFileList.RowHeadersDefaultCellStyle = dataGridViewCellStyle6;
+            dataGridViewCellStyle15.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle15.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(177)))), ((int)(((byte)(89)))));
+            dataGridViewCellStyle15.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            dataGridViewCellStyle15.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(17)))), ((int)(((byte)(17)))));
+            dataGridViewCellStyle15.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(208)))), ((int)(((byte)(104)))));
+            dataGridViewCellStyle15.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(17)))), ((int)(((byte)(17)))));
+            dataGridViewCellStyle15.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.datagridFileList.RowHeadersDefaultCellStyle = dataGridViewCellStyle15;
             this.datagridFileList.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.datagridFileList.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.datagridFileList.Size = new System.Drawing.Size(733, 217);
@@ -860,7 +861,7 @@
         private MetroFramework.Controls.MetroButton btnSelectFilesFromStatusTab;
         private MetroFramework.Controls.MetroLabel lblProcessSpeedStats;
         private MetroFramework.Controls.MetroCheckBox chkProcessInOrder;
-        private MetroFramework.Controls.MetroComboBox cbxProcessOrder;
+        private MetroFramework.Controls.MetroComboBox cbxProcessOrderBy;
         private MetroFramework.Controls.MetroCheckBox chkProcessOrderDesc;
     }
 }

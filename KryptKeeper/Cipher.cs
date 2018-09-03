@@ -55,7 +55,7 @@ namespace KryptKeeper
         private static void backgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             var options = (CipherOptions)e.Argument;
-            foreach (var fileData in options.Files)
+            foreach (var fileData in options.Files.GetList())
             {
                 if (_backgroundWorker.CancellationPending)
                     break;

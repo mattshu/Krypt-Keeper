@@ -13,9 +13,9 @@ namespace KryptKeeper
     internal static class Helper
     {
 
-        public static long CalculateTotalFilePayload(List<FileData> fileData)
+        public static long CalculateTotalFilePayload(FileList fileList)
         {
-            return fileData.Count > 0 ? fileData.Sum(f => new FileInfo(f.GetFilePath()).Length) : 0;
+            return fileList.Count > 0 ? fileList.GetList().Sum(f => new FileInfo(f.GetFilePath()).Length) : 0;
         }
 
         public static string BytesToString(long byteCount)
@@ -30,9 +30,9 @@ namespace KryptKeeper
             return Math.Sign(byteCount) * num + " " + suf[place];
         }
 
-        public static string BrowseFiles(bool multiSelect = true)
+        public static string BrowseFiles(string title = "Select a file", bool multiSelect = true)
         {
-            var openFile = new OpenFileDialog { Multiselect = multiSelect, CheckFileExists = true };
+            var openFile = new OpenFileDialog { Title = title, Multiselect = multiSelect, CheckFileExists = true };
             return openFile.ShowDialog() != DialogResult.OK ? "" : openFile.FileName;
         }
 

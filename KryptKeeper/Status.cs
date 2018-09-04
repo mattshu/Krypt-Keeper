@@ -11,6 +11,7 @@ namespace KryptKeeper
         private readonly string newLine = Environment.NewLine;
         private readonly MetroLabel _lblOperation;
         private readonly MetroLabel _lblProcessingFile;
+        private readonly MetroLabel _lblProcessingRates;
         private readonly MetroTextBox _statusBox;
         private bool _isPending;
         private DateTime _pendingStartTime;
@@ -23,9 +24,10 @@ namespace KryptKeeper
             var statusObjs = mainWindow.GetStatusObjects();
             if (statusObjs.Count <= 0)
                 throw new Exception(@"Unable to get status objects!");
-            _lblOperation = (MetroLabel)statusObjs[0];
-            _lblProcessingFile = (MetroLabel)statusObjs[1];
-            _statusBox = (MetroTextBox)statusObjs[2];
+            _lblOperation = (MetroLabel) statusObjs[0];
+            _lblProcessingFile = (MetroLabel) statusObjs[1];
+            _lblProcessingRates = (MetroLabel) statusObjs[2];
+            _statusBox = (MetroTextBox) statusObjs[3];
         }
 
         public static Status GetInstance()
@@ -41,6 +43,11 @@ namespace KryptKeeper
         public void UpdateProcessingLabel(string msg)
         {
             _mainWindow.Invoke((Action)(() => _lblProcessingFile.Text = msg));
+        }
+
+        public void UpdateRatesLabel(string processRate)
+        {
+            _mainWindow.Invoke((Action)(() => _lblProcessingRates.Text = processRate));
         }
 
         public void WriteLine(string msg)
@@ -68,5 +75,7 @@ namespace KryptKeeper
             _mainWindow.Invoke((Action)(() =>
                _statusBox.AppendText($"done! ({Helper.GetSpannedTime(_pendingStartTime.Ticks)}){newLine}")));
         }
+
+
     }
 }

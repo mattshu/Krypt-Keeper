@@ -1,7 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Security;
+using System.Threading;
+using System.Timers;
 using System.Windows.Forms;
 using MetroFramework;
 
@@ -145,6 +146,7 @@ namespace KryptKeeper
                 _status.WriteLine("* Error: File is either empty or too large (>=4GB): " + ex.Message);
             }
         }
+
 
         private void disableButtonsDuringOperation(bool disable = true)
         {

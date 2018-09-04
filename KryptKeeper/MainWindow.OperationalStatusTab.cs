@@ -8,12 +8,11 @@ namespace KryptKeeper
     public partial class MainWindow
     {
         #region Operational Status Tab Form Events
+
         private void backgroundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             if (closeAfterCurrentOperation) return;
-            updateProgress(e.ProgressPercentage, (int)e.UserState);
-            lblFilesToBeProcessed.Text = Cipher.GetFileProgress();
-            lblTimeElapsed.Text = Cipher.GetElapsedTime(hideMs: true) + @"elapsed";
+            updateProgress((ProgressPacket)e.UserState);
         }
 
         private void backgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -25,13 +24,12 @@ namespace KryptKeeper
             }
             _status.WriteLine("Operation finished. " + Cipher.GetElapsedTime());
             disableButtonsDuringOperation(false);
-            updateProgress(100, 100);
+            updateProgress();
             lblFilesToBeProcessed.Text = e.Cancelled ? "Some" : "All" + " files processed";
             lblJobInformation.Text = "";
             lblProcessingFile.Text = "";
-            lblCurrentPercentage.Text = @"100%";
-            lblTotalPercentage.Text = @"100%";
             lblOperationStatus.Text = @"Done!";
+            Cipher.StartProgressTimer(false);
             _fileList.Reset();
             datagridFileList.DataSource = _fileList.GetList();
         }
@@ -73,14 +71,30 @@ namespace KryptKeeper
         {
             Close();
         }
+
         #endregion
 
-        private void updateProgress(int current, int total)
+        private void updateProgress(ProgressPacket packet = null)
         {
-            progressCurrent.Value = Helper.Clamp(current, 0, 100);
-            lblCurrentPercentage.Text = $@"{current}%";
-            progressTotal.Value = Helper.Clamp(total, 0, 100);
-            lblTotalPercentage.Text = $@"{total}%";
+            if (packet == null)
+            {
+                lblCurrentPercentage.Text = @"100%";
+                lblTotalFilePercentage.Text = @"100%";
+                progressCurrent.Value = 100;
+                progressTotalBytes.Value = 100;
+                progressTotalFiles.Value = 100;
+                return;
+            }
+            var currentFileProgress = packet.GetCurrentFileProgress();
+            var totalPayloadProgress = packet.GetTotalPayloadProgress();
+            var totalFileProgress = packet.GetTotalFilesProgress();
+            progressCurrent.Value = Helper.Clamp(currentFileProgress, 0, 100);
+            lblCurrentPercentage.Text = $@"{currentFileProgress}%";
+            progressTotalBytes.Value = Helper.Clamp(totalPayloadProgress, 0, 100);
+            progressTotalFiles.Value = Helper.Clamp(totalFileProgress, 0, 100);
+            lblTotalFilePercentage.Text = $@"{totalFileProgress}%";
+            lblFilesToBeProcessed.Text = Cipher.GetFileProgress();
+            lblTimeElapsed.Text = Cipher.GetElapsedTime(hideMs: true) + @"elapsed";
         }
 
         private void exportStatusLog()

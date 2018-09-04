@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
+using System.Timers;
 
 namespace KryptKeeper
 {
@@ -15,20 +17,61 @@ namespace KryptKeeper
         private static readonly Status _status = Status.GetInstance();
 
         private static DateTime _cipherStartTime;
-        private static int _progressFileIndex = 0;
-        private static int _progressFilesTotal;
 
+        private static long _currentPayloadState = 0;
+        private static long _currentPayloadTotal = 0;
+        private static long _totalPayloadState = 0;
+        private static long _totalPayloadTotal = 0;
+        private static int _totalFilesState = 0;
+        private static int _totalFilesTotal = 0;
+
+        private static System.Timers.Timer _timerProgress;
+
+        public static void StartProgressTimer(bool state = true)
+        {
+            if (state == false)
+            {
+                _timerProgress.Enabled = false;
+                return;
+            }
+            _timerProgress = new System.Timers.Timer();
+            _timerProgress.Elapsed += timerProgress_Tick;
+            _timerProgress.Enabled = true;
+        }
+
+        private static long _currentPayloadLast;
+        private static DateTime _timeSinceLastTick;
+        private static void timerProgress_Tick(object sender, ElapsedEventArgs e)
+        {
+            if (_currentPayloadLast == 0)
+            {
+                _currentPayloadLast = _currentPayloadState;
+                _timeSinceLastTick = DateTime.Now;
+            }
+            var bytesWorked = _currentPayloadState - _currentPayloadLast;
+            if (bytesWorked == 0) return;
+            _processRate = $"{Helper.BytesToString(bytesWorked / DateTime.Now.Subtract(_timeSinceLastTick).Seconds)}ps";
+            _timeSinceLastTick = DateTime.Now;
+            _status.UpdateRatesLabel(_processRate);
+        }
+
+        // TODO currently under construction
+
+        private static string _processRate;
+        public static string GetProcessingRate() => _processRate;
         public static void CancelProcessing() => _cancelProcessing = true;
         public static string GetElapsedTime(bool hideMs = false) => Helper.GetSpannedTime(_cipherStartTime.Ticks, hideMs);
 
-        public static string GetFileProgress() => $"{_progressFileIndex}/{_progressFilesTotal} files processed";
+        public static string GetFileProgress() => $"{_totalFilesState}/{_totalFilesTotal} files processed";
 
         public static void ProcessFiles(CipherOptions options)
         {
             if (options.Files.Count <= 0) return;
-            _progressFileIndex = 0;
-            _progressFilesTotal = options.Files.Count;
+            _totalFilesState = 0;
+            _totalFilesTotal = options.Files.Count;
+            _totalPayloadTotal = Helper.CalculateTotalFilePayload(options.Files);
             _cipherStartTime = DateTime.Now;
+            StartProgressTimer();
             _backgroundWorker.RunWorkerAsync(options);
         }
 
@@ -50,7 +93,7 @@ namespace KryptKeeper
                     _status.WritePending($"{options.GetModeOfOperation()}: " + fileData.GetFilePath());
                     _status.UpdateOperationLabel(options.GetModeOfOperation());
                     processFile(fileData.GetFilePath(), options);
-                    _progressFileIndex++;
+                    _totalFilesState++;
                 }
                 else
                     _status.WriteLine("* Unable to find: " + fileData);
@@ -229,19 +272,27 @@ namespace KryptKeeper
             _cancelProcessing = false;
             var buffer = new byte[CHUNK_SIZE];
             int bytesRead = readStream.Read(buffer, 0, CHUNK_SIZE);
-            var totalBytes = new FileInfo(path).Length;
-            long progressBytes = 0;
+            _currentPayloadState = 0;
+            _currentPayloadTotal = new FileInfo(path).Length;
             while (bytesRead > 0)
             {
                 if (_cancelProcessing)
                     break;
-                progressBytes += bytesRead;
-                //DEPRECATED: _backgroundWorker.ReportProgress(Helper.GetPercentProgress(progressBytes, totalBytes), Helper.GetPercentProgress(_progressBytesOverall, _progressBytesTotal));
-                _backgroundWorker.ReportProgress(Helper.GetPercentProgress(progressBytes, totalBytes),
-                    Helper.GetPercentProgress(_progressFileIndex, _progressFilesTotal));
+                _currentPayloadState += bytesRead;
+                _totalPayloadState += bytesRead;
+                var packet = buildProgressPacket();
+                _backgroundWorker.ReportProgress(0, packet);
                 cryptoStream.Write(buffer, 0, bytesRead);
                 bytesRead = readStream.Read(buffer, 0, bytesRead);
             }
+        }
+
+        private static ProgressPacket buildProgressPacket()
+        {
+            return new ProgressPacket(
+                new[] { _currentPayloadState, _currentPayloadTotal},
+                new[] {_totalPayloadState, _totalPayloadTotal},
+                new[] {_totalFilesState, _totalFilesTotal});
         }
 
         private static void buildAndWriteFooter(string path, Stream cryptoStream)

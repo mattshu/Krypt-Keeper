@@ -9,13 +9,13 @@ namespace KryptKeeper
     {
         /* 
             TODO * MAJOR * (IMPERATIVE: *** REMOVE HARDCODED KEYFILE ***)
-                - Add drag and drop capabilities
                 - Calculate processing speeds
                 - Option: shutdown/sleep/restart after job
-                - Always work toward single responsibility principle
             TODO * MINOR *
-                - If planning on storing keys, ensure key storage security
                 - Dialog icons
+
+                - If planning on storing keys, ensure key storage security
+                - Always work toward single responsibility principle
         */
         private static bool closeAfterCurrentOperation;
         private enum MainTabs { Options, Files, Status }
@@ -34,6 +34,7 @@ namespace KryptKeeper
             {
                 lblOperationStatus,
                 lblProcessingFile,
+                lblProcessRates,
                 txtStatus
             };
         }
@@ -87,7 +88,7 @@ namespace KryptKeeper
         private void loadSettings()
         {
             progressCurrent.Reset();
-            progressTotal.Reset();
+            progressTotalFiles.Reset();
             var settings = Settings.Default;
             if (!settings.rememberSettings)
                 Helper.ResetSettings();
@@ -172,16 +173,6 @@ namespace KryptKeeper
                     Hide();
                     break;
             }
-        }
-
-        private void MainWindow_DragDrop(object sender, DragEventArgs e)
-        {
-        }
-
-        private void MainWindow_DragEnter(object sender, DragEventArgs e)
-        {
-            var data = e.Data.GetData(DataFormats.FileDrop);
-            e.Effect = DragDropEffects.Copy;
         }
     }
 }

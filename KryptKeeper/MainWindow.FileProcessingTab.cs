@@ -110,7 +110,6 @@ namespace KryptKeeper
             btnEncrypt.Enabled = btnDecrypt.Enabled = state;
         }
 
-
         private void removeSelectedFiles()
         {
             var selectedCount = datagridFileList.SelectedRows.Count;

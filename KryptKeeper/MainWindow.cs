@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace KryptKeeper
@@ -192,5 +193,19 @@ namespace KryptKeeper
                     break;
             }
         }
+
+        private void panelStatus_MouseEnter(object sender, EventArgs e)
+        {
+            panelStatus.Size = new Size(panelStatus.Width, panelStatus.Height + 150);
+            panelStatus.Location = new Point(panelStatus.Location.X, panelStatus.Location.Y - 150);
+        }
+
+        private void panelStatus_MouseLeave(object sender, EventArgs e)
+        {
+            panelStatus.Size = new Size(panelStatus.Width, panelStatus.Height - 150);
+            panelStatus.Location = new Point(panelStatus.Location.X, panelStatus.Location.Y + 150);
+        }
+
+
     }
 }

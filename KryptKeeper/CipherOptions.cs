@@ -13,11 +13,11 @@ namespace KryptKeeper
         public byte[] IV { get; set; }
         public byte[] Salt { get; set; }
         public byte[] Key { get; set; }
-        public byte[] SecureRandomFiller { get; private set; }
+        public byte[] Entropy { get; private set; }
 
         public CipherOptions()
         {
-            generateSecureRandomFiller();
+            generateEntropy();
             generateIV();
         }
 
@@ -31,7 +31,7 @@ namespace KryptKeeper
             }
         }
 
-        private void generateSecureRandomFiller()
+        private void generateEntropy()
         {
             var entropy = new byte[15];
             using (var rng = new RNGCryptoServiceProvider())
@@ -39,7 +39,7 @@ namespace KryptKeeper
                 rng.GetBytes(entropy);
             }
             if (entropy.Length > 0)
-                SecureRandomFiller = entropy;
+                Entropy = entropy;
         }
 
         public string GetModeOfOperation() => Mode == Cipher.ENCRYPT ? "Encrypting" : "Decrypting";

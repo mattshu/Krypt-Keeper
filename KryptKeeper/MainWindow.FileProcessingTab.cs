@@ -155,7 +155,9 @@ namespace KryptKeeper
         private void disableButtonsDuringOperation(bool disable = true)
         {
             btnSelectFiles.Enabled = btnAddFiles.Enabled = btnRemoveSelectedFiles.Enabled =
-                btnEncrypt.Enabled = btnDecrypt.Enabled = btnSelectFilesFromStatusTab.Enabled = !disable;
+                btnEncrypt.Enabled = btnDecrypt.Enabled = btnSelectFilesFromStatusTab.Enabled = 
+                chkProcessInOrder.Enabled = cbxProcessOrderBy.Enabled = chkProcessOrderDesc.Enabled =
+                !disable;
             btnCancelOperation.Enabled = disable;
         }
 
@@ -187,7 +189,7 @@ namespace KryptKeeper
                 Mode = cipherMode,
                 Files = _fileList,
                 Key = key,
-                Salt = Helper.GetBytes(BCrypt.GenerateSalt(5)),
+                Salt = Helper.GetBytes(BCrypt.GenerateSalt(10)),
                 MaskFileName = chkMaskFileInformation.Checked && chkMaskFileName.Checked,
                 MaskFileDate = chkMaskFileInformation.Checked && chkMaskFileDate.Checked,
                 RemoveOriginalEncryption = chkRemoveAfterEncryption.Checked,

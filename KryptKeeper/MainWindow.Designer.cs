@@ -215,7 +215,7 @@
             this.txtCipherKey.MaxLength = 32767;
             this.txtCipherKey.Name = "txtCipherKey";
             this.txtCipherKey.PasswordChar = '\0';
-            this.txtCipherKey.PromptText = "You must browse for a key file...";
+            this.txtCipherKey.WaterMark = "You must browse for a key file...";
             this.txtCipherKey.ReadOnly = true;
             this.txtCipherKey.ScrollBars = System.Windows.Forms.ScrollBars.None;
             this.txtCipherKey.SelectedText = "";

@@ -122,7 +122,7 @@ namespace KryptKeeper
 
         private static string getEncryptionWorkingPath(string path, CipherOptions options)
         {
-            var workingPath = "";
+            string workingPath;
             if (options.MaskFileName)
             {
                 workingPath = path.Replace(Path.GetFileName(path), Helper.GetRandomAlphanumericString(16)) + FILE_EXTENSION;

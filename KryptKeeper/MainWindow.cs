@@ -8,19 +8,15 @@ namespace KryptKeeper
     public partial class MainWindow : MetroFramework.Forms.MetroForm
     {
         /* 
-            TODO * MAJOR *
-                - If planning on storing keys, ensure key storage security
+            TODO * MAJOR * (IMPERATIVE: *** REMOVE HARDCODED KEYFILE ***)
                 - Add drag and drop capabilities
                 - Calculate processing speeds
                 - Option: shutdown/sleep/restart after job
                 - Always work toward single responsibility principle
-                - IMPERATIVE: *** REMOVE HARDCODED KEYFILE *** 
             TODO * MINOR *
-                - Fix column order
-                - Refactor constants to own class?
+                - If planning on storing keys, ensure key storage security
                 - Dialog icons
         */
-        public const int MINIMUM_PLAINTEXT_KEY_LENGTH = 8;
         private static bool closeAfterCurrentOperation;
         private enum MainTabs { Options, Files, Status }
         private Status _status;
@@ -176,6 +172,16 @@ namespace KryptKeeper
                     Hide();
                     break;
             }
+        }
+
+        private void MainWindow_DragDrop(object sender, DragEventArgs e)
+        {
+        }
+
+        private void MainWindow_DragEnter(object sender, DragEventArgs e)
+        {
+            var data = e.Data.GetData(DataFormats.FileDrop);
+            e.Effect = DragDropEffects.Copy;
         }
     }
 }

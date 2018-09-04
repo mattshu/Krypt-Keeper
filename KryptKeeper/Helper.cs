@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 namespace KryptKeeper
@@ -19,6 +20,17 @@ namespace KryptKeeper
         {
             if (val.CompareTo(min) < 0) return min;
             return val.CompareTo(max) > 0 ? max : val;
+        }
+
+        public static bool CheckSecurePassword(string pass)
+        {
+            if (pass.Length < Cipher.MINIMUM_PLAINTEXT_KEY_LENGTH)
+                return false;
+            if (!pass.Any(char.IsUpper))
+                return false;
+            if (!Regex.IsMatch(pass, $"[{string.Join("", Cipher.ALLOWED_PLAINTEXT_KEY_SYMBOLS)}]+"))
+                return false;
+            return true;
         }
 
         public static string BytesToString(long byteCount)

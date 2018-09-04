@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Security;
 using System.Windows.Forms;
 using MetroFramework;
 
@@ -94,19 +95,12 @@ namespace KryptKeeper
                 else if (new FileInfo(txtCipherKey.Text).Length <= 0)
                     errorMsg = "Key file is empty!";
             }
-            else if (!validatePlaintextKey())
-                errorMsg = "Passkey does not meet complex standards (8+ characters)"; // TODO include numbers, capitals, and symbols
+            else if (radPlaintextKey.Checked && !Helper.CheckSecurePassword(txtCipherKey.Text))
+                errorMsg =
+                    $"Password must be 8 or more characters, including at least one number, one upper/lowercase, and one symbol: ({string.Join(",", Cipher.ALLOWED_PLAINTEXT_KEY_SYMBOLS)})";
             if (errorMsg.Length <= 0) return true;
             MetroMessageBox.Show(this, errorMsg, "Invalid Settings", MessageBoxButtons.OK, MessageBoxIcon.Error);
             return false;
-        }
-
-        private bool validatePlaintextKey()
-        {
-            if (!radPlaintextKey.Checked) return false;
-            string plaintext = txtCipherKey.Text;
-            return plaintext.Length >= MINIMUM_PLAINTEXT_KEY_LENGTH;
-            // TODO more strength testing (a-z,A-Z,0-9,@$%&!etc)
         }
 
         private void enableProcessButtons(bool state)

@@ -50,13 +50,13 @@ namespace KryptKeeper
         private void btnEncrypt_Click(object sender, EventArgs e)
         {
             if (confirmSettings())
-                processFiles(Cipher.ENCRYPT);
+                processFiles(CipherMode.Encrypt);
         }
 
         private void btnDecrypt_Click(object sender, EventArgs e)
         {
             if (confirmSettings())
-                processFiles(Cipher.DECRYPT);
+                processFiles(CipherMode.Decrypt);
         }
         #endregion
 
@@ -153,7 +153,7 @@ namespace KryptKeeper
             refreshFileListGridView(retainOrder: true);
         }
 
-        private void processFiles(int cipherMode)
+        private void processFiles(CipherMode cipherMode)
         {
             try
             {
@@ -184,7 +184,7 @@ namespace KryptKeeper
             return false;
         }
 
-        private CipherOptions generateOptions(int cipherMode)
+        private CipherOptions generateOptions(CipherMode cipherMode)
         {
             byte[] key;
             if (radPlaintextKey.Checked)

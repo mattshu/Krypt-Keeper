@@ -5,11 +5,11 @@ namespace KryptKeeper
     internal class CipherOptions
     {
         public FileList Files { get; set; }
+        public CipherMode Mode { get; set; }
         public bool MaskFileName { get; set; }
         public bool MaskFileDate { get; set; }
         public bool RemoveOriginalDecryption { get; set; }
         public bool RemoveOriginalEncryption { get; set; }
-        public int Mode { get; set; }
         public byte[] IV { get; set; }
         public byte[] Salt { get; set; }
         public byte[] Key { get; set; }
@@ -42,6 +42,6 @@ namespace KryptKeeper
                 Entropy = entropy;
         }
 
-        public string GetModeOfOperation() => Mode == Cipher.ENCRYPT ? "Encrypting" : "Decrypting";
+        public string GetModeOfOperation() => Mode == CipherMode.Encrypt ? "Encrypting" : "Decrypting";
     }
 }

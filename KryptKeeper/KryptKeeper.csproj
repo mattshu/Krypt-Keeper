@@ -96,7 +96,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Cipher.Constants.cs" />
     <Compile Include="Cipher.cs" />
+    <Compile Include="CipherMode.cs" />
     <Compile Include="CipherOptions.cs" />
     <Compile Include="ConfirmExitWhileBusy.cs">
       <SubType>Form</SubType>

@@ -28,9 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             this.tabMain = new MetroFramework.Controls.MetroTabControl();
             this.tabOptions = new MetroFramework.Controls.MetroTabPage();
             this.btnBrowseKeyFile = new MetroFramework.Controls.MetroButton();
@@ -58,7 +58,6 @@
             this.panelFiles = new MetroFramework.Controls.MetroPanel();
             this.datagridFileList = new MetroFramework.Controls.MetroGrid();
             this.tabStatus = new MetroFramework.Controls.MetroTabPage();
-            this.panelStatus = new MetroFramework.Controls.MetroPanel();
             this.txtStatus = new MetroFramework.Controls.MetroTextBox();
             this.lblProcessSpeedStats = new MetroFramework.Controls.MetroLabel();
             this.lblCurrentPercentage = new MetroFramework.Controls.MetroLabel();
@@ -83,7 +82,6 @@
             this.panelFiles.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.datagridFileList)).BeginInit();
             this.tabStatus.SuspendLayout();
-            this.panelStatus.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabMain
@@ -96,7 +94,7 @@
             this.tabMain.ItemSize = new System.Drawing.Size(300, 50);
             this.tabMain.Location = new System.Drawing.Point(20, 60);
             this.tabMain.Name = "tabMain";
-            this.tabMain.SelectedIndex = 2;
+            this.tabMain.SelectedIndex = 1;
             this.tabMain.Size = new System.Drawing.Size(746, 370);
             this.tabMain.Style = MetroFramework.MetroColorStyle.Green;
             this.tabMain.TabIndex = 0;
@@ -134,7 +132,7 @@
             this.btnBrowseKeyFile.Location = new System.Drawing.Point(491, 130);
             this.btnBrowseKeyFile.Name = "btnBrowseKeyFile";
             this.btnBrowseKeyFile.Size = new System.Drawing.Size(75, 23);
-            this.btnBrowseKeyFile.TabIndex = 15;
+            this.btnBrowseKeyFile.TabIndex = 5;
             this.btnBrowseKeyFile.Text = "Browse...";
             this.btnBrowseKeyFile.Theme = MetroFramework.MetroThemeStyle.Dark;
             this.btnBrowseKeyFile.UseSelectable = true;
@@ -147,7 +145,7 @@
             this.btnSelectFiles.Name = "btnSelectFiles";
             this.btnSelectFiles.Size = new System.Drawing.Size(262, 81);
             this.btnSelectFiles.Style = MetroFramework.MetroColorStyle.Lime;
-            this.btnSelectFiles.TabIndex = 14;
+            this.btnSelectFiles.TabIndex = 9;
             this.btnSelectFiles.Text = "Select Files";
             this.btnSelectFiles.Theme = MetroFramework.MetroThemeStyle.Dark;
             this.btnSelectFiles.UseSelectable = true;
@@ -177,7 +175,7 @@
             this.radKeyFile.Location = new System.Drawing.Point(3, 0);
             this.radKeyFile.Name = "radKeyFile";
             this.radKeyFile.Size = new System.Drawing.Size(68, 19);
-            this.radKeyFile.TabIndex = 12;
+            this.radKeyFile.TabIndex = 0;
             this.radKeyFile.TabStop = true;
             this.radKeyFile.Text = "Key file";
             this.radKeyFile.Theme = MetroFramework.MetroThemeStyle.Dark;
@@ -191,7 +189,7 @@
             this.radPlaintextKey.Location = new System.Drawing.Point(93, 0);
             this.radPlaintextKey.Name = "radPlaintextKey";
             this.radPlaintextKey.Size = new System.Drawing.Size(103, 19);
-            this.radPlaintextKey.TabIndex = 12;
+            this.radPlaintextKey.TabIndex = 1;
             this.radPlaintextKey.Text = "Plaintext Key";
             this.radPlaintextKey.Theme = MetroFramework.MetroThemeStyle.Dark;
             this.radPlaintextKey.UseSelectable = true;
@@ -225,7 +223,7 @@
             this.txtCipherKey.SelectionStart = 0;
             this.txtCipherKey.ShortcutsEnabled = true;
             this.txtCipherKey.Size = new System.Drawing.Size(192, 23);
-            this.txtCipherKey.TabIndex = 10;
+            this.txtCipherKey.TabIndex = 4;
             this.txtCipherKey.Text = "D:\\shu\\Pictures\\New Bitmap Image.bmp";
             this.txtCipherKey.Theme = MetroFramework.MetroThemeStyle.Dark;
             this.txtCipherKey.UseSelectable = true;
@@ -244,7 +242,7 @@
             this.chkConfirmExit.Location = new System.Drawing.Point(74, 278);
             this.chkConfirmExit.Name = "chkConfirmExit";
             this.chkConfirmExit.Size = new System.Drawing.Size(119, 19);
-            this.chkConfirmExit.TabIndex = 6;
+            this.chkConfirmExit.TabIndex = 8;
             this.chkConfirmExit.Text = "Confirm on exit";
             this.chkConfirmExit.Theme = MetroFramework.MetroThemeStyle.Dark;
             this.chkConfirmExit.UseSelectable = true;
@@ -256,7 +254,7 @@
             this.chkRememberSettings.Location = new System.Drawing.Point(74, 230);
             this.chkRememberSettings.Name = "chkRememberSettings";
             this.chkRememberSettings.Size = new System.Drawing.Size(242, 19);
-            this.chkRememberSettings.TabIndex = 6;
+            this.chkRememberSettings.TabIndex = 7;
             this.chkRememberSettings.Text = "Remember all settings (except keys)";
             this.chkRememberSettings.Theme = MetroFramework.MetroThemeStyle.Dark;
             this.chkRememberSettings.UseSelectable = true;
@@ -280,7 +278,7 @@
             this.chkRemoveAfterEncryption.Location = new System.Drawing.Point(74, 83);
             this.chkRemoveAfterEncryption.Name = "chkRemoveAfterEncryption";
             this.chkRemoveAfterEncryption.Size = new System.Drawing.Size(245, 19);
-            this.chkRemoveAfterEncryption.TabIndex = 6;
+            this.chkRemoveAfterEncryption.TabIndex = 3;
             this.chkRemoveAfterEncryption.Text = "Remove original file after encryption";
             this.chkRemoveAfterEncryption.Theme = MetroFramework.MetroThemeStyle.Dark;
             this.chkRemoveAfterEncryption.UseSelectable = true;
@@ -292,7 +290,7 @@
             this.chkMaskFileDate.Location = new System.Drawing.Point(373, 39);
             this.chkMaskFileDate.Name = "chkMaskFileDate";
             this.chkMaskFileDate.Size = new System.Drawing.Size(133, 15);
-            this.chkMaskFileDate.TabIndex = 5;
+            this.chkMaskFileDate.TabIndex = 2;
             this.chkMaskFileDate.Text = "File date information";
             this.chkMaskFileDate.Theme = MetroFramework.MetroThemeStyle.Dark;
             this.chkMaskFileDate.UseSelectable = true;
@@ -304,7 +302,7 @@
             this.chkMaskFileName.Location = new System.Drawing.Point(293, 39);
             this.chkMaskFileName.Name = "chkMaskFileName";
             this.chkMaskFileName.Size = new System.Drawing.Size(74, 15);
-            this.chkMaskFileName.TabIndex = 5;
+            this.chkMaskFileName.TabIndex = 1;
             this.chkMaskFileName.Text = "File name";
             this.chkMaskFileName.Theme = MetroFramework.MetroThemeStyle.Dark;
             this.chkMaskFileName.UseSelectable = true;
@@ -316,7 +314,7 @@
             this.chkMaskFileInformation.Location = new System.Drawing.Point(74, 35);
             this.chkMaskFileInformation.Name = "chkMaskFileInformation";
             this.chkMaskFileInformation.Size = new System.Drawing.Size(199, 19);
-            this.chkMaskFileInformation.TabIndex = 5;
+            this.chkMaskFileInformation.TabIndex = 0;
             this.chkMaskFileInformation.Text = "Mask identifyable file details:";
             this.chkMaskFileInformation.Theme = MetroFramework.MetroThemeStyle.Dark;
             this.chkMaskFileInformation.UseSelectable = true;
@@ -350,12 +348,13 @@
             // 
             // chkProcessOrderDesc
             // 
+            this.chkProcessOrderDesc.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.chkProcessOrderDesc.AutoSize = true;
             this.chkProcessOrderDesc.Enabled = false;
             this.chkProcessOrderDesc.Location = new System.Drawing.Point(365, 258);
             this.chkProcessOrderDesc.Name = "chkProcessOrderDesc";
             this.chkProcessOrderDesc.Size = new System.Drawing.Size(85, 15);
-            this.chkProcessOrderDesc.TabIndex = 18;
+            this.chkProcessOrderDesc.TabIndex = 4;
             this.chkProcessOrderDesc.Text = "Descending";
             this.chkProcessOrderDesc.Theme = MetroFramework.MetroThemeStyle.Dark;
             this.chkProcessOrderDesc.UseSelectable = true;
@@ -363,6 +362,7 @@
             // 
             // cbxProcessOrderBy
             // 
+            this.cbxProcessOrderBy.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.cbxProcessOrderBy.Enabled = false;
             this.cbxProcessOrderBy.FontSize = MetroFramework.MetroComboBoxSize.Small;
             this.cbxProcessOrderBy.FontWeight = MetroFramework.MetroComboBoxWeight.Light;
@@ -374,23 +374,22 @@
             this.cbxProcessOrderBy.Location = new System.Drawing.Point(365, 227);
             this.cbxProcessOrderBy.Name = "cbxProcessOrderBy";
             this.cbxProcessOrderBy.Size = new System.Drawing.Size(105, 25);
-            this.cbxProcessOrderBy.TabIndex = 17;
+            this.cbxProcessOrderBy.TabIndex = 3;
             this.cbxProcessOrderBy.Theme = MetroFramework.MetroThemeStyle.Dark;
             this.cbxProcessOrderBy.UseSelectable = true;
-            this.cbxProcessOrderBy.SelectedIndexChanged += new System.EventHandler(this.cbxProcessOrderBy_SelectedIndexChanged);
             // 
             // chkProcessInOrder
             // 
+            this.chkProcessInOrder.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.chkProcessInOrder.AutoSize = true;
             this.chkProcessInOrder.FontSize = MetroFramework.MetroCheckBoxSize.Medium;
             this.chkProcessInOrder.Location = new System.Drawing.Point(233, 228);
             this.chkProcessInOrder.Name = "chkProcessInOrder";
             this.chkProcessInOrder.Size = new System.Drawing.Size(126, 19);
-            this.chkProcessInOrder.TabIndex = 7;
+            this.chkProcessInOrder.TabIndex = 2;
             this.chkProcessInOrder.Text = "Process in order:";
             this.chkProcessInOrder.Theme = MetroFramework.MetroThemeStyle.Dark;
             this.chkProcessInOrder.UseSelectable = true;
-            this.chkProcessInOrder.CheckedChanged += new System.EventHandler(this.chkProcessInOrder_CheckedChanged);
             // 
             // lblJobInformation
             // 
@@ -408,7 +407,7 @@
             this.btnRemoveSelectedFiles.Location = new System.Drawing.Point(3, 273);
             this.btnRemoveSelectedFiles.Name = "btnRemoveSelectedFiles";
             this.btnRemoveSelectedFiles.Size = new System.Drawing.Size(224, 36);
-            this.btnRemoveSelectedFiles.TabIndex = 3;
+            this.btnRemoveSelectedFiles.TabIndex = 1;
             this.btnRemoveSelectedFiles.Text = "Remove Selected Files";
             this.btnRemoveSelectedFiles.Theme = MetroFramework.MetroThemeStyle.Dark;
             this.btnRemoveSelectedFiles.UseSelectable = true;
@@ -422,7 +421,7 @@
             this.btnDecrypt.Location = new System.Drawing.Point(610, 228);
             this.btnDecrypt.Name = "btnDecrypt";
             this.btnDecrypt.Size = new System.Drawing.Size(128, 81);
-            this.btnDecrypt.TabIndex = 3;
+            this.btnDecrypt.TabIndex = 6;
             this.btnDecrypt.Text = "Decrypt";
             this.btnDecrypt.Theme = MetroFramework.MetroThemeStyle.Dark;
             this.btnDecrypt.UseSelectable = true;
@@ -436,7 +435,7 @@
             this.btnEncrypt.Location = new System.Drawing.Point(476, 228);
             this.btnEncrypt.Name = "btnEncrypt";
             this.btnEncrypt.Size = new System.Drawing.Size(128, 81);
-            this.btnEncrypt.TabIndex = 3;
+            this.btnEncrypt.TabIndex = 5;
             this.btnEncrypt.Text = "Encrypt";
             this.btnEncrypt.Theme = MetroFramework.MetroThemeStyle.Dark;
             this.btnEncrypt.UseSelectable = true;
@@ -448,7 +447,7 @@
             this.btnAddFiles.Location = new System.Drawing.Point(3, 228);
             this.btnAddFiles.Name = "btnAddFiles";
             this.btnAddFiles.Size = new System.Drawing.Size(224, 39);
-            this.btnAddFiles.TabIndex = 3;
+            this.btnAddFiles.TabIndex = 0;
             this.btnAddFiles.Text = "Add Files...";
             this.btnAddFiles.Theme = MetroFramework.MetroThemeStyle.Dark;
             this.btnAddFiles.UseSelectable = true;
@@ -477,29 +476,27 @@
             // 
             this.datagridFileList.AllowUserToAddRows = false;
             this.datagridFileList.AllowUserToDeleteRows = false;
-            this.datagridFileList.AllowUserToOrderColumns = true;
             this.datagridFileList.AllowUserToResizeRows = false;
             this.datagridFileList.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(17)))), ((int)(((byte)(17)))));
             this.datagridFileList.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.datagridFileList.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.None;
             this.datagridFileList.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(177)))), ((int)(((byte)(89)))));
-            dataGridViewCellStyle4.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            dataGridViewCellStyle4.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(17)))), ((int)(((byte)(17)))));
-            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(208)))), ((int)(((byte)(104)))));
-            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(17)))), ((int)(((byte)(17)))));
-            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.datagridFileList.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle4;
-            this.datagridFileList.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle5.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(17)))), ((int)(((byte)(17)))));
-            dataGridViewCellStyle5.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            dataGridViewCellStyle5.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(109)))), ((int)(((byte)(109)))), ((int)(((byte)(109)))));
-            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(208)))), ((int)(((byte)(104)))));
-            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(17)))), ((int)(((byte)(17)))));
-            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.datagridFileList.DefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(177)))), ((int)(((byte)(89)))));
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(17)))), ((int)(((byte)(17)))));
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(208)))), ((int)(((byte)(104)))));
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(17)))), ((int)(((byte)(17)))));
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.datagridFileList.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(17)))), ((int)(((byte)(17)))));
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(109)))), ((int)(((byte)(109)))), ((int)(((byte)(109)))));
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(208)))), ((int)(((byte)(104)))));
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(17)))), ((int)(((byte)(17)))));
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.datagridFileList.DefaultCellStyle = dataGridViewCellStyle2;
             this.datagridFileList.Dock = System.Windows.Forms.DockStyle.Fill;
             this.datagridFileList.EnableHeadersVisualStyles = false;
             this.datagridFileList.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
@@ -508,26 +505,25 @@
             this.datagridFileList.Name = "datagridFileList";
             this.datagridFileList.ReadOnly = true;
             this.datagridFileList.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
-            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle6.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(177)))), ((int)(((byte)(89)))));
-            dataGridViewCellStyle6.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            dataGridViewCellStyle6.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(17)))), ((int)(((byte)(17)))));
-            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(208)))), ((int)(((byte)(104)))));
-            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(17)))), ((int)(((byte)(17)))));
-            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.datagridFileList.RowHeadersDefaultCellStyle = dataGridViewCellStyle6;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(177)))), ((int)(((byte)(89)))));
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            dataGridViewCellStyle3.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(17)))), ((int)(((byte)(17)))));
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(208)))), ((int)(((byte)(104)))));
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(17)))), ((int)(((byte)(17)))));
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.datagridFileList.RowHeadersDefaultCellStyle = dataGridViewCellStyle3;
             this.datagridFileList.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.datagridFileList.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.datagridFileList.Size = new System.Drawing.Size(733, 217);
             this.datagridFileList.Style = MetroFramework.MetroColorStyle.Green;
-            this.datagridFileList.TabIndex = 2;
+            this.datagridFileList.TabIndex = 0;
             this.datagridFileList.Theme = MetroFramework.MetroThemeStyle.Dark;
-            this.datagridFileList.DataSourceChanged += new System.EventHandler(this.datagridFileList_DataSourceChanged);
             this.datagridFileList.SelectionChanged += new System.EventHandler(this.datagridFileList_SelectionChanged);
             // 
             // tabStatus
             // 
-            this.tabStatus.Controls.Add(this.panelStatus);
+            this.tabStatus.Controls.Add(this.txtStatus);
             this.tabStatus.Controls.Add(this.lblProcessSpeedStats);
             this.tabStatus.Controls.Add(this.lblCurrentPercentage);
             this.tabStatus.Controls.Add(this.progressCurrent);
@@ -555,29 +551,16 @@
             this.tabStatus.VerticalScrollbarHighlightOnWheel = false;
             this.tabStatus.VerticalScrollbarSize = 10;
             // 
-            // panelStatus
-            // 
-            this.panelStatus.Controls.Add(this.txtStatus);
-            this.panelStatus.HorizontalScrollbarBarColor = true;
-            this.panelStatus.HorizontalScrollbarHighlightOnWheel = false;
-            this.panelStatus.HorizontalScrollbarSize = 10;
-            this.panelStatus.Location = new System.Drawing.Point(236, 225);
-            this.panelStatus.Name = "panelStatus";
-            this.panelStatus.Size = new System.Drawing.Size(502, 84);
-            this.panelStatus.TabIndex = 14;
-            this.panelStatus.VerticalScrollbarBarColor = true;
-            this.panelStatus.VerticalScrollbarHighlightOnWheel = false;
-            this.panelStatus.VerticalScrollbarSize = 10;
-            this.panelStatus.MouseEnter += new System.EventHandler(this.panelStatus_MouseEnter);
-            this.panelStatus.MouseLeave += new System.EventHandler(this.panelStatus_MouseLeave);
-            // 
             // txtStatus
             // 
+            this.txtStatus.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             // 
             // 
             // 
             this.txtStatus.CustomButton.Image = null;
-            this.txtStatus.CustomButton.Location = new System.Drawing.Point(420, 2);
+            this.txtStatus.CustomButton.Location = new System.Drawing.Point(426, 2);
             this.txtStatus.CustomButton.Name = "";
             this.txtStatus.CustomButton.Size = new System.Drawing.Size(79, 79);
             this.txtStatus.CustomButton.Style = MetroFramework.MetroColorStyle.Blue;
@@ -585,21 +568,22 @@
             this.txtStatus.CustomButton.Theme = MetroFramework.MetroThemeStyle.Light;
             this.txtStatus.CustomButton.UseSelectable = true;
             this.txtStatus.CustomButton.Visible = false;
-            this.txtStatus.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtStatus.FontWeight = MetroFramework.MetroTextBoxWeight.Light;
             this.txtStatus.Lines = new string[0];
-            this.txtStatus.Location = new System.Drawing.Point(0, 0);
+            this.txtStatus.Location = new System.Drawing.Point(230, 225);
             this.txtStatus.MaxLength = 32767;
             this.txtStatus.Multiline = true;
             this.txtStatus.Name = "txtStatus";
             this.txtStatus.PasswordChar = '\0';
+            this.txtStatus.ReadOnly = true;
             this.txtStatus.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.txtStatus.SelectedText = "";
             this.txtStatus.SelectionLength = 0;
             this.txtStatus.SelectionStart = 0;
             this.txtStatus.ShortcutsEnabled = true;
-            this.txtStatus.Size = new System.Drawing.Size(502, 84);
-            this.txtStatus.TabIndex = 7;
+            this.txtStatus.ShowClearButton = true;
+            this.txtStatus.Size = new System.Drawing.Size(508, 84);
+            this.txtStatus.TabIndex = 3;
             this.txtStatus.Theme = MetroFramework.MetroThemeStyle.Dark;
             this.txtStatus.UseSelectable = true;
             this.txtStatus.WaterMarkColor = System.Drawing.Color.FromArgb(((int)(((byte)(109)))), ((int)(((byte)(109)))), ((int)(((byte)(109)))));
@@ -676,7 +660,7 @@
             this.btnExit.Location = new System.Drawing.Point(0, 273);
             this.btnExit.Name = "btnExit";
             this.btnExit.Size = new System.Drawing.Size(224, 36);
-            this.btnExit.TabIndex = 8;
+            this.btnExit.TabIndex = 2;
             this.btnExit.Text = "Exit";
             this.btnExit.Theme = MetroFramework.MetroThemeStyle.Dark;
             this.btnExit.UseSelectable = true;
@@ -691,7 +675,7 @@
             this.btnCancelOperation.Name = "btnCancelOperation";
             this.btnCancelOperation.Size = new System.Drawing.Size(224, 39);
             this.btnCancelOperation.Style = MetroFramework.MetroColorStyle.Red;
-            this.btnCancelOperation.TabIndex = 6;
+            this.btnCancelOperation.TabIndex = 1;
             this.btnCancelOperation.Text = "CANCEL OPERATIONS";
             this.btnCancelOperation.Theme = MetroFramework.MetroThemeStyle.Dark;
             this.btnCancelOperation.UseSelectable = true;
@@ -705,7 +689,7 @@
             this.btnSelectFilesFromStatusTab.Location = new System.Drawing.Point(0, 204);
             this.btnSelectFilesFromStatusTab.Name = "btnSelectFilesFromStatusTab";
             this.btnSelectFilesFromStatusTab.Size = new System.Drawing.Size(224, 18);
-            this.btnSelectFilesFromStatusTab.TabIndex = 6;
+            this.btnSelectFilesFromStatusTab.TabIndex = 0;
             this.btnSelectFilesFromStatusTab.Text = "Select More Files...";
             this.btnSelectFilesFromStatusTab.Theme = MetroFramework.MetroThemeStyle.Dark;
             this.btnSelectFilesFromStatusTab.UseSelectable = true;
@@ -718,7 +702,7 @@
             this.btnExport.Location = new System.Drawing.Point(582, 204);
             this.btnExport.Name = "btnExport";
             this.btnExport.Size = new System.Drawing.Size(75, 18);
-            this.btnExport.TabIndex = 6;
+            this.btnExport.TabIndex = 4;
             this.btnExport.Text = "Export...";
             this.btnExport.Theme = MetroFramework.MetroThemeStyle.Dark;
             this.btnExport.UseSelectable = true;
@@ -731,7 +715,7 @@
             this.btnClear.Location = new System.Drawing.Point(663, 204);
             this.btnClear.Name = "btnClear";
             this.btnClear.Size = new System.Drawing.Size(75, 18);
-            this.btnClear.TabIndex = 6;
+            this.btnClear.TabIndex = 5;
             this.btnClear.Text = "Clear";
             this.btnClear.Theme = MetroFramework.MetroThemeStyle.Dark;
             this.btnClear.UseSelectable = true;
@@ -830,7 +814,6 @@
             this.panelFiles.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.datagridFileList)).EndInit();
             this.tabStatus.ResumeLayout(false);
-            this.panelStatus.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -880,6 +863,5 @@
         private MetroFramework.Controls.MetroCheckBox chkProcessInOrder;
         private MetroFramework.Controls.MetroComboBox cbxProcessOrderBy;
         private MetroFramework.Controls.MetroCheckBox chkProcessOrderDesc;
-        private MetroFramework.Controls.MetroPanel panelStatus;
     }
 }

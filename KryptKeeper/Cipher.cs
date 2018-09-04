@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -42,8 +43,8 @@ namespace KryptKeeper
 
         private static void backgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            var options = (CipherOptions)e.Argument;
-            foreach (var fileData in options.Files.GetList())
+            var options = (CipherOptions) e.Argument;
+            foreach (var fileData in options.Files.GetList().ToList())
             {
                 if (_backgroundWorker.CancellationPending)
                     break;
@@ -70,9 +71,9 @@ namespace KryptKeeper
                     return;
                 }
                 _status.UpdateProcessingLabel(Path.GetFileName(path));
-                if (options.Mode == CipherMode.Decrypt && isFileValidForDecryption(path))
+                if (options.Mode == Mode.Decrypt && isFileValidForDecryption(path))
                     workingPath = path.ReplaceLastOccurrence(FILE_EXTENSION, WORKING_FILE_EXTENSION);
-                else if (options.Mode == CipherMode.Encrypt)
+                else if (options.Mode == Mode.Encrypt)
                     workingPath = getEncryptionWorkingPath(path, options);
                 else return;
                 if (File.Exists(workingPath)) workingPath = Helper.PadExistingFileName(workingPath);
@@ -88,13 +89,13 @@ namespace KryptKeeper
                     {
                         using (var wStream = new FileStream(workingPath, FileMode.CreateNew, FileAccess.Write))
                         {
-                            if (options.Mode == CipherMode.Encrypt)
+                            if (options.Mode == Mode.Encrypt)
                                 injectHeader(options, wStream);
                             using (var cStream = new CryptoStream(wStream, transformer, CryptoStreamMode.Write))
                             {
-                                rStream.Seek(options.Mode == CipherMode.Encrypt ? 0 : ENTROPY_SIZE + IV_SIZE + SALT_SIZE, SeekOrigin.Begin);
+                                rStream.Seek(options.Mode == Mode.Encrypt ? 0 : ENTROPY_SIZE + IV_SIZE + SALT_SIZE, SeekOrigin.Begin);
                                 processStreams(path, rStream, cStream);
-                                if (options.Mode == CipherMode.Encrypt)
+                                if (options.Mode == Mode.Encrypt)
                                     buildAndWriteFooter(path, cStream);
                             }
                         }
@@ -147,10 +148,10 @@ namespace KryptKeeper
         private static ICryptoTransform createCryptoTransform(string path, CipherOptions options, SymmetricAlgorithm aes)
         {
             aes.KeySize = KEY_SIZE;
-            aes.Mode = System.Security.Cryptography.CipherMode.CBC;
+            aes.Mode = CipherMode.CBC;
             aes.Padding = PaddingMode.PKCS7;
             ICryptoTransform transformer;
-            if (options.Mode == CipherMode.Encrypt)
+            if (options.Mode == Mode.Encrypt)
             {
                 aes.Key = generateSaltedKey(options.Key, options.Salt);
                 aes.IV = options.IV;
@@ -255,7 +256,7 @@ namespace KryptKeeper
 
         private static string postProcessFileHandling(string path, string workingPath, CipherOptions options)
         {
-            return options.Mode == CipherMode.Encrypt ? encryptionPostProcess(path, workingPath, options) : decryptionPostProcess(path, workingPath, options);
+            return options.Mode == Mode.Encrypt ? encryptionPostProcess(path, workingPath, options) : decryptionPostProcess(path, workingPath, options);
         }
 
         private static string encryptionPostProcess(string path, string workingPath, CipherOptions options)

@@ -1,7 +1,5 @@
 ﻿using KryptKeeper.Properties;
 using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -13,9 +11,9 @@ namespace KryptKeeper
     internal static class Helper
     {
 
-        public static long CalculateTotalFilePayload(FileList fileList)
+        public static long CalculateTotalFilePayload(FileList files)
         {
-            return fileList.Count > 0 ? fileList.GetList().Sum(f => new FileInfo(f.GetFilePath()).Length) : 0;
+            return files.Count > 0 ? files.GetList().Sum(f => new FileInfo(f.GetFilePath()).Length) : 0;
         }
 
         public static string BytesToString(long byteCount)
@@ -129,8 +127,6 @@ namespace KryptKeeper
             settings.processInOrderBy = 0;
             settings.processInOrderDesc = false;
             settings.confirmOnExit = true;
-            settings.fileListColumnOrder = new StringCollection { "1", "3", "0", "2" };
-            settings.fileListColumnWidths = new StringCollection { "72", "194", "164", "103" };
             settings.Save();
         }
 

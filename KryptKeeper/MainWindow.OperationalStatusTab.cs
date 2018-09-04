@@ -24,14 +24,14 @@ namespace KryptKeeper
                 return;
             }
             _status.WriteLine("Operation finished. " + Cipher.GetElapsedTime());
-            btnCancelOperation.Enabled = false;
-            btnSelectFilesFromStatusTab.Enabled = true;
+            disableButtonsDuringOperation(false);
             updateProgress(100, 100);
             lblFilesToBeProcessed.Text = e.Cancelled ? "Some" : "All" + " files processed";
             lblProcessingFile.Text = "";
             lblCurrentPercentage.Text = @"100%";
             lblTotalPercentage.Text = @"100%";
             lblOperationStatus.Text = @"Done!";
+            resetFileList();
         }
 
         private void btnSelectFilesFromStatusTab_Click(object sender, EventArgs e)
@@ -78,6 +78,7 @@ namespace KryptKeeper
             progressCurrent.Value = current;
             lblCurrentPercentage.Text = $@"{current}%";
             progressTotal.Value = total;
+            progressCurrent.Speed = 10.0f;
             lblTotalPercentage.Text = $@"{total}%";
         }
 

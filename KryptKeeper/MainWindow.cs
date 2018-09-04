@@ -1,8 +1,6 @@
 ﻿using KryptKeeper.Properties;
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Drawing;
 using System.Windows.Forms;
 
 namespace KryptKeeper
@@ -18,7 +16,6 @@ namespace KryptKeeper
                 - Always work toward single responsibility principle
                 - IMPERATIVE: *** REMOVE HARDCODED KEYFILE *** 
             TODO * MINOR *
-                - Option: process files according to size (*in progress)
                 - Fix column order
                 - Refactor constants to own class?
                 - Dialog icons
@@ -28,12 +25,13 @@ namespace KryptKeeper
         private enum MainTabs { Options, Files, Status }
         private Status _status;
         private bool _settingsNeedConfirmed = true;
-        private FileList _fileList = new FileList();
+        private FileList _fileList = new FileList(new List<FileData>());
 
         public MainWindow()
         {
             InitializeComponent();
         }
+        
         public List<Control> GetStatusObjects()
         {
             return new List<Control>
@@ -49,6 +47,11 @@ namespace KryptKeeper
             focusTab(MainTabs.Options);
             loadSettings();
             _status = new Status(this);
+            datagridFileList.DataSource = _fileList.GetList();
+            setDefaultColumnWidths();
+            datagridFileList.DataSourceChanged += datagridFileList_DataSourceChanged;
+            chkProcessInOrder.CheckedChanged += chkProcessInOrder_CheckedChanged;
+            cbxProcessOrderBy.SelectedIndexChanged += cbxProcessOrderBy_SelectedIndexChanged;
             backgroundWorker.ProgressChanged += backgroundWorker_ProgressChanged;
             backgroundWorker.RunWorkerCompleted += backgroundWorker_RunWorkerCompleted;
             Cipher.SetBackgroundWorker(backgroundWorker);
@@ -71,7 +74,6 @@ namespace KryptKeeper
                     e.Cancel = true;
                     return;
                 }
-                saveFileListColumnSettings();
                 if (chkRememberSettings.Checked)
                     saveSettings();
                 else if (!settingsAreDefault())
@@ -98,6 +100,7 @@ namespace KryptKeeper
             chkMaskFileName.Checked = settings.encryptionMaskFileName;
             chkMaskFileDate.Checked = settings.encryptionMaskFileDate;
             chkProcessInOrder.Checked = settings.processInOrder;
+            chkProcessOrderDesc.Enabled = cbxProcessOrderBy.Enabled = chkProcessInOrder.Checked;
             cbxProcessOrderBy.SelectedIndex = settings.processInOrderBy;
             chkProcessOrderDesc.Checked = settings.processInOrderDesc;
             chkRemoveAfterEncryption.Checked = settings.removeAfterEncryption;
@@ -113,24 +116,6 @@ namespace KryptKeeper
                            MessageBoxButtons.OKCancel,
                            MessageBoxIcon.Question) == DialogResult.OK;
             return true;
-        }
-
-        private void saveFileListColumnSettings()
-        {
-            var widths = new StringCollection();
-            var orders = new StringCollection();
-            var enumer = datagridFileList.Columns.GetEnumerator();
-            while (enumer.MoveNext())
-            {
-                var header = (DataGridViewTextBoxColumn)enumer.Current;
-                if (header == null) break;
-                widths.Add(header.Width.ToString());
-                orders.Add(header.DisplayIndex.ToString());
-            }
-            if (widths.Count <= 0) return;
-            Settings.Default.fileListColumnWidths = widths;
-            Settings.Default.fileListColumnOrder = orders;
-            Settings.Default.Save();
         }
 
         private void saveSettings()
@@ -193,19 +178,5 @@ namespace KryptKeeper
                     break;
             }
         }
-
-        private void panelStatus_MouseEnter(object sender, EventArgs e)
-        {
-            panelStatus.Size = new Size(panelStatus.Width, panelStatus.Height + 150);
-            panelStatus.Location = new Point(panelStatus.Location.X, panelStatus.Location.Y - 150);
-        }
-
-        private void panelStatus_MouseLeave(object sender, EventArgs e)
-        {
-            panelStatus.Size = new Size(panelStatus.Width, panelStatus.Height - 150);
-            panelStatus.Location = new Point(panelStatus.Location.X, panelStatus.Location.Y + 150);
-        }
-
-
     }
 }

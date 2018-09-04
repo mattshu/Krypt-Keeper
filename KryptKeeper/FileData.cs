@@ -13,10 +13,10 @@ namespace KryptKeeper
             Path = fileInfo.DirectoryName;
         }
 
-        public string Extension { get; }
         public string Name { get; }
-        public string Path { get; }
+        public string Extension { get; }
         public string Size { get; }
+        public string Path { get; }
 
         public string GetFilePath()
         {

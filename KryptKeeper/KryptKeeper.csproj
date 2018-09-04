@@ -55,7 +55,7 @@
     <TargetZone>Internet</TargetZone>
   </PropertyGroup>
   <PropertyGroup>
-    <GenerateManifests>true</GenerateManifests>
+    <GenerateManifests>false</GenerateManifests>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
@@ -98,7 +98,7 @@
   <ItemGroup>
     <Compile Include="Cipher.Constants.cs" />
     <Compile Include="Cipher.cs" />
-    <Compile Include="CipherMode.cs" />
+    <Compile Include="Cipher.Mode.cs" />
     <Compile Include="CipherOptions.cs" />
     <Compile Include="ConfirmExitWhileBusy.cs">
       <SubType>Form</SubType>
@@ -123,6 +123,7 @@
     </Compile>
     <Compile Include="Footer.cs" />
     <Compile Include="Helper.cs" />
+    <Compile Include="Cipher.ProcessOrder.cs" />
     <Compile Include="MainWindow.FileProcessingTab.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -132,7 +133,6 @@
     <Compile Include="MainWindow.OptionsTab.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ProcessOrder.cs" />
     <Compile Include="Status.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -157,7 +157,9 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <None Include="packages.config" />
-    <None Include="Properties\app.manifest" />
+    <None Include="Properties\app.manifest">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -169,7 +171,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.6.1">

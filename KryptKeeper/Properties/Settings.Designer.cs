@@ -37,24 +37,6 @@ namespace KryptKeeper.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute(@"<?xml version=""1.0"" encoding=""utf-16""?>
-<ArrayOfString xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
-  <string>60</string>
-  <string>60</string>
-  <string>60</string>
-  <string>60</string>
-</ArrayOfString>")]
-        public global::System.Collections.Specialized.StringCollection fileListColumnWidths {
-            get {
-                return ((global::System.Collections.Specialized.StringCollection)(this["fileListColumnWidths"]));
-            }
-            set {
-                this["fileListColumnWidths"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool encryptionMaskFileName {
             get {
@@ -98,24 +80,6 @@ namespace KryptKeeper.Properties {
             }
             set {
                 this["confirmOnExit"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute(@"<?xml version=""1.0"" encoding=""utf-16""?>
-<ArrayOfString xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
-  <string>0</string>
-  <string>1</string>
-  <string>2</string>
-  <string>3</string>
-</ArrayOfString>")]
-        public global::System.Collections.Specialized.StringCollection fileListColumnOrder {
-            get {
-                return ((global::System.Collections.Specialized.StringCollection)(this["fileListColumnOrder"]));
-            }
-            set {
-                this["fileListColumnOrder"] = value;
             }
         }
         

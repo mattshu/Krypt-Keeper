@@ -2,16 +2,18 @@
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using KryptKeeper.Properties;
 using MetroFramework;
 
 namespace KryptKeeper
 {
     public partial class MainWindow
     {
+        private readonly int[] DEFAULT_COLUMN_WIDTHS = {235, 100, 54, 284};
+
         #region File Processing Tab Form Events
         private void btnAddFiles_Click(object sender, EventArgs e)
         {
+            _fileList.Clear();
             buildFileList();
         }
 
@@ -22,6 +24,7 @@ namespace KryptKeeper
 
         private void datagridFileList_DataSourceChanged(object sender, EventArgs e)
         {
+            if (datagridFileList.DataSource != null) setDefaultColumnWidths();
             enableProcessButtons(datagridFileList.RowCount > 0);
         }
 
@@ -33,30 +36,29 @@ namespace KryptKeeper
         private void chkProcessInOrder_CheckedChanged(object sender, EventArgs e)
         {
             cbxProcessOrderBy.Enabled = chkProcessOrderDesc.Enabled = chkProcessInOrder.Checked;
+            sortFileList();
         }
 
         private void cbxProcessOrderBy_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (_fileList.Count <= 0) return;
-            sortFiles((ProcessOrder)cbxProcessOrderBy.SelectedIndex, chkProcessOrderDesc.Checked);
+            sortFileList();
         }
 
         private void chkProcessOrderDesc_CheckedChanged(object sender, EventArgs e)
         {
-            if (_fileList.Count <= 0) return;
-            sortFiles((ProcessOrder)cbxProcessOrderBy.SelectedIndex, chkProcessOrderDesc.Checked);
+            sortFileList();
         }
 
         private void btnEncrypt_Click(object sender, EventArgs e)
         {
             if (confirmSettings())
-                processFiles(CipherMode.Encrypt);
+                processFiles(Cipher.Mode.Encrypt);
         }
 
         private void btnDecrypt_Click(object sender, EventArgs e)
         {
             if (confirmSettings())
-                processFiles(CipherMode.Decrypt);
+                processFiles(Cipher.Mode.Decrypt);
         }
         #endregion
 
@@ -72,11 +74,13 @@ namespace KryptKeeper
             var openFileDialog = new OpenFileDialog { Title = @"Select the files to be processed", Multiselect = true };
             var openResult = openFileDialog.ShowDialog();
             if (openResult != DialogResult.OK) return;
-            datagridFileList.Columns.Clear();
+            _fileList.Clear();
             _fileList = new FileList(openFileDialog.FileNames.Select(path => new FileData(path)).ToList());
-            refreshFileListGridView();
+            datagridFileList.DataSource = _fileList.GetList();
+            if (chkProcessInOrder.Checked)
+                sortFileList();
             enableProcessButtons(datagridFileList.RowCount > 0);
-            lblJobInformation.Text = $@"{Helper.BytesToString(Helper.CalculateTotalFilePayload(_fileList))} ({_fileList.Count} files) to be processed.";
+            lblJobInformation.Text = $@"{Helper.BytesToString(Helper.CalculateTotalFilePayload( _fileList))} ({_fileList.Count} files) to be processed.";
             focusTab(MainTabs.Files);
         }
 
@@ -110,6 +114,14 @@ namespace KryptKeeper
             btnEncrypt.Enabled = btnDecrypt.Enabled = state;
         }
 
+        private void setDefaultColumnWidths()
+        {
+            for (int i = 0; i < DEFAULT_COLUMN_WIDTHS.Length; i++)
+            {
+                datagridFileList.Columns[i].Width = DEFAULT_COLUMN_WIDTHS[i];
+            }
+        }
+
         private void removeSelectedFiles()
         {
             var selectedCount = datagridFileList.SelectedRows.Count;
@@ -118,61 +130,33 @@ namespace KryptKeeper
                 if (datagridFileList.Rows[i].Selected)
                     _fileList.RemoveAt(i);
             datagridFileList.ClearSelection();
-            refreshFileListGridView(retainOrder: true);
         }
 
-        private void refreshFileListGridView(bool retainOrder = false)
-        {
-            datagridFileList.DataSource = null;
-            datagridFileList.DataSource = _fileList.GetList();
-            if (retainOrder) return;
-            arrangeFileListColumns();
-            loadFileListColumnWidths();
-        }
-
-
-        private void arrangeFileListColumns()
-        {
-            var columnOrderFromSettings = Settings.Default.fileListColumnOrder;
-            for (int i = 0; i < columnOrderFromSettings.Count; i++)
-                datagridFileList.Columns[i].DisplayIndex = int.Parse(columnOrderFromSettings[i]);
-        }
-
-        private void loadFileListColumnWidths()
-        {
-            var widths = Settings.Default.fileListColumnWidths;
-            for (int i = 0; i < datagridFileList.ColumnCount; i++)
-                datagridFileList.Columns[i].Width = int.Parse(widths[i]);
-        }
-
-        private void sortFiles(ProcessOrder processOrder, bool descending = false)
-        {
-            if (_fileList.Count <= 0) return;
-            var fileListComparer = new FileListComparer(processOrder, descending);
-            _fileList.Sort(fileListComparer);
-            refreshFileListGridView(retainOrder: true);
-        }
-
-        private void processFiles(CipherMode cipherMode)
+        private void processFiles(Cipher.Mode cipherMode)
         {
             try
             {
                 if (!validateAllSettings()) return;
                 focusTab(MainTabs.Status);
-                btnCancelOperation.Enabled = true;
-                btnSelectFilesFromStatusTab.Enabled = false;
+                disableButtonsDuringOperation();
                 var options = generateOptions(cipherMode);
                 Cipher.ProcessFiles(options);
-                resetFileList();
             }
             catch (FileNotFoundException ex)
             {
-                _status.WriteLine("* Error: Unable to find keyfile: " + ex.Message);
+                _status.WriteLine("* Error: Unable to find file: " + ex.Message);
             }
             catch (FileLoadException ex)
             {
-                _status.WriteLine("* Error: Keyfile is either empty or too large (>=4GB): " + ex.Message);
+                _status.WriteLine("* Error: File is either empty or too large (>=4GB): " + ex.Message);
             }
+        }
+
+        private void disableButtonsDuringOperation(bool disable = true)
+        {
+            btnSelectFiles.Enabled = btnAddFiles.Enabled = btnRemoveSelectedFiles.Enabled =
+                btnEncrypt.Enabled = btnDecrypt.Enabled = btnSelectFilesFromStatusTab.Enabled = !disable;
+            btnCancelOperation.Enabled = disable;
         }
 
         private bool validateAllSettings()
@@ -184,7 +168,7 @@ namespace KryptKeeper
             return false;
         }
 
-        private CipherOptions generateOptions(CipherMode cipherMode)
+        private CipherOptions generateOptions(Cipher.Mode cipherMode)
         {
             byte[] key;
             if (radPlaintextKey.Checked)
@@ -203,7 +187,7 @@ namespace KryptKeeper
                 Mode = cipherMode,
                 Files = _fileList,
                 Key = key,
-                Salt = Helper.GetBytes(BCrypt.GenerateSalt()),
+                Salt = Helper.GetBytes(BCrypt.GenerateSalt(5)),
                 MaskFileName = chkMaskFileInformation.Checked && chkMaskFileName.Checked,
                 MaskFileDate = chkMaskFileInformation.Checked && chkMaskFileDate.Checked,
                 RemoveOriginalEncryption = chkRemoveAfterEncryption.Checked,
@@ -212,9 +196,23 @@ namespace KryptKeeper
             return options;
         }
 
-        private void resetFileList()
+        private void sortFileList()
+        {
+            if (_fileList.Count <= 0) return;
+            sortFiles((Cipher.ProcessOrder)cbxProcessOrderBy.SelectedIndex, chkProcessOrderDesc.Checked);
+        }
+
+        private void sortFiles(Cipher.ProcessOrder processOrder, bool descending = false)
         {
             datagridFileList.DataSource = null;
+            var fileListComparer = new FileListComparer(processOrder, descending);
+            _fileList.Sort(fileListComparer);
+            datagridFileList.DataSource = _fileList.GetList();
+        }
+
+        private void resetFileList()
+        {
+            _fileList.Clear();
             lblJobInformation.Text = "";
         }
 

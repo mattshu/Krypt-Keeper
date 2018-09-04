@@ -5,7 +5,7 @@ namespace KryptKeeper
     internal class CipherOptions
     {
         public FileList Files { get; set; }
-        public CipherMode Mode { get; set; }
+        public Cipher.Mode Mode { get; set; }
         public bool MaskFileName { get; set; }
         public bool MaskFileDate { get; set; }
         public bool RemoveOriginalDecryption { get; set; }
@@ -15,20 +15,12 @@ namespace KryptKeeper
         public byte[] Key { get; set; }
         public byte[] Entropy { get; private set; }
 
+        public string GetModeOfOperation() => Mode == Cipher.Mode.Encrypt ? "Encrypting" : "Decrypting";
+
         public CipherOptions()
         {
             generateEntropy();
             generateIV();
-        }
-
-        private void generateIV()
-        {
-            using (var aes = Aes.Create())
-            {
-                if (aes == null) throw new CryptographicException("Failed to create AES object!");
-                aes.GenerateIV();
-                IV = aes.IV;
-            }
         }
 
         private void generateEntropy()
@@ -42,6 +34,14 @@ namespace KryptKeeper
                 Entropy = entropy;
         }
 
-        public string GetModeOfOperation() => Mode == CipherMode.Encrypt ? "Encrypting" : "Decrypting";
+        private void generateIV()
+        {
+            using (var aes = Aes.Create())
+            {
+                if (aes == null) throw new CryptographicException("Failed to create AES object!");
+                aes.GenerateIV();
+                IV = aes.IV;
+            }
+        }
     }
 }

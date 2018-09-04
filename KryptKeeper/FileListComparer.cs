@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
 
 namespace KryptKeeper
 {
     internal class FileListComparer : IComparer<FileData>
     {
         private readonly bool _descending;
-        private readonly ProcessOrder _processOrder;
+        private readonly Cipher.ProcessOrder _processOrder;
 
-        public FileListComparer(ProcessOrder processOrder, bool descending)
+        public FileListComparer(Cipher.ProcessOrder processOrder, bool descending)
         {
             _processOrder = processOrder;
             _descending = descending;
@@ -28,10 +26,10 @@ namespace KryptKeeper
             int value;
             switch (_processOrder)
             {
-                case ProcessOrder.FileSize:
+                case Cipher.ProcessOrder.FileSize:
                     value = compareSizeFromString(fileA.Size, fileB.Size);
                     break;
-                case ProcessOrder.FileName:
+                case Cipher.ProcessOrder.FileName:
                     value = string.CompareOrdinal(fileA.Name, fileB.Name);
                     break;
                 default:

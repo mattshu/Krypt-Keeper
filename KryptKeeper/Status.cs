@@ -5,6 +5,7 @@ namespace KryptKeeper
 {
     public class Status
     {
+
         private static Status _instance;
         private readonly MainWindow _mainWindow;
         private readonly string newLine = Environment.NewLine;

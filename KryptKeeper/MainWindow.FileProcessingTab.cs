@@ -212,12 +212,6 @@ namespace KryptKeeper
             datagridFileList.DataSource = _fileList.GetList();
         }
 
-        private void resetFileList()
-        {
-            _fileList.Clear();
-            lblJobInformation.Text = "";
-        }
-
         private bool confirmSettings()
         {
             if (!_settingsNeedConfirmed) return true;

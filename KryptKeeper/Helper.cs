@@ -10,10 +10,15 @@ namespace KryptKeeper
 {
     internal static class Helper
     {
-
         public static long CalculateTotalFilePayload(FileList files)
         {
             return files.Count > 0 ? files.GetList().Sum(f => new FileInfo(f.GetFilePath()).Length) : 0;
+        }
+
+        public static int Clamp(int val, int min, int max)
+        {
+            if (val.CompareTo(min) < 0) return min;
+            return val.CompareTo(max) > 0 ? max : val;
         }
 
         public static string BytesToString(long byteCount)

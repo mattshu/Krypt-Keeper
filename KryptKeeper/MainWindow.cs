@@ -86,7 +86,6 @@ namespace KryptKeeper
         private void focusTab(MainTabs tab)
         {
             tabMain.SelectedIndex = (int)tab;
-            tabMain.Refresh();
         }
 
         private void loadSettings()

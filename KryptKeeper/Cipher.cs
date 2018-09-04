@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -14,23 +15,19 @@ namespace KryptKeeper
         private static readonly Status _status = Status.GetInstance();
 
         private static DateTime _cipherStartTime;
-        private static long _progressBytesOverall;
-        private static long _progressBytesTotal;
         private static int _progressFileIndex = 0;
-        private static int _progressFileTotal;
+        private static int _progressFilesTotal;
 
         public static void CancelProcessing() => _cancelProcessing = true;
         public static string GetElapsedTime(bool hideMs = false) => Helper.GetSpannedTime(_cipherStartTime.Ticks, hideMs);
 
-        public static string GetFileProgress() => $"{_progressFileIndex}/{_progressFileTotal} files processed";
+        public static string GetFileProgress() => $"{_progressFileIndex}/{_progressFilesTotal} files processed";
 
         public static void ProcessFiles(CipherOptions options)
         {
             if (options.Files.Count <= 0) return;
-            _progressBytesOverall = 0;
             _progressFileIndex = 0;
-            _progressFileTotal = options.Files.Count;
-            _progressBytesTotal = Helper.CalculateTotalFilePayload(options.Files);
+            _progressFilesTotal = options.Files.Count;
             _cipherStartTime = DateTime.Now;
             _backgroundWorker.RunWorkerAsync(options);
         }
@@ -43,7 +40,7 @@ namespace KryptKeeper
 
         private static void backgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            var options = (CipherOptions) e.Argument;
+            var options = (CipherOptions)e.Argument;
             foreach (var fileData in options.Files.GetList().ToList())
             {
                 if (_backgroundWorker.CancellationPending)
@@ -239,8 +236,9 @@ namespace KryptKeeper
                 if (_cancelProcessing)
                     break;
                 progressBytes += bytesRead;
-                _progressBytesOverall += bytesRead;
-                _backgroundWorker.ReportProgress(Helper.GetPercentProgress(progressBytes, totalBytes), Helper.GetPercentProgress(_progressBytesOverall, _progressBytesTotal));
+                //DEPRECATED: _backgroundWorker.ReportProgress(Helper.GetPercentProgress(progressBytes, totalBytes), Helper.GetPercentProgress(_progressBytesOverall, _progressBytesTotal));
+                _backgroundWorker.ReportProgress(Helper.GetPercentProgress(progressBytes, totalBytes),
+                    Helper.GetPercentProgress(_progressFileIndex, _progressFilesTotal));
                 cryptoStream.Write(buffer, 0, bytesRead);
                 bytesRead = readStream.Read(buffer, 0, bytesRead);
             }

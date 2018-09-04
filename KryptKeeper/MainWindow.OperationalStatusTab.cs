@@ -27,11 +27,13 @@ namespace KryptKeeper
             disableButtonsDuringOperation(false);
             updateProgress(100, 100);
             lblFilesToBeProcessed.Text = e.Cancelled ? "Some" : "All" + " files processed";
+            lblJobInformation.Text = "";
             lblProcessingFile.Text = "";
             lblCurrentPercentage.Text = @"100%";
             lblTotalPercentage.Text = @"100%";
             lblOperationStatus.Text = @"Done!";
-            resetFileList();
+            _fileList.Reset();
+            datagridFileList.DataSource = _fileList.GetList();
         }
 
         private void btnSelectFilesFromStatusTab_Click(object sender, EventArgs e)
@@ -75,10 +77,9 @@ namespace KryptKeeper
 
         private void updateProgress(int current, int total)
         {
-            progressCurrent.Value = current;
+            progressCurrent.Value = Helper.Clamp(current, 0, 100);
             lblCurrentPercentage.Text = $@"{current}%";
-            progressTotal.Value = total;
-            progressCurrent.Speed = 10.0f;
+            progressTotal.Value = Helper.Clamp(total, 0, 100);
             lblTotalPercentage.Text = $@"{total}%";
         }
 

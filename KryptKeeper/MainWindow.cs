@@ -9,6 +9,7 @@ namespace KryptKeeper
     {
         /* 
             TODO * MAJOR * (IMPERATIVE: *** REMOVE HARDCODED KEYFILE ***)
+                - FIX ISSUE WHEN REMOVING ITEMS FROM DGV
                 - Calculate processing speeds
                 - Option: shutdown/sleep/restart after job
             TODO * MINOR *

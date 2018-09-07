@@ -50,7 +50,7 @@ namespace KryptKeeper
             }
             var bytesWorked = _currentPayloadState - _currentPayloadLast;
             if (bytesWorked == 0) return;
-            _processRate = $"{Helper.BytesToString(bytesWorked / DateTime.Now.Subtract(_timeSinceLastTick).Seconds)}ps";
+            _processRate = $"{Helper.BytesToString(bytesWorked / Math.Min(1, DateTime.Now.Subtract(_timeSinceLastTick).Seconds))}ps";
             _timeSinceLastTick = DateTime.Now;
             _status.UpdateRatesLabel(_processRate);
         }

@@ -26,7 +26,7 @@ namespace KryptKeeper
 
         private void datagridFileList_DataSourceChanged(object sender, EventArgs e)
         {
-            if (datagridFileList.DataSource != null) setDefaultColumnWidths();
+            if (datagridFileList.DataSource == _fileList) setDefaultColumnWidths();
             enableProcessButtons(datagridFileList.RowCount > 0);
         }
 
@@ -111,6 +111,7 @@ namespace KryptKeeper
 
         private void setDefaultColumnWidths()
         {
+            if (datagridFileList.ColumnCount <= 0) return;
             for (int i = 0; i < DEFAULT_COLUMN_WIDTHS.Length; i++)
             {
                 datagridFileList.Columns[i].Width = DEFAULT_COLUMN_WIDTHS[i];
@@ -122,9 +123,11 @@ namespace KryptKeeper
             var selectedCount = datagridFileList.SelectedRows.Count;
             if (selectedCount <= 0) return;
             for (int i = datagridFileList.RowCount - 1; i >= 0; i--)
-                if (datagridFileList.Rows[i].Selected)
-                    _fileList.RemoveAt(i);
-            datagridFileList.ClearSelection();
+            {
+                if (!datagridFileList.Rows[i].Selected) continue;
+                _fileList.RemoveAt(i);
+                datagridFileList.Rows.RemoveAt(i);
+            }
         }
 
         private void processFiles(Cipher.Mode cipherMode)

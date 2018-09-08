@@ -45,7 +45,7 @@ namespace KryptKeeper
             focusTab(MainTabs.Options);
             loadSettings();
             _status = new Status(this);
-            datagridFileList.DataSource = _fileList.GetList();
+            //datagridFileList.DataSource = _fileList.GetList();
             setDefaultColumnWidths();
             datagridFileList.DataSourceChanged += datagridFileList_DataSourceChanged;
             chkProcessInOrder.CheckedChanged += chkProcessInOrder_CheckedChanged;

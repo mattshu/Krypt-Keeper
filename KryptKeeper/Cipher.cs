@@ -4,8 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading;
-using System.Timers;
 
 namespace KryptKeeper
 {
@@ -25,40 +23,6 @@ namespace KryptKeeper
         private static int _totalFilesState = 0;
         private static int _totalFilesTotal = 0;
 
-        private static System.Timers.Timer _timerProgress;
-
-        public static void StartProgressTimer(bool state = true)
-        {
-            if (state == false)
-            {
-                _timerProgress.Enabled = false;
-                return;
-            }
-            _timerProgress = new System.Timers.Timer();
-            _timerProgress.Elapsed += timerProgress_Tick;
-            _timerProgress.Enabled = true;
-        }
-
-        private static long _currentPayloadLast;
-        private static DateTime _timeSinceLastTick;
-        private static void timerProgress_Tick(object sender, ElapsedEventArgs e)
-        {
-            if (_currentPayloadLast == 0)
-            {
-                _currentPayloadLast = _currentPayloadState;
-                _timeSinceLastTick = DateTime.Now;
-            }
-            var bytesWorked = _currentPayloadState - _currentPayloadLast;
-            if (bytesWorked == 0) return;
-            _processRate = $"{Helper.BytesToString(bytesWorked / Math.Min(1, DateTime.Now.Subtract(_timeSinceLastTick).Seconds))}ps";
-            _timeSinceLastTick = DateTime.Now;
-            _status.UpdateRatesLabel(_processRate);
-        }
-
-        // TODO currently under construction
-
-        private static string _processRate;
-        public static string GetProcessingRate() => _processRate;
         public static void CancelProcessing() => _cancelProcessing = true;
         public static string GetElapsedTime(bool hideMs = false) => Helper.GetSpannedTime(_cipherStartTime.Ticks, hideMs);
 
@@ -71,7 +35,6 @@ namespace KryptKeeper
             _totalFilesTotal = options.Files.Count;
             _totalPayloadTotal = Helper.CalculateTotalFilePayload(options.Files);
             _cipherStartTime = DateTime.Now;
-            StartProgressTimer();
             _backgroundWorker.RunWorkerAsync(options);
         }
 

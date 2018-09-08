@@ -29,7 +29,6 @@ namespace KryptKeeper
             lblJobInformation.Text = "";
             lblProcessingFile.Text = "";
             lblOperationStatus.Text = @"Done!";
-            Cipher.StartProgressTimer(false);
             _fileList.Reset();
             datagridFileList.DataSource = _fileList.GetList();
         }

@@ -183,12 +183,13 @@ namespace KryptKeeper
             }
             else
                 throw new FileNotFoundException(txtCipherKey.Text);
+            var salt = Helper.GetBytes(BCrypt.GenerateSalt(5));
             var options = new CipherOptions
             {
                 Mode = cipherMode,
                 Files = _fileList,
                 Key = key,
-                Salt = Helper.GetBytes(BCrypt.GenerateSalt(10)),
+                Salt = salt,
                 MaskFileName = chkMaskFileInformation.Checked && chkMaskFileName.Checked,
                 MaskFileDate = chkMaskFileInformation.Checked && chkMaskFileDate.Checked,
                 RemoveOriginalEncryption = chkRemoveAfterEncryption.Checked,

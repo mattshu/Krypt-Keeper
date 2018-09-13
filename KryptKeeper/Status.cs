@@ -30,6 +30,7 @@ namespace KryptKeeper
             _statusBox = (MetroTextBox) statusObjs[3];
         }
 
+
         public static Status GetInstance()
         {
             return _instance ?? throw new Exception(@"Unable to get _instance of status window!");
@@ -50,18 +51,18 @@ namespace KryptKeeper
             _mainWindow.Invoke((Action)(() => _lblProcessingRates.Text = processRate));
         }
 
-        public void WriteLine(string msg)
+        public void WriteLine(string msg, long fileSize = 0)
         {
             if (_isPending)
-                finishPending();
+                finishPending(fileSize);
             _isPending = false;
             _mainWindow.Invoke((Action)(() => _statusBox.AppendText(_timestamp + msg + newLine)));
         }
 
-        public void WritePending(string msg)
+        public void WritePending(string msg, long fileSize = 0)
         {
             if (_isPending)
-                finishPending();
+                finishPending(fileSize);
             else
                 _isPending = true;
             _pendingStartTime = DateTime.Now;
@@ -70,8 +71,10 @@ namespace KryptKeeper
 
         private static string _timestamp => $"[{DateTime.Now:HH:mm:ss.fff}]: ";
 
-        private void finishPending()
+        private void finishPending(long fileSize = 0)
         {
+            if (fileSize > 0)
+                UpdateRatesLabel($@"{fileSize / _pendingStartTime.Second} bps");
             _mainWindow.Invoke((Action)(() =>
                _statusBox.AppendText($"done! ({Utils.GetSpannedTime(_pendingStartTime.Ticks)}){newLine}")));
         }

@@ -35,35 +35,35 @@ namespace KryptKeeper
             handleOnCompletion();
         }
 
-        private void handleOnCompletion()
+        private void chkOnCompletion_CheckedChanged(object sender, EventArgs e)
         {
-            if ((bool) panelIconShutdown.Tag)
-            {
-                Utils.ShutdownComputer();
-            }
-            else if ((bool) panelIconRestart.Tag)
-            {
-                Utils.RestartComputer();
-            }
-            else if ((bool) panelIconSleep.Tag)
-            {
-                Utils.StandyComputer();
-            }
-            else if ((bool) panelIconClose.Tag)
-            {
-                forceExit();
-            }
+            panelIconShutdown.Enabled = panelIconRestart.Enabled =
+                panelIconSleep.Enabled = panelIconClose.Enabled = chkOnCompletion.Checked;
+            toggleOnCompleteDisabled(chkOnCompletion.Checked);
         }
 
-        private void forceExit()
+        private void panelIconShutdown_Click(object sender, EventArgs e)
         {
-            _forceExit = true;
-            Close();
+            toggleOnCompleteActiveIcon("shutdown");
+            toggleOnCompleteTags("shutdown");
         }
 
-        private bool validateOnCompletionIconsHaveOneSelection()
+        private void panelIconRestart_Click(object sender, EventArgs e)
         {
-            return (bool) panelIconShutdown.Tag || (bool) panelIconSleep.Tag || (bool) panelIconSleep.Tag || (bool) panelIconClose.Tag;
+            toggleOnCompleteActiveIcon("restart");
+            toggleOnCompleteTags("restart");
+        }
+
+        private void panelIconSleep_Click(object sender, EventArgs e)
+        {
+            toggleOnCompleteActiveIcon("sleep");
+            toggleOnCompleteTags("sleep");
+        }
+
+        private void panelIconClose_Click(object sender, EventArgs e)
+        {
+            toggleOnCompleteActiveIcon("close");
+            toggleOnCompleteTags("close");
         }
 
         private void btnSelectFilesFromStatusTab_Click(object sender, EventArgs e)
@@ -105,6 +105,68 @@ namespace KryptKeeper
         }
 
         #endregion
+
+        private void handleOnCompletion()
+        {
+            if ((bool)panelIconShutdown.Tag)
+            {
+                Utils.ShutdownComputer();
+                forceExit();
+            }
+            else if ((bool)panelIconRestart.Tag)
+            {
+                Utils.RestartComputer();
+                forceExit();
+            }
+            else if ((bool)panelIconSleep.Tag)
+            {
+                _status.WriteLine("Computer going to sleep...");
+                Utils.StandyComputer();
+            }
+            else if ((bool)panelIconClose.Tag)
+            {
+                forceExit();
+            }
+        }
+
+        private void forceExit()
+        {
+            _forceExit = true;
+            Close();
+        }
+
+        private bool validateOnCompletionIconsHaveOneSelection()
+        {
+            var shutdownOption = bool.Parse(panelIconShutdown.Tag.ToString());
+            var restartOption = bool.Parse(panelIconRestart.Tag.ToString());
+            var sleepOption = bool.Parse(panelIconSleep.Tag.ToString());
+            var closeOption = bool.Parse(panelIconClose.Tag.ToString());
+            return shutdownOption || restartOption || sleepOption || closeOption;
+        }
+
+        private void toggleOnCompleteActiveIcon(string iconName)
+        {
+            panelIconShutdown.BackgroundImage = iconName == "shutdown" ? Resources.shutdown_active : Resources.shutdown;
+            panelIconRestart.BackgroundImage = iconName == "restart" ? Resources.restart_active : Resources.restart;
+            panelIconSleep.BackgroundImage = iconName == "sleep" ? Resources.sleep_active : Resources.sleep;
+            panelIconClose.BackgroundImage = iconName == "close" ? Resources.close_active : Resources.close;
+        }
+
+        private void toggleOnCompleteTags(string iconName)
+        {
+            panelIconShutdown.Tag = iconName == "shutdown";
+            panelIconRestart.Tag = iconName == "restart";
+            panelIconSleep.Tag = iconName == "sleep";
+            panelIconClose.Tag = iconName == "close";
+        }
+
+        private void toggleOnCompleteDisabled(bool state)
+        {
+            panelIconShutdown.BackgroundImage = state ? Resources.shutdown : Resources.shutdown_disabled;
+            panelIconRestart.BackgroundImage = state ? Resources.restart : Resources.restart_disabled;
+            panelIconSleep.BackgroundImage = state ? Resources.sleep : Resources.sleep_disabled;
+            panelIconClose.BackgroundImage = state ? Resources.close : Resources.close_disabled;
+        }
 
         private void updateProgress(ProgressPacket packet = null)
         {

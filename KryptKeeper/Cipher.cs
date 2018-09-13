@@ -53,7 +53,7 @@ namespace KryptKeeper
                     break;
                 if (File.Exists(fileData.GetFilePath()))
                 {
-                    _status.WritePending($"{options.GetModeOfOperation()}: " + fileData.GetFilePath());
+                    _status.WritePending($"{options.GetModeOfOperation()}: " + fileData.GetFilePath(), new FileInfo(fileData.GetFilePath()).Length);
                     _status.UpdateOperationLabel(options.GetModeOfOperation());
                     processFile(fileData.GetFilePath(), options);
                     _totalFilesState++;
@@ -114,7 +114,7 @@ namespace KryptKeeper
                 {
                     var resultFile = postProcessFileHandling(path, workingPath, options);
                     if (resultFile.Length > 0)
-                        _status.WriteLine("Processed to: " + Path.GetFileName(resultFile));
+                        _status.WriteLine("Processed to: " + Path.GetFileName(resultFile), resultFile.Length);
                 }
             }
             catch (Exception ex)

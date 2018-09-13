@@ -13,7 +13,6 @@ namespace KryptKeeper
         #region File Processing Tab Form Events
         private void btnAddFiles_Click(object sender, EventArgs e)
         {
-            _fileList.Clear();
             buildFileList();
         }
 
@@ -74,7 +73,7 @@ namespace KryptKeeper
             }
             var openFileDialog = new OpenFileDialog { Title = @"Select the files to be processed", Multiselect = true };
             var openResult = openFileDialog.ShowDialog();
-            if (openResult != DialogResult.OK) return;
+            if (openResult != DialogResult.OK || openFileDialog.FileNames.Length <= 0) return;
             _fileList.Clear();
             _fileList = new FileList(openFileDialog.FileNames.Select(path => new FileData(path)).ToList(), datagridFileList);
             if (chkProcessInOrder.Checked)
@@ -87,7 +86,7 @@ namespace KryptKeeper
         private void updateFileListStats()
         {
             lblJobInformation.Text =
-                $@"{Utils.BytesToString(Utils.CalculateTotalFilePayload(_fileList))} ({
+                $@"{Utils.BytesToFileSize(Utils.CalculateTotalFilePayload(_fileList))} ({
                         _fileList.Count
                     } files) to be processed.";
         }

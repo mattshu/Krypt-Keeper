@@ -34,7 +34,7 @@ namespace KryptKeeper
             return true;
         }
 
-        public static string BytesToString(long byteCount)
+        public static string BytesToFileSize(long byteCount)
         {
             string[] suf = { "B", "KB", "MB", "GB", "TB", "PB", "EB" };
             if (byteCount == 0)
@@ -198,7 +198,7 @@ namespace KryptKeeper
 
         public static void StandyComputer()
         {
-            Application.SetSuspendState(PowerState.Suspend, true, true);
+            Application.SetSuspendState(PowerState.Suspend, true, false);
         }
 
         public static void RestartComputer()

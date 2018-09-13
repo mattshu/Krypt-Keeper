@@ -9,7 +9,7 @@ namespace KryptKeeper
             var fileInfo = new FileInfo(filePath);
             Name = fileInfo.Name;
             Extension = fileInfo.Extension;
-            Size = Utils.BytesToString(fileInfo.Length);
+            Size = Utils.BytesToFileSize(fileInfo.Length);
             Path = fileInfo.DirectoryName;
         }
 

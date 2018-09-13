@@ -1,7 +1,6 @@
 ﻿using KryptKeeper.Properties;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Windows.Forms;
 
 namespace KryptKeeper
@@ -10,7 +9,6 @@ namespace KryptKeeper
     {
         /* 
             TODO * MAJOR * (IMPERATIVE: *** REMOVE HARDCODED KEYFILE ***)
-                - Option: shutdown/sleep/restart after job
             TODO * MINOR *
                 - Dialog icons
                 - Calculate processing speeds
@@ -182,50 +180,9 @@ namespace KryptKeeper
             }
         }
 
-        private void datagridFileList_DataError(object sender, DataGridViewDataErrorEventArgs e) {
-            Console.WriteLine(@"Error has occured: " + e.Exception.Message + @"sender as DataGridView.RowCount:" + (sender as DataGridView)?.RowCount);
-        }
-
-        private void panelIconShutdown_Click(object sender, EventArgs e)
+        private void metroButton1_Click(object sender, EventArgs e)
         {
-            toggleOnCompleteActiveIcon("shutdown");
-        }
-
-        private void panelIconRestart_Click(object sender, EventArgs e)
-        {
-            toggleOnCompleteActiveIcon("restart");
-        }
-
-        private void panelIconSleep_Click(object sender, EventArgs e)
-        {
-            toggleOnCompleteActiveIcon("sleep");
-        }
-
-        private void panelIconClose_Click(object sender, EventArgs e) {
-            toggleOnCompleteActiveIcon("close");
-        }
-
-        private void toggleOnCompleteActiveIcon(string iconName)
-        {
-            panelIconShutdown.BackgroundImage = iconName == "shutdown" ? Resources.shutdown_active : Resources.shutdown;
-            panelIconRestart.BackgroundImage = iconName == "restart" ? Resources.restart_active : Resources.restart;
-            panelIconSleep.BackgroundImage = iconName == "sleep" ? Resources.sleep_active : Resources.sleep;
-            panelIconClose.BackgroundImage = iconName == "close" ? Resources.close_active : Resources.close;
-        }
-
-        private void toggleOnCompleteDisabled(bool state)
-        {
-            panelIconShutdown.BackgroundImage = state ? Resources.shutdown : Resources.shutdown_disabled;
-            panelIconRestart.BackgroundImage = state ? Resources.restart : Resources.restart_disabled;
-            panelIconSleep.BackgroundImage = state ? Resources.sleep : Resources.sleep_disabled;
-            panelIconClose.BackgroundImage = state ? Resources.close : Resources.close_disabled;
-        }
-
-        private void chkOnCompletion_CheckedChanged(object sender, EventArgs e)
-        {
-            panelIconShutdown.Enabled = panelIconRestart.Enabled =
-                panelIconSleep.Enabled = panelIconClose.Enabled = chkOnCompletion.Checked;
-            toggleOnCompleteDisabled(chkOnCompletion.Checked);
+            handleOnCompletion();
         }
     }
 }

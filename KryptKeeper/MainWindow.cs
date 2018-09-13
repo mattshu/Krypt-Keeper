@@ -1,6 +1,7 @@
 ﻿using KryptKeeper.Properties;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace KryptKeeper
@@ -9,24 +10,24 @@ namespace KryptKeeper
     {
         /* 
             TODO * MAJOR * (IMPERATIVE: *** REMOVE HARDCODED KEYFILE ***)
-                - FIX ISSUE WHEN REMOVING ITEMS FROM DGV
-                - Calculate processing speeds
                 - Option: shutdown/sleep/restart after job
             TODO * MINOR *
                 - Dialog icons
-
+                - Calculate processing speeds
                 - If planning on storing keys, ensure key storage security
                 - Always work toward single responsibility principle
         */
-        private static bool closeAfterCurrentOperation;
+        private static bool _CloseAfterCurrentOperation;
         private enum MainTabs { Options, Files, Status }
         private Status _status;
         private bool _settingsNeedConfirmed = true;
-        private FileList _fileList = new FileList(new List<FileData>());
+        private bool _forceExit = false;
+        private FileList _fileList;
 
         public MainWindow()
         {
             InitializeComponent();
+            _fileList = new FileList(new List<FileData>(), datagridFileList);
         }
         
         public List<Control> GetStatusObjects()
@@ -45,7 +46,7 @@ namespace KryptKeeper
             focusTab(MainTabs.Options);
             loadSettings();
             _status = new Status(this);
-            //datagridFileList.DataSource = _fileList.GetList();
+            _fileList.UpdateDataSource();
             setDefaultColumnWidths();
             datagridFileList.DataSourceChanged += datagridFileList_DataSourceChanged;
             chkProcessInOrder.CheckedChanged += chkProcessInOrder_CheckedChanged;
@@ -57,6 +58,11 @@ namespace KryptKeeper
 
         private void mainWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
+            if (_forceExit)
+            {
+                if (chkRememberSettings.Checked)
+                    saveSettings();
+            }
             if (backgroundWorker.IsBusy)
             {
                 e.Cancel = true;
@@ -65,7 +71,7 @@ namespace KryptKeeper
             else
             {
                 e.Cancel = false;
-                if (closeAfterCurrentOperation)
+                if (_CloseAfterCurrentOperation)
                     return;
                 if (!confirmExit())
                 {
@@ -159,21 +165,67 @@ namespace KryptKeeper
             {
                 case DialogResult.Abort: // Abort and Exit
                     Cipher.CancelProcessing();
-                    closeAfterCurrentOperation = true;
+                    _CloseAfterCurrentOperation = true;
                     backgroundWorker.CancelAsync();
                     break;
 
                 case DialogResult.Retry: // Finish File and Exit
-                    closeAfterCurrentOperation = true;
+                    _CloseAfterCurrentOperation = true;
                     backgroundWorker.CancelAsync();
                     Hide();
                     break;
 
                 case DialogResult.Ignore: // Finish in Background
-                    closeAfterCurrentOperation = true;
+                    _CloseAfterCurrentOperation = true;
                     Hide();
                     break;
             }
+        }
+
+        private void datagridFileList_DataError(object sender, DataGridViewDataErrorEventArgs e) {
+            Console.WriteLine(@"Error has occured: " + e.Exception.Message + @"sender as DataGridView.RowCount:" + (sender as DataGridView)?.RowCount);
+        }
+
+        private void panelIconShutdown_Click(object sender, EventArgs e)
+        {
+            toggleOnCompleteActiveIcon("shutdown");
+        }
+
+        private void panelIconRestart_Click(object sender, EventArgs e)
+        {
+            toggleOnCompleteActiveIcon("restart");
+        }
+
+        private void panelIconSleep_Click(object sender, EventArgs e)
+        {
+            toggleOnCompleteActiveIcon("sleep");
+        }
+
+        private void panelIconClose_Click(object sender, EventArgs e) {
+            toggleOnCompleteActiveIcon("close");
+        }
+
+        private void toggleOnCompleteActiveIcon(string iconName)
+        {
+            panelIconShutdown.BackgroundImage = iconName == "shutdown" ? Resources.shutdown_active : Resources.shutdown;
+            panelIconRestart.BackgroundImage = iconName == "restart" ? Resources.restart_active : Resources.restart;
+            panelIconSleep.BackgroundImage = iconName == "sleep" ? Resources.sleep_active : Resources.sleep;
+            panelIconClose.BackgroundImage = iconName == "close" ? Resources.close_active : Resources.close;
+        }
+
+        private void toggleOnCompleteDisabled(bool state)
+        {
+            panelIconShutdown.BackgroundImage = state ? Resources.shutdown : Resources.shutdown_disabled;
+            panelIconRestart.BackgroundImage = state ? Resources.restart : Resources.restart_disabled;
+            panelIconSleep.BackgroundImage = state ? Resources.sleep : Resources.sleep_disabled;
+            panelIconClose.BackgroundImage = state ? Resources.close : Resources.close_disabled;
+        }
+
+        private void chkOnCompletion_CheckedChanged(object sender, EventArgs e)
+        {
+            panelIconShutdown.Enabled = panelIconRestart.Enabled =
+                panelIconSleep.Enabled = panelIconClose.Enabled = chkOnCompletion.Checked;
+            toggleOnCompleteDisabled(chkOnCompletion.Checked);
         }
     }
 }

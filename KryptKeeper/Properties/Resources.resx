@@ -117,33 +117,63 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="SaveSettingsMsg" xml:space="preserve">
-    <value>Do you want to save your settings?</value>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="shutdown-active" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\shutdown-active.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="OperationBusyTitleMsg" xml:space="preserve">
-    <value>Operation in Progress</value>
+  <data name="restart-disabled" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\restart-disabled.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="ExitApplicationMsg" xml:space="preserve">
-    <value>Are you sure you want to exit?</value>
+  <data name="restart" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\restart.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="sleep" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\sleep.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="lock" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\lock.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="shutdown" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\shutdown.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="SaveSettingsTitle" xml:space="preserve">
     <value>Save Settings?</value>
   </data>
+  <data name="SaveSettingsMsg" xml:space="preserve">
+    <value>Do you want to save your settings?</value>
+  </data>
+  <data name="AbortOperationDlgMsg" xml:space="preserve">
+    <value>Do you want to abort the current file?
+Select 'No' to finish current file then cancel job.</value>
+  </data>
+  <data name="ExitApplicationMsg" xml:space="preserve">
+    <value>Are you sure you want to exit?</value>
+  </data>
   <data name="ExitApplicationTitle" xml:space="preserve">
     <value>Exit KryptKeeper</value>
   </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="appbar.arrow.left" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\appbar.arrow.left.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="shutdown-disabled" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\shutdown-disabled.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="AbortOperationDlgMsg" xml:space="preserve">
-    <value>Do you want to abort the current job?
-Select 'No' to finish current job and cancel remaining tasks.</value>
+  <data name="restart-active" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\restart-active.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="appbar.arrow.right" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\appbar.arrow.right.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="OperationBusyTitleMsg" xml:space="preserve">
+    <value>Operation in Progress</value>
   </data>
-  <data name="appbar.lock" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\appbar.lock.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="sleep-active" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\sleep-active.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="sleep-disabled" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\sleep-disabled.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="close" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\close.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="close_active" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\close_active.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="close_disabled" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\close_disabled.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

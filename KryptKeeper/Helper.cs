@@ -1,5 +1,6 @@
 ﻿using KryptKeeper.Properties;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -193,6 +194,29 @@ namespace KryptKeeper
             new Random().NextBytes(buffer);
             long longRand = BitConverter.ToInt64(buffer, 0);
             return Math.Abs(longRand % (max - min)) + min;
+        }
+
+        public static void StandyComputer()
+        {
+            Application.SetSuspendState(PowerState.Suspend, true, true);
+        }
+
+        public static void RestartComputer()
+        {
+            var psi = new ProcessStartInfo("shutdown", "/r /t 0") {
+                CreateNoWindow = true,
+                UseShellExecute = false
+            };
+            Process.Start(psi);
+        }
+
+        public static void ShutdownComputer()
+        {
+            var psi = new ProcessStartInfo("shutdown", "/s /t 0") {
+                CreateNoWindow = true,
+                UseShellExecute = false
+            };
+            Process.Start(psi);
         }
     }
 }

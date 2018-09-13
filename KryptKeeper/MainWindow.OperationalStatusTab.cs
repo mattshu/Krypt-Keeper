@@ -11,13 +11,13 @@ namespace KryptKeeper
 
         private void backgroundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            if (closeAfterCurrentOperation) return;
+            if (_CloseAfterCurrentOperation) return;
             updateProgress((ProgressPacket)e.UserState);
         }
 
         private void backgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            if (closeAfterCurrentOperation)
+            if (_CloseAfterCurrentOperation)
             {
                 Close();
                 return;
@@ -30,7 +30,40 @@ namespace KryptKeeper
             lblProcessingFile.Text = "";
             lblOperationStatus.Text = @"Done!";
             _fileList.Reset();
-            datagridFileList.DataSource = _fileList.GetList();
+            if (!chkOnCompletion.Checked) return;
+            if (!validateOnCompletionIconsHaveOneSelection()) return;
+            handleOnCompletion();
+        }
+
+        private void handleOnCompletion()
+        {
+            if ((bool) panelIconShutdown.Tag)
+            {
+                Helper.ShutdownComputer();
+            }
+            else if ((bool) panelIconRestart.Tag)
+            {
+                Helper.RestartComputer();
+            }
+            else if ((bool) panelIconSleep.Tag)
+            {
+                Helper.StandyComputer();
+            }
+            else if ((bool) panelIconClose.Tag)
+            {
+                forceExit();
+            }
+        }
+
+        private void forceExit()
+        {
+            _forceExit = true;
+            Close();
+        }
+
+        private bool validateOnCompletionIconsHaveOneSelection()
+        {
+            return (bool) panelIconShutdown.Tag || (bool) panelIconSleep.Tag || (bool) panelIconSleep.Tag || (bool) panelIconClose.Tag;
         }
 
         private void btnSelectFilesFromStatusTab_Click(object sender, EventArgs e)

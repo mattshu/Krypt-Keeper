@@ -61,8 +61,18 @@ namespace KryptKeeper.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Do you want to abort the current job?
-        ///Select &apos;No&apos; to finish current job and cancel remaining tasks..
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap _lock {
+            get {
+                object obj = ResourceManager.GetObject("lock", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Do you want to abort the current file?
+        ///Select &apos;No&apos; to finish current file then cancel job..
         /// </summary>
         internal static string AbortOperationDlgMsg {
             get {
@@ -73,9 +83,9 @@ namespace KryptKeeper.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap appbar_arrow_left {
+        internal static System.Drawing.Bitmap close {
             get {
-                object obj = ResourceManager.GetObject("appbar.arrow.left", resourceCulture);
+                object obj = ResourceManager.GetObject("close", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -83,9 +93,9 @@ namespace KryptKeeper.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap appbar_arrow_right {
+        internal static System.Drawing.Bitmap close_active {
             get {
-                object obj = ResourceManager.GetObject("appbar.arrow.right", resourceCulture);
+                object obj = ResourceManager.GetObject("close_active", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -93,9 +103,9 @@ namespace KryptKeeper.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap appbar_lock {
+        internal static System.Drawing.Bitmap close_disabled {
             get {
-                object obj = ResourceManager.GetObject("appbar.lock", resourceCulture);
+                object obj = ResourceManager.GetObject("close_disabled", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -128,6 +138,36 @@ namespace KryptKeeper.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap restart {
+            get {
+                object obj = ResourceManager.GetObject("restart", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap restart_active {
+            get {
+                object obj = ResourceManager.GetObject("restart-active", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap restart_disabled {
+            get {
+                object obj = ResourceManager.GetObject("restart-disabled", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Do you want to save your settings?.
         /// </summary>
         internal static string SaveSettingsMsg {
@@ -142,6 +182,66 @@ namespace KryptKeeper.Properties {
         internal static string SaveSettingsTitle {
             get {
                 return ResourceManager.GetString("SaveSettingsTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap shutdown {
+            get {
+                object obj = ResourceManager.GetObject("shutdown", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap shutdown_active {
+            get {
+                object obj = ResourceManager.GetObject("shutdown-active", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap shutdown_disabled {
+            get {
+                object obj = ResourceManager.GetObject("shutdown-disabled", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap sleep {
+            get {
+                object obj = ResourceManager.GetObject("sleep", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap sleep_active {
+            get {
+                object obj = ResourceManager.GetObject("sleep-active", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap sleep_disabled {
+            get {
+                object obj = ResourceManager.GetObject("sleep-disabled", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
     }

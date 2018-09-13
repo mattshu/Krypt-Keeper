@@ -28,9 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
             this.tabMain = new MetroFramework.Controls.MetroTabControl();
             this.tabOptions = new MetroFramework.Controls.MetroTabPage();
             this.btnBrowseKeyFile = new MetroFramework.Controls.MetroButton();
@@ -59,6 +59,12 @@
             this.datagridFileList = new MetroFramework.Controls.MetroGrid();
             this.tabStatus = new MetroFramework.Controls.MetroTabPage();
             this.progressTotalBytes = new MetroFramework.Controls.MetroProgressSpinner();
+            this.chkOnCompletion = new MetroFramework.Controls.MetroCheckBox();
+            this.panelOnCompletion = new MetroFramework.Controls.MetroPanel();
+            this.panelIconClose = new MetroFramework.Controls.MetroPanel();
+            this.panelIconSleep = new MetroFramework.Controls.MetroPanel();
+            this.panelIconRestart = new MetroFramework.Controls.MetroPanel();
+            this.panelIconShutdown = new MetroFramework.Controls.MetroPanel();
             this.txtStatus = new MetroFramework.Controls.MetroTextBox();
             this.lblProcessRates = new MetroFramework.Controls.MetroLabel();
             this.lblCurrentPercentage = new MetroFramework.Controls.MetroLabel();
@@ -76,6 +82,7 @@
             this.lblProcessingFile = new MetroFramework.Controls.MetroLabel();
             this.lblVersionInformation = new MetroFramework.Controls.MetroLabel();
             this.backgroundWorker = new System.ComponentModel.BackgroundWorker();
+            this.metroToolTip = new MetroFramework.Components.MetroToolTip();
             this.tabMain.SuspendLayout();
             this.tabOptions.SuspendLayout();
             this.panelKeyRads.SuspendLayout();
@@ -83,6 +90,7 @@
             this.panelFiles.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.datagridFileList)).BeginInit();
             this.tabStatus.SuspendLayout();
+            this.panelOnCompletion.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabMain
@@ -483,22 +491,22 @@
             this.datagridFileList.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.datagridFileList.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.None;
             this.datagridFileList.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(177)))), ((int)(((byte)(89)))));
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(17)))), ((int)(((byte)(17)))));
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(208)))), ((int)(((byte)(104)))));
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(17)))), ((int)(((byte)(17)))));
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.datagridFileList.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(17)))), ((int)(((byte)(17)))));
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(109)))), ((int)(((byte)(109)))), ((int)(((byte)(109)))));
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(208)))), ((int)(((byte)(104)))));
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(17)))), ((int)(((byte)(17)))));
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.datagridFileList.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(177)))), ((int)(((byte)(89)))));
+            dataGridViewCellStyle4.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle4.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(17)))), ((int)(((byte)(17)))));
+            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(208)))), ((int)(((byte)(104)))));
+            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(17)))), ((int)(((byte)(17)))));
+            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.datagridFileList.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle5.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(17)))), ((int)(((byte)(17)))));
+            dataGridViewCellStyle5.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            dataGridViewCellStyle5.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(109)))), ((int)(((byte)(109)))), ((int)(((byte)(109)))));
+            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(208)))), ((int)(((byte)(104)))));
+            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(17)))), ((int)(((byte)(17)))));
+            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.datagridFileList.DefaultCellStyle = dataGridViewCellStyle5;
             this.datagridFileList.Dock = System.Windows.Forms.DockStyle.Fill;
             this.datagridFileList.EnableHeadersVisualStyles = false;
             this.datagridFileList.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
@@ -507,25 +515,28 @@
             this.datagridFileList.Name = "datagridFileList";
             this.datagridFileList.ReadOnly = true;
             this.datagridFileList.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(177)))), ((int)(((byte)(89)))));
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            dataGridViewCellStyle3.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(17)))), ((int)(((byte)(17)))));
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(208)))), ((int)(((byte)(104)))));
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(17)))), ((int)(((byte)(17)))));
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.datagridFileList.RowHeadersDefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle6.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(177)))), ((int)(((byte)(89)))));
+            dataGridViewCellStyle6.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            dataGridViewCellStyle6.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(17)))), ((int)(((byte)(17)))));
+            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(208)))), ((int)(((byte)(104)))));
+            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(17)))), ((int)(((byte)(17)))));
+            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.datagridFileList.RowHeadersDefaultCellStyle = dataGridViewCellStyle6;
             this.datagridFileList.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.datagridFileList.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.datagridFileList.Size = new System.Drawing.Size(733, 238);
             this.datagridFileList.Style = MetroFramework.MetroColorStyle.Green;
             this.datagridFileList.TabIndex = 0;
             this.datagridFileList.Theme = MetroFramework.MetroThemeStyle.Dark;
+            this.datagridFileList.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.datagridFileList_DataError);
             this.datagridFileList.SelectionChanged += new System.EventHandler(this.datagridFileList_SelectionChanged);
             // 
             // tabStatus
             // 
             this.tabStatus.Controls.Add(this.progressTotalBytes);
+            this.tabStatus.Controls.Add(this.chkOnCompletion);
+            this.tabStatus.Controls.Add(this.panelOnCompletion);
             this.tabStatus.Controls.Add(this.txtStatus);
             this.tabStatus.Controls.Add(this.lblProcessRates);
             this.tabStatus.Controls.Add(this.lblCurrentPercentage);
@@ -563,11 +574,131 @@
             this.progressTotalBytes.Name = "progressTotalBytes";
             this.progressTotalBytes.Size = new System.Drawing.Size(64, 64);
             this.progressTotalBytes.Spinning = false;
-            this.progressTotalBytes.Style = MetroFramework.MetroColorStyle.Lime;
-            this.progressTotalBytes.TabIndex = 14;
+            this.progressTotalBytes.Style = MetroFramework.MetroColorStyle.Teal;
+            this.progressTotalBytes.TabIndex = 11;
             this.progressTotalBytes.Theme = MetroFramework.MetroThemeStyle.Dark;
+            this.metroToolTip.SetToolTip(this.progressTotalBytes, "Total data progress");
             this.progressTotalBytes.UseSelectable = true;
-            this.progressTotalBytes.Value = -1;
+            this.progressTotalBytes.Value = 100;
+            // 
+            // chkOnCompletion
+            // 
+            this.chkOnCompletion.AutoSize = true;
+            this.chkOnCompletion.FontWeight = MetroFramework.MetroCheckBoxWeight.Light;
+            this.chkOnCompletion.Location = new System.Drawing.Point(0, 204);
+            this.chkOnCompletion.Name = "chkOnCompletion";
+            this.chkOnCompletion.Size = new System.Drawing.Size(100, 15);
+            this.chkOnCompletion.TabIndex = 17;
+            this.chkOnCompletion.Text = "On completion:";
+            this.chkOnCompletion.Theme = MetroFramework.MetroThemeStyle.Dark;
+            this.chkOnCompletion.UseSelectable = true;
+            this.chkOnCompletion.CheckedChanged += new System.EventHandler(this.chkOnCompletion_CheckedChanged);
+            // 
+            // panelOnCompletion
+            // 
+            this.panelOnCompletion.Controls.Add(this.panelIconClose);
+            this.panelOnCompletion.Controls.Add(this.panelIconSleep);
+            this.panelOnCompletion.Controls.Add(this.panelIconRestart);
+            this.panelOnCompletion.Controls.Add(this.panelIconShutdown);
+            this.panelOnCompletion.HorizontalScrollbarBarColor = true;
+            this.panelOnCompletion.HorizontalScrollbarHighlightOnWheel = false;
+            this.panelOnCompletion.HorizontalScrollbarSize = 10;
+            this.panelOnCompletion.Location = new System.Drawing.Point(106, 204);
+            this.panelOnCompletion.Name = "panelOnCompletion";
+            this.panelOnCompletion.Size = new System.Drawing.Size(91, 18);
+            this.panelOnCompletion.TabIndex = 16;
+            this.panelOnCompletion.Theme = MetroFramework.MetroThemeStyle.Dark;
+            this.panelOnCompletion.VerticalScrollbarBarColor = true;
+            this.panelOnCompletion.VerticalScrollbarHighlightOnWheel = false;
+            this.panelOnCompletion.VerticalScrollbarSize = 10;
+            // 
+            // panelIconClose
+            // 
+            this.panelIconClose.BackColor = System.Drawing.Color.Transparent;
+            this.panelIconClose.BackgroundImage = global::KryptKeeper.Properties.Resources.close_disabled;
+            this.panelIconClose.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.panelIconClose.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.panelIconClose.Enabled = false;
+            this.panelIconClose.HorizontalScrollbarBarColor = true;
+            this.panelIconClose.HorizontalScrollbarHighlightOnWheel = false;
+            this.panelIconClose.HorizontalScrollbarSize = 10;
+            this.panelIconClose.Location = new System.Drawing.Point(69, 0);
+            this.panelIconClose.Name = "panelIconClose";
+            this.panelIconClose.Size = new System.Drawing.Size(16, 16);
+            this.panelIconClose.TabIndex = 2;
+            this.panelIconClose.Tag = "false";
+            this.panelIconClose.Theme = MetroFramework.MetroThemeStyle.Dark;
+            this.metroToolTip.SetToolTip(this.panelIconClose, "Exit KryptKeeper");
+            this.panelIconClose.VerticalScrollbarBarColor = true;
+            this.panelIconClose.VerticalScrollbarHighlightOnWheel = false;
+            this.panelIconClose.VerticalScrollbarSize = 10;
+            this.panelIconClose.Click += new System.EventHandler(this.panelIconClose_Click);
+            // 
+            // panelIconSleep
+            // 
+            this.panelIconSleep.BackColor = System.Drawing.Color.Transparent;
+            this.panelIconSleep.BackgroundImage = global::KryptKeeper.Properties.Resources.sleep_disabled;
+            this.panelIconSleep.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.panelIconSleep.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.panelIconSleep.Enabled = false;
+            this.panelIconSleep.HorizontalScrollbarBarColor = true;
+            this.panelIconSleep.HorizontalScrollbarHighlightOnWheel = false;
+            this.panelIconSleep.HorizontalScrollbarSize = 10;
+            this.panelIconSleep.Location = new System.Drawing.Point(47, 0);
+            this.panelIconSleep.Name = "panelIconSleep";
+            this.panelIconSleep.Size = new System.Drawing.Size(16, 16);
+            this.panelIconSleep.TabIndex = 2;
+            this.panelIconSleep.Tag = "false";
+            this.panelIconSleep.Theme = MetroFramework.MetroThemeStyle.Dark;
+            this.metroToolTip.SetToolTip(this.panelIconSleep, "Sleep");
+            this.panelIconSleep.VerticalScrollbarBarColor = true;
+            this.panelIconSleep.VerticalScrollbarHighlightOnWheel = false;
+            this.panelIconSleep.VerticalScrollbarSize = 10;
+            this.panelIconSleep.Click += new System.EventHandler(this.panelIconSleep_Click);
+            // 
+            // panelIconRestart
+            // 
+            this.panelIconRestart.BackColor = System.Drawing.Color.Transparent;
+            this.panelIconRestart.BackgroundImage = global::KryptKeeper.Properties.Resources.restart_disabled;
+            this.panelIconRestart.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.panelIconRestart.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.panelIconRestart.Enabled = false;
+            this.panelIconRestart.HorizontalScrollbarBarColor = true;
+            this.panelIconRestart.HorizontalScrollbarHighlightOnWheel = false;
+            this.panelIconRestart.HorizontalScrollbarSize = 10;
+            this.panelIconRestart.Location = new System.Drawing.Point(25, 0);
+            this.panelIconRestart.Name = "panelIconRestart";
+            this.panelIconRestart.Size = new System.Drawing.Size(16, 16);
+            this.panelIconRestart.TabIndex = 2;
+            this.panelIconRestart.Tag = "false";
+            this.panelIconRestart.Theme = MetroFramework.MetroThemeStyle.Dark;
+            this.metroToolTip.SetToolTip(this.panelIconRestart, "Restart");
+            this.panelIconRestart.VerticalScrollbarBarColor = true;
+            this.panelIconRestart.VerticalScrollbarHighlightOnWheel = false;
+            this.panelIconRestart.VerticalScrollbarSize = 10;
+            this.panelIconRestart.Click += new System.EventHandler(this.panelIconRestart_Click);
+            // 
+            // panelIconShutdown
+            // 
+            this.panelIconShutdown.BackColor = System.Drawing.Color.Transparent;
+            this.panelIconShutdown.BackgroundImage = global::KryptKeeper.Properties.Resources.shutdown_disabled;
+            this.panelIconShutdown.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.panelIconShutdown.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.panelIconShutdown.Enabled = false;
+            this.panelIconShutdown.HorizontalScrollbarBarColor = true;
+            this.panelIconShutdown.HorizontalScrollbarHighlightOnWheel = false;
+            this.panelIconShutdown.HorizontalScrollbarSize = 10;
+            this.panelIconShutdown.Location = new System.Drawing.Point(3, 0);
+            this.panelIconShutdown.Name = "panelIconShutdown";
+            this.panelIconShutdown.Size = new System.Drawing.Size(16, 16);
+            this.panelIconShutdown.TabIndex = 2;
+            this.panelIconShutdown.Tag = "false";
+            this.panelIconShutdown.Theme = MetroFramework.MetroThemeStyle.Dark;
+            this.metroToolTip.SetToolTip(this.panelIconShutdown, "Shutdown");
+            this.panelIconShutdown.VerticalScrollbarBarColor = true;
+            this.panelIconShutdown.VerticalScrollbarHighlightOnWheel = false;
+            this.panelIconShutdown.VerticalScrollbarSize = 10;
+            this.panelIconShutdown.Click += new System.EventHandler(this.panelIconShutdown_Click);
             // 
             // txtStatus
             // 
@@ -640,6 +771,7 @@
             this.progressCurrent.Style = MetroFramework.MetroColorStyle.Blue;
             this.progressCurrent.TabIndex = 11;
             this.progressCurrent.Theme = MetroFramework.MetroThemeStyle.Dark;
+            this.metroToolTip.SetToolTip(this.progressCurrent, "File data progress");
             this.progressCurrent.UseSelectable = true;
             this.progressCurrent.Value = -1;
             // 
@@ -668,6 +800,7 @@
             this.progressTotalFiles.Style = MetroFramework.MetroColorStyle.Green;
             this.progressTotalFiles.TabIndex = 9;
             this.progressTotalFiles.Theme = MetroFramework.MetroThemeStyle.Dark;
+            this.metroToolTip.SetToolTip(this.progressTotalFiles, "Total file progress");
             this.progressTotalFiles.UseSelectable = true;
             this.progressTotalFiles.Value = -1;
             // 
@@ -809,6 +942,12 @@
             this.backgroundWorker.WorkerReportsProgress = true;
             this.backgroundWorker.WorkerSupportsCancellation = true;
             // 
+            // metroToolTip
+            // 
+            this.metroToolTip.Style = MetroFramework.MetroColorStyle.Blue;
+            this.metroToolTip.StyleManager = null;
+            this.metroToolTip.Theme = MetroFramework.MetroThemeStyle.Light;
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -834,6 +973,8 @@
             this.panelFiles.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.datagridFileList)).EndInit();
             this.tabStatus.ResumeLayout(false);
+            this.tabStatus.PerformLayout();
+            this.panelOnCompletion.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -883,6 +1024,13 @@
         private MetroFramework.Controls.MetroCheckBox chkProcessInOrder;
         private MetroFramework.Controls.MetroComboBox cbxProcessOrderBy;
         private MetroFramework.Controls.MetroCheckBox chkProcessOrderDesc;
+        private MetroFramework.Controls.MetroPanel panelOnCompletion;
+        private MetroFramework.Controls.MetroCheckBox chkOnCompletion;
+        private MetroFramework.Controls.MetroPanel panelIconSleep;
+        private MetroFramework.Controls.MetroPanel panelIconRestart;
+        private MetroFramework.Controls.MetroPanel panelIconShutdown;
+        private MetroFramework.Components.MetroToolTip metroToolTip;
         private MetroFramework.Controls.MetroProgressSpinner progressTotalBytes;
+        private MetroFramework.Controls.MetroPanel panelIconClose;
     }
 }

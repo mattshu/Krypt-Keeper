@@ -1,8 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Threading;
-using System.Timers;
 using System.Windows.Forms;
 using MetroFramework;
 
@@ -26,7 +24,8 @@ namespace KryptKeeper
 
         private void datagridFileList_DataSourceChanged(object sender, EventArgs e)
         {
-            if (datagridFileList.DataSource == _fileList) setDefaultColumnWidths();
+            if (datagridFileList.DataSource == null) return;
+            setDefaultColumnWidths();
             enableProcessButtons(datagridFileList.RowCount > 0);
         }
 
@@ -77,13 +76,20 @@ namespace KryptKeeper
             var openResult = openFileDialog.ShowDialog();
             if (openResult != DialogResult.OK) return;
             _fileList.Clear();
-            _fileList = new FileList(openFileDialog.FileNames.Select(path => new FileData(path)).ToList());
-            datagridFileList.DataSource = _fileList.GetList();
+            _fileList = new FileList(openFileDialog.FileNames.Select(path => new FileData(path)).ToList(), datagridFileList);
             if (chkProcessInOrder.Checked)
                 sortFileList();
             enableProcessButtons(datagridFileList.RowCount > 0);
-            lblJobInformation.Text = $@"{Helper.BytesToString(Helper.CalculateTotalFilePayload( _fileList))} ({_fileList.Count} files) to be processed.";
+            updateFileListStats();
             focusTab(MainTabs.Files);
+        }
+
+        private void updateFileListStats()
+        {
+            lblJobInformation.Text =
+                $@"{Helper.BytesToString(Helper.CalculateTotalFilePayload(_fileList))} ({
+                        _fileList.Count
+                    } files) to be processed.";
         }
 
         private bool validateKeySettings()
@@ -126,8 +132,9 @@ namespace KryptKeeper
             {
                 if (!datagridFileList.Rows[i].Selected) continue;
                 _fileList.RemoveAt(i);
-                datagridFileList.Rows.RemoveAt(i);
             }
+            _fileList.UpdateDataSource();
+            updateFileListStats();
         }
 
         private void processFiles(Cipher.Mode cipherMode)
@@ -206,10 +213,9 @@ namespace KryptKeeper
 
         private void sortFiles(Cipher.ProcessOrder processOrder, bool descending = false)
         {
-            datagridFileList.DataSource = null;
             var fileListComparer = new FileListComparer(processOrder, descending);
             _fileList.Sort(fileListComparer);
-            datagridFileList.DataSource = _fileList.GetList();
+            _fileList.UpdateDataSource();
         }
 
         private bool confirmSettings()

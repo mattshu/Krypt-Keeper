@@ -8,7 +8,7 @@ namespace KryptKeeper
     internal class Footer
     {
         public static readonly string FOOTER_TAG = "[KRYPTKEEPER]";
-        private static readonly byte[] FOOTER_SIGNATURE = Helper.GetBytes(FOOTER_TAG);
+        private static readonly byte[] FOOTER_SIGNATURE = Utils.GetBytes(FOOTER_TAG);
 
         public DateTime AccessedTime { get; set; }
         public DateTime CreationTime { get; set; }
@@ -18,7 +18,7 @@ namespace KryptKeeper
         public static Footer FromString(string footerString)
         {
             var footerSplit = footerString.Replace(FOOTER_TAG, "").Split(',');
-            string name = Helper.GetRandomAlphanumericString(8) + ".krpt.place"; // Default if name's blank
+            string name = Utils.GetRandomAlphanumericString(8) + ".krpt.place"; // Default if name's blank
             long created = 0, modified = 0, accessed = 0;
             foreach (var data in footerSplit)
             {
@@ -64,7 +64,7 @@ namespace KryptKeeper
 
         public byte[] ToArray()
         {
-            return Helper.GetBytes(ToString());
+            return Utils.GetBytes(ToString());
         }
 
         public override string ToString()

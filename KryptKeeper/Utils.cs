@@ -10,7 +10,7 @@ using System.Windows.Forms;
 
 namespace KryptKeeper
 {
-    internal static class Helper
+    internal static class Utils
     {
         public static long CalculateTotalFilePayload(FileList files)
         {

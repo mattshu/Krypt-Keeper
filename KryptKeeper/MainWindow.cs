@@ -98,7 +98,7 @@ namespace KryptKeeper
             progressTotalFiles.Reset();
             var settings = Settings.Default;
             if (!settings.rememberSettings)
-                Helper.ResetSettings();
+                Utils.ResetSettings();
             chkMaskFileInformation.Checked = settings.encryptionMaskFileName || settings.encryptionMaskFileDate;
             chkMaskFileName.Checked = settings.encryptionMaskFileName;
             chkMaskFileDate.Checked = settings.encryptionMaskFileDate;
@@ -151,7 +151,7 @@ namespace KryptKeeper
                     return false;
 
                 case DialogResult.No:
-                    Helper.ResetSettings();
+                    Utils.ResetSettings();
                     return false;
 
                 default:

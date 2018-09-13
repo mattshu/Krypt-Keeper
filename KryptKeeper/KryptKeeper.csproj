@@ -108,7 +108,7 @@
       <DependentUpon>MainWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Footer.cs" />
-    <Compile Include="Helper.cs" />
+    <Compile Include="Utils.cs" />
     <Compile Include="Cipher.ProcessOrder.cs" />
     <Compile Include="MainWindow.FileProcessingTab.cs">
       <SubType>Form</SubType>

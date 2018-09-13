@@ -73,7 +73,7 @@ namespace KryptKeeper
         private void finishPending()
         {
             _mainWindow.Invoke((Action)(() =>
-               _statusBox.AppendText($"done! ({Helper.GetSpannedTime(_pendingStartTime.Ticks)}){newLine}")));
+               _statusBox.AppendText($"done! ({Utils.GetSpannedTime(_pendingStartTime.Ticks)}){newLine}")));
         }
 
 

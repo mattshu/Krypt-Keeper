@@ -69,7 +69,7 @@ namespace KryptKeeper
             {
                 focusTab(MainTabs.Options);
                 if (radKeyFile.Checked)
-                    txtCipherKey.Text = Helper.BrowseFiles(@"Select a key file", false);
+                    txtCipherKey.Text = Utils.BrowseFiles(@"Select a key file", false);
                 return;
             }
             var openFileDialog = new OpenFileDialog { Title = @"Select the files to be processed", Multiselect = true };
@@ -87,7 +87,7 @@ namespace KryptKeeper
         private void updateFileListStats()
         {
             lblJobInformation.Text =
-                $@"{Helper.BytesToString(Helper.CalculateTotalFilePayload(_fileList))} ({
+                $@"{Utils.BytesToString(Utils.CalculateTotalFilePayload(_fileList))} ({
                         _fileList.Count
                     } files) to be processed.";
         }
@@ -102,7 +102,7 @@ namespace KryptKeeper
                 else if (new FileInfo(txtCipherKey.Text).Length <= 0)
                     errorMsg = "Key file is empty!";
             }
-            else if (radPlaintextKey.Checked && !Helper.CheckSecurePassword(txtCipherKey.Text))
+            else if (radPlaintextKey.Checked && !Utils.CheckSecurePassword(txtCipherKey.Text))
                 errorMsg =
                     $"Password must be 8 or more characters, including at least one number, one upper/lowercase, and one symbol: ({string.Join(",", Cipher.ALLOWED_PLAINTEXT_KEY_SYMBOLS)})";
             if (errorMsg.Length <= 0) return true;
@@ -171,7 +171,7 @@ namespace KryptKeeper
         {
             if (!validateKeySettings()) return false;
             if (_fileList.Count > 0) return true;
-            Helper.ShowErrorBox("There are no files to work.");
+            Utils.ShowErrorBox("There are no files to work.");
             focusTab(MainTabs.Files);
             return false;
         }
@@ -180,7 +180,7 @@ namespace KryptKeeper
         {
             byte[] key;
             if (radPlaintextKey.Checked)
-                key = Helper.GetBytes(txtCipherKey.Text);
+                key = Utils.GetBytes(txtCipherKey.Text);
             else if (radKeyFile.Checked && File.Exists(txtCipherKey.Text))
             {
                 if (new FileInfo(txtCipherKey.Text).Length < Cipher.MAX_FILE_LENGTH)
@@ -190,7 +190,7 @@ namespace KryptKeeper
             }
             else
                 throw new FileNotFoundException(txtCipherKey.Text);
-            var salt = Helper.GetBytes(BCrypt.GenerateSalt(5));
+            var salt = Utils.GetBytes(BCrypt.GenerateSalt(5));
             var options = new CipherOptions
             {
                 Mode = cipherMode,

@@ -23,7 +23,7 @@ namespace KryptKeeper
             txtCipherKey.UseSystemPasswordChar = radPlaintextKey.Checked;
             if (radKeyFile.Checked)
             {
-                txtCipherKey.Text = Helper.BrowseFiles(multiSelect: false);
+                txtCipherKey.Text = Utils.BrowseFiles(multiSelect: false);
                 txtCipherKey.WaterMark = @"You must browse for a key file...";
             }
             else
@@ -40,12 +40,12 @@ namespace KryptKeeper
         private void txtCipherKey_Click(object sender, EventArgs e)
         {
             if (radKeyFile.Checked && string.IsNullOrWhiteSpace(txtCipherKey.Text))
-                txtCipherKey.Text = Helper.BrowseFiles(@"Select a key file", multiSelect: false);
+                txtCipherKey.Text = Utils.BrowseFiles(@"Select a key file", multiSelect: false);
         }
 
         private void btnBrowseKeyFile_Click(object sender, EventArgs e)
         {
-            txtCipherKey.Text = Helper.BrowseFiles(multiSelect: false);
+            txtCipherKey.Text = Utils.BrowseFiles(multiSelect: false);
         }
 
         private void btnSelectFiles_Click(object sender, EventArgs e)

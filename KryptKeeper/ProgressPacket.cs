@@ -23,12 +23,12 @@ namespace KryptKeeper
         }
 
         public int GetCurrentFileProgress() =>
-            Helper.GetPercentProgress(_currentPayloadState, _currentPayloadTotal);
+            Utils.GetPercentProgress(_currentPayloadState, _currentPayloadTotal);
 
         public int GetTotalPayloadProgress() =>
-            Helper.GetPercentProgress(_totalPayloadState, _totalPayloadTotal);
+            Utils.GetPercentProgress(_totalPayloadState, _totalPayloadTotal);
 
         public int GetTotalFilesProgress() =>
-            Helper.GetPercentProgress(_totalFilesState, _totalFilesTotal);
+            Utils.GetPercentProgress(_totalFilesState, _totalFilesTotal);
     }
 }

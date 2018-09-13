@@ -24,7 +24,7 @@ namespace KryptKeeper
         private static int _totalFilesTotal = 0;
 
         public static void CancelProcessing() => _cancelProcessing = true;
-        public static string GetElapsedTime(bool hideMs = false) => Helper.GetSpannedTime(_cipherStartTime.Ticks, hideMs);
+        public static string GetElapsedTime(bool hideMs = false) => Utils.GetSpannedTime(_cipherStartTime.Ticks, hideMs);
 
         public static string GetFileProgress() => $"{_totalFilesState}/{_totalFilesTotal} files processed";
 
@@ -33,7 +33,7 @@ namespace KryptKeeper
             if (options.Files.Count <= 0) return;
             _totalFilesState = 0;
             _totalFilesTotal = options.Files.Count;
-            _totalPayloadTotal = Helper.CalculateTotalFilePayload(options.Files);
+            _totalPayloadTotal = Utils.CalculateTotalFilePayload(options.Files);
             _cipherStartTime = DateTime.Now;
             _backgroundWorker.RunWorkerAsync(options);
         }
@@ -79,7 +79,7 @@ namespace KryptKeeper
                 else if (options.Mode == Mode.Encrypt)
                     workingPath = getEncryptionWorkingPath(path, options);
                 else return;
-                if (File.Exists(workingPath)) workingPath = Helper.PadExistingFileName(workingPath);
+                if (File.Exists(workingPath)) workingPath = Utils.PadExistingFileName(workingPath);
                 using (var aes = Aes.Create())
                 {
                     if (aes == null)
@@ -107,7 +107,7 @@ namespace KryptKeeper
                 if (_cancelProcessing)
                 {
                     _status.WriteLine("Process cancelled, deleting temp file: " + workingPath);
-                    if (!Helper.TryDeleteFile(workingPath))
+                    if (!Utils.TryDeleteFile(workingPath))
                         _status.WriteLine("Unable to remove temp file: " + workingPath);
                 }
                 else
@@ -128,12 +128,12 @@ namespace KryptKeeper
             string workingPath;
             if (options.MaskFileName)
             {
-                workingPath = path.Replace(Path.GetFileName(path), Helper.GetRandomAlphanumericString(16)) + FILE_EXTENSION;
+                workingPath = path.Replace(Path.GetFileName(path), Utils.GetRandomAlphanumericString(16)) + FILE_EXTENSION;
             }
             else
             {
                 if (Path.GetExtension(path) == FILE_EXTENSION)
-                    workingPath = Helper.PadExistingFileName(path);
+                    workingPath = Utils.PadExistingFileName(path);
                 else
                     workingPath = path + FILE_EXTENSION;
             }
@@ -172,7 +172,7 @@ namespace KryptKeeper
         private static byte[] generateSaltedKey(byte[] key, byte[] salt)
         {
             var saltedKey = BCrypt.HashPassword(Encoding.UTF8.GetString(key), Encoding.UTF8.GetString(salt));
-            return Helper.GetSHA256(Helper.GetBytes(saltedKey));
+            return Utils.GetSHA256(Utils.GetBytes(saltedKey));
         }
 
         private static byte[] extractIV(string path)
@@ -273,10 +273,10 @@ namespace KryptKeeper
 
         private static string encryptionPostProcess(string path, string workingPath, CipherOptions options)
         {
-            if (options.RemoveOriginalEncryption && !Helper.TryDeleteFile(path))
+            if (options.RemoveOriginalEncryption && !Utils.TryDeleteFile(path))
                 _status.WriteLine("Unable to remove original (access denied): " + path);
             if (options.MaskFileDate)
-                Helper.SetRandomFileTimes(workingPath);
+                Utils.SetRandomFileTimes(workingPath);
             return workingPath;
         }
 
@@ -294,12 +294,12 @@ namespace KryptKeeper
             var originalPath = workingPath.Replace(Path.GetFileName(workingPath), footer.Name)
                 .ReplaceLastOccurrence(WORKING_FILE_EXTENSION, "");
             if (File.Exists(originalPath))
-                originalPath = Helper.PadExistingFileName(originalPath);
+                originalPath = Utils.PadExistingFileName(originalPath);
             File.Move(workingPath, originalPath); // Copy worked file to original file
-            Helper.SetFileTimesFromFooter(originalPath, footer);
+            Utils.SetFileTimesFromFooter(originalPath, footer);
             if (new FileInfo(originalPath).Length > 0)
             {
-                if (options.RemoveOriginalDecryption && !Helper.TryDeleteFile(path))
+                if (options.RemoveOriginalDecryption && !Utils.TryDeleteFile(path))
                     _status.WriteLine("Unable to remove original file: " + path);
             }
             else
@@ -308,7 +308,7 @@ namespace KryptKeeper
                 _status.WriteLine("* File possibly corrupt: " + originalPath);
                 return string.Empty;
             }
-            if (!Helper.TryDeleteFile(workingPath))
+            if (!Utils.TryDeleteFile(workingPath))
                 _status.WriteLine("Unable to remove temp file: " + workingPath);
             return originalPath;
         }
@@ -344,7 +344,7 @@ namespace KryptKeeper
                     preserveTempFile = true;
                     break;
             }
-            if (!preserveTempFile && !Helper.TryDeleteFile(workingPath))
+            if (!preserveTempFile && !Utils.TryDeleteFile(workingPath))
                 _status.WriteLine("Unable to remove temp file: " + workingPath);
         }
     }

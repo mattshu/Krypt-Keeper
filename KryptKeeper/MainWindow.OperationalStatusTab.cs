@@ -39,15 +39,15 @@ namespace KryptKeeper
         {
             if ((bool) panelIconShutdown.Tag)
             {
-                Helper.ShutdownComputer();
+                Utils.ShutdownComputer();
             }
             else if ((bool) panelIconRestart.Tag)
             {
-                Helper.RestartComputer();
+                Utils.RestartComputer();
             }
             else if ((bool) panelIconSleep.Tag)
             {
-                Helper.StandyComputer();
+                Utils.StandyComputer();
             }
             else if ((bool) panelIconClose.Tag)
             {
@@ -120,10 +120,10 @@ namespace KryptKeeper
             var currentFileProgress = packet.GetCurrentFileProgress();
             var totalPayloadProgress = packet.GetTotalPayloadProgress();
             var totalFileProgress = packet.GetTotalFilesProgress();
-            progressCurrent.Value = Helper.Clamp(currentFileProgress, 0, 100);
+            progressCurrent.Value = Utils.Clamp(currentFileProgress, 0, 100);
             lblCurrentPercentage.Text = $@"{currentFileProgress}%";
-            progressTotalBytes.Value = Helper.Clamp(totalPayloadProgress, 0, 100);
-            progressTotalFiles.Value = Helper.Clamp(totalFileProgress, 0, 100);
+            progressTotalBytes.Value = Utils.Clamp(totalPayloadProgress, 0, 100);
+            progressTotalFiles.Value = Utils.Clamp(totalFileProgress, 0, 100);
             lblTotalFilePercentage.Text = $@"{totalFileProgress}%";
             lblFilesToBeProcessed.Text = Cipher.GetFileProgress();
             lblTimeElapsed.Text = Cipher.GetElapsedTime(hideMs: true) + @"elapsed";
@@ -136,9 +136,9 @@ namespace KryptKeeper
             if (dialogResult != DialogResult.OK || string.IsNullOrWhiteSpace(saveFileDialog.FileName)) return;
             using (var fStream = saveFileDialog.OpenFile())
             {
-                var logHeader = Helper.GenerateLogHeader();
+                var logHeader = Utils.GenerateLogHeader();
                 fStream.Write(logHeader, 0, logHeader.Length);
-                fStream.Write(Helper.GetBytes(txtStatus.Text), 0, txtStatus.Text.Length);
+                fStream.Write(Utils.GetBytes(txtStatus.Text), 0, txtStatus.Text.Length);
             }
             _status.WriteLine("Exported log to " + saveFileDialog.FileName);
         }

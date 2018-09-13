@@ -83,7 +83,6 @@
             this.lblVersionInformation = new MetroFramework.Controls.MetroLabel();
             this.backgroundWorker = new System.ComponentModel.BackgroundWorker();
             this.metroToolTip = new MetroFramework.Components.MetroToolTip();
-            this.metroButton1 = new MetroFramework.Controls.MetroButton();
             this.tabMain.SuspendLayout();
             this.tabOptions.SuspendLayout();
             this.panelKeyRads.SuspendLayout();
@@ -950,22 +949,11 @@
             this.metroToolTip.StyleManager = null;
             this.metroToolTip.Theme = MetroFramework.MetroThemeStyle.Light;
             // 
-            // metroButton1
-            // 
-            this.metroButton1.Location = new System.Drawing.Point(443, 44);
-            this.metroButton1.Name = "metroButton1";
-            this.metroButton1.Size = new System.Drawing.Size(75, 23);
-            this.metroButton1.TabIndex = 2;
-            this.metroButton1.Text = "metroButton1";
-            this.metroButton1.UseSelectable = true;
-            this.metroButton1.Click += new System.EventHandler(this.metroButton1_Click);
-            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(786, 471);
-            this.Controls.Add(this.metroButton1);
             this.Controls.Add(this.tabMain);
             this.Controls.Add(this.lblVersionInformation);
             this.MinimumSize = new System.Drawing.Size(786, 450);
@@ -1045,6 +1033,5 @@
         private MetroFramework.Components.MetroToolTip metroToolTip;
         private MetroFramework.Controls.MetroProgressSpinner progressTotalBytes;
         private MetroFramework.Controls.MetroPanel panelIconClose;
-        private MetroFramework.Controls.MetroButton metroButton1;
     }
 }

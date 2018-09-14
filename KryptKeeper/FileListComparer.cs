@@ -49,21 +49,11 @@ namespace KryptKeeper
         private static long getSizeFromString(string sizeString)
         {
             var split = sizeString.Split();
-            if (split.Length <= 1) return -1;
-            var size = long.Parse(split[0]);
+            if (split.Length < 1) return -1;
+            var size = long.Parse(split[0].Replace(",",""));
             var sizeSuffix = split[1];
-            switch (sizeSuffix)
-            {
-                case "MB":
-                    size *= 1024;
-                    break;
-                case "GB":
-                    size *= 1024 * 1024;
-                    break;
-                case "TB":
-                    size *= 1024 * 1024 * 1024;
-                    break;
-            }
+            if (sizeSuffix == "KB")
+                return size * 1024;
             return size;
         }
     }

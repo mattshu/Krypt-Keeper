@@ -8,7 +8,7 @@ namespace KryptKeeper
 {
     public partial class MainWindow
     {
-        private readonly int[] DEFAULT_COLUMN_WIDTHS = {235, 100, 54, 284};
+        private readonly int[] DEFAULT_COLUMN_WIDTHS = {274, 86, 315};
 
         #region File Processing Tab Form Events
         private void btnAddFiles_Click(object sender, EventArgs e)
@@ -62,7 +62,8 @@ namespace KryptKeeper
         }
         #endregion
 
-        private void buildFileList()
+        // TODO REMOVE DEBUG SIGNATURE AND FUNCTIONS
+        private void buildFileList(bool DEBUG = false)
         {
             if (!validateKeySettings())
             {
@@ -71,11 +72,20 @@ namespace KryptKeeper
                     txtCipherKey.Text = Utils.BrowseFiles(@"Select a key file", false);
                 return;
             }
-            var openFileDialog = new OpenFileDialog { Title = @"Select the files to be processed", Multiselect = true };
-            var openResult = openFileDialog.ShowDialog();
-            if (openResult != DialogResult.OK || openFileDialog.FileNames.Length <= 0) return;
-            _fileList.Clear();
-            _fileList = new FileList(openFileDialog.FileNames.Select(path => new FileData(path)).ToList(), datagridFileList);
+            if (DEBUG)
+            {
+                _fileList = new FileList(Directory.GetFiles(@"D:\shu\Downloads\").Select(x => new FileData(x)).ToList(), datagridFileList);
+            }
+            else
+            {
+                var openFileDialog =
+                    new OpenFileDialog {Title = @"Select the files to be processed", Multiselect = true};
+                var openResult = openFileDialog.ShowDialog();
+                if (openResult != DialogResult.OK || openFileDialog.FileNames.Length <= 0) return;
+                _fileList.Clear();
+                _fileList = new FileList(openFileDialog.FileNames.Select(path => new FileData(path)).ToList(),
+                    datagridFileList);
+            }
             if (chkProcessInOrder.Checked)
                 sortFileList();
             enableProcessButtons(datagridFileList.RowCount > 0);
@@ -85,10 +95,7 @@ namespace KryptKeeper
 
         private void updateFileListStats()
         {
-            lblJobInformation.Text =
-                $@"{Utils.BytesToFileSize(Utils.CalculateTotalFilePayload(_fileList))} ({
-                        _fileList.Count
-                    } files) to be processed.";
+            lblJobInformation.Text = $@"{Utils.GetTotalBytes(_fileList).BytesToSizeString()} ({_fileList.Count} files) to be processed.";
         }
 
         private bool validateKeySettings()
@@ -144,6 +151,7 @@ namespace KryptKeeper
                 focusTab(MainTabs.Status);
                 disableButtonsDuringOperation();
                 var options = generateOptions(cipherMode);
+                _status.StartProcessSpeedTimer();
                 Cipher.ProcessFiles(options);
             }
             catch (FileNotFoundException ex)

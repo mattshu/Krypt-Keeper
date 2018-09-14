@@ -25,11 +25,12 @@ namespace KryptKeeper
             _status.WriteLine("Operation finished. " + Cipher.GetElapsedTime());
             disableButtonsDuringOperation(false);
             updateProgress();
-            lblFilesToBeProcessed.Text = e.Cancelled ? "Some" : "All" + " files processed";
+            lblTotalFiles.Text = e.Cancelled ? "Some" : "All" + " files processed";
             lblJobInformation.Text = "";
-            lblProcessingFile.Text = "";
+            lblFileBeingProcessed.Text = "";
             lblOperationStatus.Text = @"Done!";
             _fileList.Reset();
+            _status.StopProcessSpeedTimer();
             if (!chkOnCompletion.Checked) return;
             if (!validateOnCompletionIconsHaveOneSelection()) return;
             handleOnCompletion();
@@ -173,21 +174,21 @@ namespace KryptKeeper
             if (packet == null)
             {
                 lblCurrentPercentage.Text = @"100%";
-                lblTotalFilePercentage.Text = @"100%";
+                lblTotalBytesPercentage.Text = @"100%";
                 progressCurrent.Value = 100;
-                progressTotalBytes.Value = 100;
                 progressTotalFiles.Value = 100;
+                progressTotalBytes.Value = 100;
                 return;
             }
             var currentFileProgress = packet.GetCurrentFileProgress();
-            var totalPayloadProgress = packet.GetTotalPayloadProgress();
+            var totalBytesProgress = packet.GetTotalBytesProgress();
             var totalFileProgress = packet.GetTotalFilesProgress();
             progressCurrent.Value = Utils.Clamp(currentFileProgress, 0, 100);
             lblCurrentPercentage.Text = $@"{currentFileProgress}%";
-            progressTotalBytes.Value = Utils.Clamp(totalPayloadProgress, 0, 100);
             progressTotalFiles.Value = Utils.Clamp(totalFileProgress, 0, 100);
-            lblTotalFilePercentage.Text = $@"{totalFileProgress}%";
-            lblFilesToBeProcessed.Text = Cipher.GetFileProgress();
+            progressTotalBytes.Value = Utils.Clamp(totalBytesProgress, 0, 100);
+            lblTotalBytesPercentage.Text = $@"{totalBytesProgress}%";
+            lblTotalFiles.Text = Cipher.GetFileProgress();
             lblTimeElapsed.Text = Cipher.GetElapsedTime(hideMs: true) + @"elapsed";
         }
 

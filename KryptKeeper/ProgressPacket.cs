@@ -4,31 +4,31 @@ namespace KryptKeeper
 {
     internal class ProgressPacket
     {
-        private long _currentPayloadState { get; }
-        private long _currentPayloadTotal { get; }
-        private long _totalPayloadState { get; }
-        private long _totalPayloadTotal { get; }
+        private long _currentBytesState { get; }
+        private long _currentBytesTotal { get; }
+        private long _totalBytesState { get; }
+        private long _totalBytesTotal { get; }
         private int _totalFilesState { get; }
         private int _totalFilesTotal { get; }
 
-        public ProgressPacket(IReadOnlyList<long> currentPayload, IReadOnlyList<long> totalPayload, IReadOnlyList<int> totalFiles)
+        public ProgressPacket(IReadOnlyList<long> currentBytes, IReadOnlyList<int> totalFiles, IReadOnlyList<long> totalBytes)
         {
             // [0:progressState, 1:progressTotal]
-            _currentPayloadState = currentPayload[0];
-            _currentPayloadTotal = currentPayload[1];
-            _totalPayloadState = totalPayload[0];
-            _totalPayloadTotal = totalPayload[1];
+            _currentBytesState = currentBytes[0];
+            _currentBytesTotal = currentBytes[1];
             _totalFilesState = totalFiles[0];
             _totalFilesTotal = totalFiles[1];
+            _totalBytesState = totalBytes[0];
+            _totalBytesTotal = totalBytes[1];
         }
 
         public int GetCurrentFileProgress() =>
-            Utils.GetPercentProgress(_currentPayloadState, _currentPayloadTotal);
-
-        public int GetTotalPayloadProgress() =>
-            Utils.GetPercentProgress(_totalPayloadState, _totalPayloadTotal);
+            Utils.GetPercentProgress(_currentBytesState, _currentBytesTotal);
 
         public int GetTotalFilesProgress() =>
             Utils.GetPercentProgress(_totalFilesState, _totalFilesTotal);
+
+        public int GetTotalBytesProgress() =>
+            Utils.GetPercentProgress(_totalBytesState, _totalBytesTotal);
     }
 }

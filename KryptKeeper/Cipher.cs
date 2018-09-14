@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Windows.Forms;
 
 namespace KryptKeeper
 {
@@ -23,6 +25,8 @@ namespace KryptKeeper
         private static int _totalFilesState = 0;
         private static int _totalFilesTotal = 0;
 
+        private static long _lastDataSizeWorked = 0;
+
         public static void CancelProcessing() => _cancelProcessing = true;
         public static string GetElapsedTime(bool hideMs = false) => Utils.GetSpannedTime(_cipherStartTime.Ticks, hideMs);
 
@@ -33,9 +37,21 @@ namespace KryptKeeper
             if (options.Files.Count <= 0) return;
             _totalFilesState = 0;
             _totalFilesTotal = options.Files.Count;
-            _totalPayloadTotal = Utils.CalculateTotalFilePayload(options.Files);
+            _totalPayloadTotal = Utils.GetTotalBytes(options.Files);
             _cipherStartTime = DateTime.Now;
             _backgroundWorker.RunWorkerAsync(options);
+        }
+
+        public static long GetElapsedBytes()
+        {
+            if (_lastDataSizeWorked == 0)
+            {
+                _lastDataSizeWorked = _totalPayloadState;
+                return 0;
+            }
+            var difference = _totalPayloadState - _lastDataSizeWorked;
+            if (difference <= 0) return 0;
+            return _lastDataSizeWorked = _totalPayloadState;
         }
 
         public static void SetBackgroundWorker(BackgroundWorker bgWorker)
@@ -53,8 +69,8 @@ namespace KryptKeeper
                     break;
                 if (File.Exists(fileData.GetFilePath()))
                 {
-                    _status.WritePending($"{options.GetModeOfOperation()}: " + fileData.GetFilePath(), new FileInfo(fileData.GetFilePath()).Length);
-                    _status.UpdateOperationLabel(options.GetModeOfOperation());
+                    _status.WritePending($"{options.GetModeOfOperation()}: " + fileData.GetFilePath());
+                    _status.SetFileOperationMsg(options.GetModeOfOperation());
                     processFile(fileData.GetFilePath(), options);
                     _totalFilesState++;
                 }
@@ -73,7 +89,7 @@ namespace KryptKeeper
                     _status.WriteLine("* File not found: " + path);
                     return;
                 }
-                _status.UpdateProcessingLabel(Path.GetFileName(path));
+                _status.SetFileProcessing(Path.GetFileName(path));
                 if (options.Mode == Mode.Decrypt && isFileValidForDecryption(path))
                     workingPath = path.ReplaceLastOccurrence(FILE_EXTENSION, WORKING_FILE_EXTENSION);
                 else if (options.Mode == Mode.Encrypt)
@@ -114,7 +130,7 @@ namespace KryptKeeper
                 {
                     var resultFile = postProcessFileHandling(path, workingPath, options);
                     if (resultFile.Length > 0)
-                        _status.WriteLine("Processed to: " + Path.GetFileName(resultFile), resultFile.Length);
+                        _status.WriteLine("Processed to: " + Path.GetFileName(resultFile));
                 }
             }
             catch (Exception ex)
@@ -254,8 +270,8 @@ namespace KryptKeeper
         {
             return new ProgressPacket(
                 new[] { _currentPayloadState, _currentPayloadTotal},
-                new[] {_totalPayloadState, _totalPayloadTotal},
-                new[] {_totalFilesState, _totalFilesTotal});
+                new[] {_totalFilesState, _totalFilesTotal},
+                new[] {_totalPayloadState, _totalPayloadTotal});
         }
 
         private static void buildAndWriteFooter(string path, Stream cryptoStream)

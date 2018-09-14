@@ -12,7 +12,25 @@ namespace KryptKeeper
 {
     internal static class Utils
     {
-        public static long CalculateTotalFilePayload(FileList files)
+        public static string BrowseFiles(string title = "Select a file", bool multiSelect = true)
+        {
+            var openFile = new OpenFileDialog { Title = title, Multiselect = multiSelect, CheckFileExists = true };
+            return openFile.ShowDialog() != DialogResult.OK ? "" : openFile.FileName;
+        }
+
+        public static string BytesToSizeString(this long byteCount, bool limitToKB = false)
+        {
+            if (byteCount == 0) return "0";
+            if (limitToKB)
+                return byteCount < 1024 ? $"{byteCount:n0} B" : $"{byteCount / 1024:n0} KB";
+            string[] suf = { "B", "KB", "MB", "GB", "TB", "PB", "EB" };
+            var bytes = Math.Abs(byteCount);
+            var place = Convert.ToInt32(Math.Floor(Math.Log(bytes, 1024)));
+            var num = Math.Round(bytes / Math.Pow(1024, place));
+            return Math.Sign(byteCount) * num + " " + suf[place];
+        }
+
+        public static long GetTotalBytes(FileList files)
         {
             return files.Count > 0 ? files.GetList().Sum(f => new FileInfo(f.GetFilePath()).Length) : 0;
         }
@@ -32,24 +50,6 @@ namespace KryptKeeper
             if (!Regex.IsMatch(pass, $"[{string.Join("", Cipher.ALLOWED_PLAINTEXT_KEY_SYMBOLS)}]+"))
                 return false;
             return true;
-        }
-
-        public static string BytesToFileSize(long byteCount)
-        {
-            string[] suf = { "B", "KB", "MB", "GB", "TB", "PB", "EB" };
-            if (byteCount == 0)
-                return @"0";
-            var bytes = Math.Abs(byteCount);
-            var place = Convert.ToInt32(Math.Floor(Math.Log(bytes, 1024)));
-            if (place < 1) return @"1 KB";
-            var num = Math.Round(bytes / Math.Pow(1024, place));
-            return Math.Sign(byteCount) * num + " " + suf[place];
-        }
-
-        public static string BrowseFiles(string title = "Select a file", bool multiSelect = true)
-        {
-            var openFile = new OpenFileDialog { Title = title, Multiselect = multiSelect, CheckFileExists = true };
-            return openFile.ShowDialog() != DialogResult.OK ? "" : openFile.FileName;
         }
 
         public static byte[] GenerateLogHeader()

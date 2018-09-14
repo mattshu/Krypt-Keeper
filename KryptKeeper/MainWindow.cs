@@ -9,6 +9,7 @@ namespace KryptKeeper
     {
         /* 
             TODO * MAJOR * (IMPERATIVE: *** REMOVE HARDCODED KEYFILE ***)
+                - Processing speeds, fix bug
             TODO * MINOR *
                 - Dialog icons
                 - Calculate processing speeds
@@ -33,8 +34,8 @@ namespace KryptKeeper
             return new List<Control>
             {
                 lblOperationStatus,
-                lblProcessingFile,
-                lblProcessRates,
+                lblFileBeingProcessed,
+                lblProcessingRates,
                 txtStatus
             };
         }
@@ -52,6 +53,7 @@ namespace KryptKeeper
             backgroundWorker.ProgressChanged += backgroundWorker_ProgressChanged;
             backgroundWorker.RunWorkerCompleted += backgroundWorker_RunWorkerCompleted;
             Cipher.SetBackgroundWorker(backgroundWorker);
+            buildFileList(DEBUG:true); // TODO DEBUG
         }
 
         private void mainWindow_FormClosing(object sender, FormClosingEventArgs e)
@@ -93,7 +95,7 @@ namespace KryptKeeper
         private void loadSettings()
         {
             progressCurrent.Reset();
-            progressTotalFiles.Reset();
+            progressTotalBytes.Reset();
             var settings = Settings.Default;
             if (!settings.rememberSettings)
                 Utils.ResetSettings();
@@ -179,5 +181,6 @@ namespace KryptKeeper
                     break;
             }
         }
+
     }
 }

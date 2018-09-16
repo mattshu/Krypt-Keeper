@@ -11,7 +11,9 @@ namespace KryptKeeper
 {
     internal static partial class Cipher
     {
-        public static readonly char[] ALLOWED_PLAINTEXT_KEY_SYMBOLS = { '!', '@', '#', '$', '%', '^', '&', '*', '?', '_', '~', '-', '£', '(', ')' };
+        public static readonly char[] ALLOWED_PLAINTEXT_KEY_SYMBOLS =
+            {'!', '@', '#', '$', '%', '^', '&', '*', '?', '_', '~', '-', '£', '(', ')'};
+
         private static bool _cancelProcessing;
         private static BackgroundWorker _backgroundWorker;
         private static readonly Status _status = Status.GetInstance();
@@ -28,7 +30,9 @@ namespace KryptKeeper
         private static long _lastDataSizeWorked = 0;
 
         public static void CancelProcessing() => _cancelProcessing = true;
-        public static string GetElapsedTime(bool hideMs = false) => Utils.GetSpannedTime(_cipherStartTime.Ticks, hideMs);
+
+        public static string GetElapsedTime(bool hideMs = false) =>
+            Utils.GetSpannedTime(_cipherStartTime.Ticks, hideMs);
 
         public static string GetFileProgress() => $"{_totalFilesState}/{_totalFilesTotal} files processed";
 
@@ -57,11 +61,12 @@ namespace KryptKeeper
         {
             _backgroundWorker = bgWorker;
             _backgroundWorker.DoWork += backgroundWorker_DoWork;
+            _backgroundWorker.RunWorkerCompleted += backgroundWorker_RunWorkerCompleted;
         }
 
         private static void backgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            var options = (CipherOptions)e.Argument;
+            var options = (CipherOptions) e.Argument;
             foreach (var fileData in options.Files.GetList().ToList())
             {
                 if (_backgroundWorker.CancellationPending)
@@ -78,6 +83,22 @@ namespace KryptKeeper
             }
         }
 
+        private static void backgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            resetProgressPoints();
+        }
+
+        private static void resetProgressPoints()
+        {
+            _currentPayloadState = 0;
+            _currentPayloadTotal = 0;
+            _totalPayloadState = 0;
+            _totalPayloadTotal = 0;
+            _totalFilesState = 0;
+            _totalFilesTotal = 0;
+            _lastDataSizeWorked = 0;
+        }
+
         private static void processFile(string path, CipherOptions options)
         {
             string workingPath = "";
@@ -88,7 +109,7 @@ namespace KryptKeeper
                     _status.WriteLine("* File not found: " + path);
                     return;
                 }
-                _status.SetFileProcessing(Path.GetFileName(path));
+                _status.SetFileProcessingMsg(Path.GetFileName(path));
                 if (options.Mode == Mode.Decrypt && isFileValidForDecryption(path))
                     workingPath = path.ReplaceLastOccurrence(FILE_EXTENSION, WORKING_FILE_EXTENSION);
                 else if (options.Mode == Mode.Encrypt)

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
 using System.Timers;
 
 namespace KryptKeeper
@@ -10,8 +11,7 @@ namespace KryptKeeper
     {
         private static Status _instance;
         private static string _timestamp => $"[{DateTime.Now:HH:mm:ss.fff}]: ";
-        private static Timer _processSpeedTimer;
-        private static List<long> _processSpeedData;
+        private static ProcessRate _processRate;
         private readonly MetroLabel _lblFileBeingProcessed;
         private readonly MetroLabel _lblOperationStatus;
         private readonly MetroLabel _lblProcessingRates;
@@ -20,6 +20,46 @@ namespace KryptKeeper
         private readonly MetroTextBox _txtStatus;
         private bool _isPending;
         private DateTime _pendingStartTime;
+
+        private class ProcessRate
+        {
+            private const int MAX_DATA_POINTS = 25;
+            private const int INTERVAL = 500;
+            private static List<long> _data;
+            private static Timer _timer;
+            private static Status _status;
+
+            public ProcessRate(Status status)
+            {
+                _status = status;
+                _data = new List<long>();
+                _timer = new Timer { Enabled = true, Interval = INTERVAL };
+                _timer.Elapsed += timer_Elapsed;
+            }
+
+            public void Start()
+            {
+                _timer.Start();
+            }
+
+            public void Stop()
+            {
+                _timer.Stop();
+                _data = new List<long>();
+            }
+
+            private static void timer_Elapsed(object sender, ElapsedEventArgs e)
+            {
+                add(Cipher.GetElapsedBytes());
+                var msg = $"Processing speed: {((long)_data.Average(x => x * (1000 / INTERVAL))).BytesToSizeString()}/s";
+                _status.UpdateProcessingRate(msg);
+            }
+
+            private static void add(long data) {
+                _data.Insert(0, data);
+                _data = _data.GetRange(0, Math.Min(_data.Count, MAX_DATA_POINTS));
+            }
+        }
 
         public Status(MainWindow mainWindow)
         {
@@ -34,9 +74,6 @@ namespace KryptKeeper
             _lblFileBeingProcessed = (MetroLabel) statusObjs[1];
             _lblProcessingRates = (MetroLabel) statusObjs[2];
             _txtStatus = (MetroTextBox) statusObjs[3];
-            _processSpeedTimer = new Timer {Enabled = true, Interval = 500};
-            _processSpeedTimer.Elapsed += _processSpeedTimer_Elapsed;
-            _processSpeedData = new List<long>(25); // Collect 25 data points to get average process speed
         }
 
         public static Status GetInstance()
@@ -44,15 +81,15 @@ namespace KryptKeeper
             return _instance ?? throw new Exception(@"Unable to get instance of status window!");
         }
 
-        public void StartProcessSpeedTimer()
+        public void StartProcessRateCollection()
         {
-            _processSpeedTimer.Start();
+            _processRate = new ProcessRate(this);
+            _processRate.Start();
         }
 
-        public void StopProcessSpeedTimer()
+        public void StopProcessRateCollection()
         {
-            _processSpeedTimer.Stop();
-            _processSpeedData.Clear();
+            _processRate.Stop();
         }
 
         public void SetFileOperationMsg(string msg)
@@ -60,12 +97,12 @@ namespace KryptKeeper
             updateLabel(_lblOperationStatus, msg);
         }
 
-        public void SetFileProcessing(string msg)
+        public void SetFileProcessingMsg(string msg)
         {
             updateLabel(_lblFileBeingProcessed, msg);
         }
 
-        public void UpdateProcessingSpeedMsg(string msg)
+        public void UpdateProcessingRate(string msg)
         {
             updateLabel(_lblProcessingRates, msg);
         }
@@ -86,15 +123,6 @@ namespace KryptKeeper
                 _isPending = true;
             _pendingStartTime = DateTime.Now;
             updateStatus(_timestamp + msg + "...");
-        }
-
-        private void _processSpeedTimer_Elapsed(object sender, ElapsedEventArgs e)
-        {
-            Console.WriteLine();
-            _processSpeedData.Add(Cipher.GetElapsedBytes());
-            // x * 2 because data point captured @ 500ms
-            var msg = $"Processing speed: {((long)_processSpeedData.Average(x => x * 2)).BytesToSizeString()}/s";
-            updateLabel(_lblProcessingRates, msg);
         }
 
         private void updateLabel(MetroLabel label, string msg)

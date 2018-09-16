@@ -9,7 +9,6 @@ namespace KryptKeeper
     {
         /* 
             TODO * MAJOR * (IMPERATIVE: *** REMOVE HARDCODED KEYFILE ***)
-                - Processing speeds, fix bug
             TODO * MINOR *
                 - Dialog icons
                 - Calculate processing speeds

@@ -151,7 +151,7 @@ namespace KryptKeeper
                 focusTab(MainTabs.Status);
                 disableButtonsDuringOperation();
                 var options = generateOptions(cipherMode);
-                _status.StartProcessSpeedTimer();
+                _status.StartProcessRateCollection();
                 Cipher.ProcessFiles(options);
             }
             catch (FileNotFoundException ex)

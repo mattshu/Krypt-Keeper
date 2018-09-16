@@ -30,7 +30,7 @@ namespace KryptKeeper
             lblFileBeingProcessed.Text = "";
             lblOperationStatus.Text = @"Done!";
             _fileList.Reset();
-            _status.StopProcessSpeedTimer();
+            _status.StopProcessRateCollection();
             if (!chkOnCompletion.Checked) return;
             if (!validateOnCompletionIconsHaveOneSelection()) return;
             handleOnCompletion();

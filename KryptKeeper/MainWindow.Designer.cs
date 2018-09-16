@@ -576,7 +576,7 @@
             this.progressTotalFiles.Style = MetroFramework.MetroColorStyle.Teal;
             this.progressTotalFiles.TabIndex = 11;
             this.progressTotalFiles.Theme = MetroFramework.MetroThemeStyle.Dark;
-            this.metroToolTip.SetToolTip(this.progressTotalFiles, "Total data progress");
+            this.metroToolTip.SetToolTip(this.progressTotalFiles, "Total file progress");
             this.progressTotalFiles.UseSelectable = true;
             this.progressTotalFiles.Value = 100;
             // 
@@ -801,7 +801,7 @@
             this.progressTotalBytes.Style = MetroFramework.MetroColorStyle.Green;
             this.progressTotalBytes.TabIndex = 9;
             this.progressTotalBytes.Theme = MetroFramework.MetroThemeStyle.Dark;
-            this.metroToolTip.SetToolTip(this.progressTotalBytes, "Total file progress");
+            this.metroToolTip.SetToolTip(this.progressTotalBytes, "Total data progress");
             this.progressTotalBytes.UseSelectable = true;
             this.progressTotalBytes.Value = -1;
             // 

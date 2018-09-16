@@ -124,7 +124,7 @@ namespace KryptKeeper
                 _status.WriteLine("Computer going to sleep...");
                 Utils.StandyComputer();
             }
-            else if ((bool)panelIconClose.Tag)
+            else if ((bool)panelIconClose.Tag) 
             {
                 forceExit();
             }

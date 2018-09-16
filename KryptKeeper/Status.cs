@@ -9,20 +9,22 @@ namespace KryptKeeper
     public class Status
     {
         private static Status _instance;
-        private readonly MainWindow _mainWindow;
-        private readonly string newLine = Environment.NewLine;
-        private readonly MetroLabel _lblOperationStatus;
+        private static string _timestamp => $"[{DateTime.Now:HH:mm:ss.fff}]: ";
+        private static Timer _processSpeedTimer;
+        private static List<long> _processSpeedData;
         private readonly MetroLabel _lblFileBeingProcessed;
+        private readonly MetroLabel _lblOperationStatus;
         private readonly MetroLabel _lblProcessingRates;
+        private readonly MainWindow _mainWindow;
+        private readonly string _newLine = Environment.NewLine;
         private readonly MetroTextBox _txtStatus;
         private bool _isPending;
         private DateTime _pendingStartTime;
-        private static Timer _processSpeedTimer;
-        private List<long> _processSpeedList;
 
         public Status(MainWindow mainWindow)
         {
-            if (_instance != null) return;
+            if (_instance != null)
+                return;
             _instance = this;
             _mainWindow = mainWindow;
             var statusObjs = mainWindow.GetStatusObjects();
@@ -34,12 +36,12 @@ namespace KryptKeeper
             _txtStatus = (MetroTextBox) statusObjs[3];
             _processSpeedTimer = new Timer {Enabled = true, Interval = 500};
             _processSpeedTimer.Elapsed += _processSpeedTimer_Elapsed;
-            _processSpeedList = new List<long>(25);
+            _processSpeedData = new List<long>(25); // Collect 25 data points to get average process speed
         }
 
         public static Status GetInstance()
         {
-            return _instance ?? throw new Exception(@"Unable to get _instance of status window!");
+            return _instance ?? throw new Exception(@"Unable to get instance of status window!");
         }
 
         public void StartProcessSpeedTimer()
@@ -50,19 +52,7 @@ namespace KryptKeeper
         public void StopProcessSpeedTimer()
         {
             _processSpeedTimer.Stop();
-            _processSpeedList.Clear();
-        }
-
-        private void _processSpeedTimer_Elapsed(object sender, ElapsedEventArgs e)
-        {
-            _processSpeedList.Add(Cipher.GetElapsedBytes());
-            var msg = $"Processing speed: {((long)_processSpeedList.Average(x => x * 2)).BytesToSizeString()}/s";
-            updateLabel(_lblProcessingRates, msg);
-        }
-
-        private void updateLabel(MetroLabel label, string msg)
-        {
-            _mainWindow.Invoke((Action) (() => label.Text = msg));
+            _processSpeedData.Clear();
         }
 
         public void SetFileOperationMsg(string msg)
@@ -85,7 +75,7 @@ namespace KryptKeeper
             if (_isPending)
                 finishPending();
             _isPending = false;
-            _mainWindow.Invoke((Action)(() => _txtStatus.AppendText(_timestamp + msg + newLine)));
+            updateStatus(_timestamp + msg + _newLine);
         }
 
         public void WritePending(string msg)
@@ -95,17 +85,31 @@ namespace KryptKeeper
             else
                 _isPending = true;
             _pendingStartTime = DateTime.Now;
-            _mainWindow.Invoke((Action)(() => _txtStatus.AppendText(_timestamp + msg + "...")));
+            updateStatus(_timestamp + msg + "...");
         }
 
-        private static string _timestamp => $"[{DateTime.Now:HH:mm:ss.fff}]: ";
-
-        private void finishPending()
+        private void _processSpeedTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            _mainWindow.Invoke((Action)(() =>
-               _txtStatus.AppendText($"done! ({Utils.GetSpannedTime(_pendingStartTime.Ticks)}){newLine}")));
+            Console.WriteLine();
+            _processSpeedData.Add(Cipher.GetElapsedBytes());
+            // x * 2 because data point captured @ 500ms
+            var msg = $"Processing speed: {((long)_processSpeedData.Average(x => x * 2)).BytesToSizeString()}/s";
+            updateLabel(_lblProcessingRates, msg);
         }
 
+        private void updateLabel(MetroLabel label, string msg)
+        {
+            _mainWindow?.Invoke((Action)(() => label.Text = msg));
+        }
 
+        private void finishPending() 
+        {
+            updateStatus($"done! ({Utils.GetSpannedTime(_pendingStartTime.Ticks)}){_newLine}");
+        }
+
+        private void updateStatus(string msg)
+        {
+            _mainWindow?.Invoke((Action)(() => _txtStatus?.AppendText(msg)));
+        }
     }
 }

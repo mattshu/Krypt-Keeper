@@ -50,8 +50,7 @@ namespace KryptKeeper
                 return 0;
             }
             var difference = _totalPayloadState - _lastDataSizeWorked;
-            if (difference <= 0) return 0;
-            return _lastDataSizeWorked = _totalPayloadState;
+            return difference <= 0 ? 0 : (_lastDataSizeWorked = _totalPayloadState);
         }
 
         public static void SetBackgroundWorker(BackgroundWorker bgWorker)

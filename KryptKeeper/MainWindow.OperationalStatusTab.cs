@@ -189,7 +189,6 @@ namespace KryptKeeper
             progressTotalBytes.Value = Utils.Clamp(totalBytesProgress, 0, 100);
             lblTotalBytesPercentage.Text = $@"{totalBytesProgress}%";
             lblTotalFiles.Text = Cipher.GetFileProgress();
-            lblTimeElapsed.Text = Cipher.GetElapsedTime(hideMs: true) + @"elapsed";
         }
 
         private void exportStatusLog()

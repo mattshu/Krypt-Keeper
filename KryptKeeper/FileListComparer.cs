@@ -41,20 +41,9 @@ namespace KryptKeeper
 
         private static int compareSizeFromString(string sizeA, string sizeB)
         {
-            var bytesA = getSizeFromString(sizeA);
-            var bytesB = getSizeFromString(sizeB);
+            var bytesA = Utils.GetSizeFromString(sizeA);
+            var bytesB = Utils.GetSizeFromString(sizeB);
             return bytesA.CompareTo(bytesB);
-        }
-
-        private static long getSizeFromString(string sizeString)
-        {
-            var split = sizeString.Split();
-            if (split.Length < 1) return -1;
-            var size = long.Parse(split[0].Replace(",",""));
-            var sizeSuffix = split[1];
-            if (sizeSuffix == "KB")
-                return size * 1024;
-            return size;
         }
     }
 }

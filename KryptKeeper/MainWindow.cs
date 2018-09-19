@@ -8,10 +8,12 @@ namespace KryptKeeper
     public partial class MainWindow : MetroFramework.Forms.MetroForm
     {
         /* 
-            TODO * MAJOR * (IMPERATIVE: *** REMOVE HARDCODED KEYFILE ***)
+            TODO * MAJOR *
+                - IMPERATIVE: * REMOVE HARDCODED KEYFILE *
+                - Add Windows context menu options
             TODO * MINOR *
                 - Dialog icons
-                - Calculate processing speeds
+                - Add option to minimize to tray on close
                 - If planning on storing keys, ensure key storage security
                 - Always work toward single responsibility principle
         */
@@ -19,7 +21,7 @@ namespace KryptKeeper
         private enum MainTabs { Options, Files, Status }
         private Status _status;
         private bool _settingsNeedConfirmed = true;
-        private bool _forceExit = false;
+        private bool _forceExit;
         private FileList _fileList;
 
         public MainWindow()
@@ -35,7 +37,9 @@ namespace KryptKeeper
                 lblOperationStatus,
                 lblFileBeingProcessed,
                 lblProcessingRates,
-                txtStatus
+                txtStatus,
+                lblTimeElapsed,
+                lblTimeRemaining
             };
         }
 

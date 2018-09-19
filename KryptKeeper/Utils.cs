@@ -26,8 +26,19 @@ namespace KryptKeeper
             string[] suf = { "B", "KB", "MB", "GB", "TB", "PB", "EB" };
             var bytes = Math.Abs(byteCount);
             var place = Convert.ToInt32(Math.Floor(Math.Log(bytes, 1024)));
-            var num = Math.Round(bytes / Math.Pow(1024, place));
-            return Math.Sign(byteCount) * num + " " + suf[place];
+            var num = bytes / Math.Pow(1024, place);
+            return $"{Math.Sign(byteCount) * num:0.00}" + " " + suf[place];
+        }
+
+        public static long GetSizeFromString(string sizeString) {
+            var split = sizeString.Split();
+            if (split.Length < 1) return -1;
+            string[] suf = { "B", "KB", "MB", "GB", "TB", "PB", "EB" };
+            var size = long.Parse(split[0].Replace(",", ""));
+            var sizeSuffix = split[1];
+            if (sizeSuffix == "KB")
+                //return size * Math.Pow(1024, suf.Where(x => sizeSuffix); // TODO MUST FIX
+            return size;
         }
 
         public static long GetTotalBytes(FileList files)
@@ -45,9 +56,9 @@ namespace KryptKeeper
         {
             if (pass.Length < Cipher.MINIMUM_PLAINTEXT_KEY_LENGTH)
                 return false;
-            if (!pass.Any(char.IsUpper))
+            if (!pass.Any(Char.IsUpper))
                 return false;
-            if (!Regex.IsMatch(pass, $"[{string.Join("", Cipher.ALLOWED_PLAINTEXT_KEY_SYMBOLS)}]+"))
+            if (!Regex.IsMatch(pass, $"[{String.Join("", Cipher.ALLOWED_PLAINTEXT_KEY_SYMBOLS)}]+"))
                 return false;
             return true;
         }

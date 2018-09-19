@@ -1,65 +1,23 @@
 ﻿using MetroFramework.Controls;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Remoting.Messaging;
-using System.Timers;
 
-namespace KryptKeeper
-{
-    public class Status
+namespace KryptKeeper {
+    public partial class Status
     {
         private static Status _instance;
         private static string _timestamp => $"[{DateTime.Now:HH:mm:ss.fff}]: ";
-        private static ProcessRate _processRate;
+        private static ProcessRates _processRates;
         private readonly MetroLabel _lblFileBeingProcessed;
         private readonly MetroLabel _lblOperationStatus;
         private readonly MetroLabel _lblProcessingRates;
+        private readonly MetroLabel _lblTimeElapsed;
+        private readonly MetroLabel _lblTimeRemaining;
         private readonly MainWindow _mainWindow;
         private readonly string _newLine = Environment.NewLine;
         private readonly MetroTextBox _txtStatus;
         private bool _isPending;
         private DateTime _pendingStartTime;
-
-        private class ProcessRate
-        {
-            private const int MAX_DATA_POINTS = 25;
-            private const int INTERVAL = 500;
-            private static List<long> _data;
-            private static Timer _timer;
-            private static Status _status;
-
-            public ProcessRate(Status status)
-            {
-                _status = status;
-                _data = new List<long>();
-                _timer = new Timer { Enabled = true, Interval = INTERVAL };
-                _timer.Elapsed += timer_Elapsed;
-            }
-
-            public void Start()
-            {
-                _timer.Start();
-            }
-
-            public void Stop()
-            {
-                _timer.Stop();
-                _data = new List<long>();
-            }
-
-            private static void timer_Elapsed(object sender, ElapsedEventArgs e)
-            {
-                add(Cipher.GetElapsedBytes());
-                var msg = $"Processing speed: {((long)_data.Average(x => x * (1000 / INTERVAL))).BytesToSizeString()}/s";
-                _status.UpdateProcessingRate(msg);
-            }
-
-            private static void add(long data) {
-                _data.Insert(0, data);
-                _data = _data.GetRange(0, Math.Min(_data.Count, MAX_DATA_POINTS));
-            }
-        }
 
         public Status(MainWindow mainWindow)
         {
@@ -74,6 +32,8 @@ namespace KryptKeeper
             _lblFileBeingProcessed = (MetroLabel) statusObjs[1];
             _lblProcessingRates = (MetroLabel) statusObjs[2];
             _txtStatus = (MetroTextBox) statusObjs[3];
+            _lblTimeElapsed = (MetroLabel) statusObjs[4];
+            _lblTimeRemaining = (MetroLabel) statusObjs[5];
         }
 
         public static Status GetInstance()
@@ -83,13 +43,13 @@ namespace KryptKeeper
 
         public void StartProcessRateCollection()
         {
-            _processRate = new ProcessRate(this);
-            _processRate.Start();
+            _processRates = new ProcessRates(this);
+            _processRates.Start();
         }
 
         public void StopProcessRateCollection()
         {
-            _processRate.Stop();
+            _processRates.Stop();
         }
 
         public void SetFileOperationMsg(string msg)
@@ -105,6 +65,16 @@ namespace KryptKeeper
         public void UpdateProcessingRate(string msg)
         {
             updateLabel(_lblProcessingRates, msg);
+        }
+
+        public void UpdateTimeElapsed(string msg)
+        {
+            updateLabel(_lblTimeElapsed, msg);
+        }
+
+        public void UpdateTimeRemaining(string msg)
+        {
+            updateLabel(_lblTimeRemaining, msg);
         }
 
         public void WriteLine(string msg)

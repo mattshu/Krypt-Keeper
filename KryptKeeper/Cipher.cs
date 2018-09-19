@@ -20,14 +20,14 @@ namespace KryptKeeper
 
         private static DateTime _cipherStartTime;
 
-        private static long _currentPayloadState = 0;
-        private static long _currentPayloadTotal = 0;
-        private static long _totalPayloadState = 0;
-        private static long _totalPayloadTotal = 0;
-        private static int _totalFilesState = 0;
-        private static int _totalFilesTotal = 0;
+        private static long _currentPayloadState;
+        private static long _currentPayloadTotal;
+        private static long _totalPayloadState;
+        private static long _totalPayloadTotal;
+        private static int _totalFilesState;
+        private static int _totalFilesTotal;
 
-        private static long _lastDataSizeWorked = 0;
+        private static long _lastDataSizeWorked;
 
         public static void CancelProcessing() => _cancelProcessing = true;
 
@@ -35,6 +35,8 @@ namespace KryptKeeper
             Utils.GetSpannedTime(_cipherStartTime.Ticks, hideMs);
 
         public static string GetFileProgress() => $"{_totalFilesState}/{_totalFilesTotal} files processed";
+
+        public static long GetTotalSize() => _totalPayloadTotal;
 
         public static void ProcessFiles(CipherOptions options)
         {
@@ -53,8 +55,9 @@ namespace KryptKeeper
                 _lastDataSizeWorked = _totalPayloadState;
                 return 0;
             }
-            var difference = _totalPayloadState - _lastDataSizeWorked;
-            return difference <= 0 ? 0 : (_lastDataSizeWorked = _totalPayloadState);
+            var difference = Math.Abs(_totalPayloadState - _lastDataSizeWorked);
+            _lastDataSizeWorked = _totalPayloadState;
+            return difference;
         }
 
         public static void SetBackgroundWorker(BackgroundWorker bgWorker)

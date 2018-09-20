@@ -22,7 +22,7 @@ namespace KryptKeeper
                 Close();
                 return;
             }
-            _status.WriteLine("Operation finished. " + Cipher.GetElapsedTime());
+            _status.WriteLine("Operation finished. ");
             disableButtonsDuringOperation(false);
             updateProgress();
             lblTotalFiles.Text = e.Cancelled ? "Some" : "All" + " files processed";

@@ -1,5 +1,6 @@
 ﻿using KryptKeeper.Properties;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -95,6 +96,13 @@ namespace KryptKeeper
         {
             using (var sha = SHA256.Create())
                 return sha.ComputeHash(value);
+        }
+
+        public static void InsertAndTrim<T>(this List<T> list, T item, int capacity)
+        {
+            list.Insert(0, item);
+            if (list.Count > capacity)
+                list.RemoveRange(capacity, list.Count - capacity);
         }
 
         public static string GetSpannedTime(long ticks, bool hideMs = false)

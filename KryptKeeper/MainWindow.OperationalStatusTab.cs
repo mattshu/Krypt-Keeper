@@ -27,10 +27,8 @@ namespace KryptKeeper
             updateProgress();
             lblTotalFiles.Text = e.Cancelled ? "Some" : "All" + " files processed";
             lblJobInformation.Text = "";
-            lblFileBeingProcessed.Text = "";
-            lblOperationStatus.Text = @"Done!";
             _fileList.Reset();
-            _status.StopProcessRateCollection();
+            _status.CompleteOperations();
             if (!chkOnCompletion.Checked) return;
             if (!validateOnCompletionIconsHaveOneSelection()) return;
             handleOnCompletion();

@@ -2,7 +2,7 @@
 
 namespace KryptKeeper
 {
-    internal class CipherOptions
+    public class CipherOptions
     {
         public FileList Files { get; set; }
         public Cipher.Mode Mode { get; set; }

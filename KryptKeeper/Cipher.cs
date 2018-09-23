@@ -9,7 +9,7 @@ using System.Windows.Forms;
 
 namespace KryptKeeper
 {
-    internal static partial class Cipher
+    public static partial class Cipher
     {
         public static readonly char[] ALLOWED_PLAINTEXT_KEY_SYMBOLS =
             {'!', '@', '#', '$', '%', '^', '&', '*', '?', '_', '~', '-', '£', '(', ')'};
@@ -32,15 +32,34 @@ namespace KryptKeeper
 
         public static string GetFileProgress() => $"{_totalFilesState}/{_totalFilesTotal} files processed";
 
+        public static long GetPayloadState() => _totalPayloadState;
         public static long GetTotalSize() => _totalPayloadTotal;
 
         public static void ProcessFiles(CipherOptions options)
         {
             if (options.Files.Count <= 0) return;
             _totalFilesState = 0;
+            if (options.Mode == Mode.Decrypt)
+                validateFilesForDecryption(options);
             _totalFilesTotal = options.Files.Count;
             _totalPayloadTotal = Utils.GetTotalBytes(options.Files);
+            _status.StartProcessRateCollection(options);
             _backgroundWorker.RunWorkerAsync(options);
+        }
+
+        private static void validateFilesForDecryption(CipherOptions options)
+        {
+            var tmpList = options.Files.GetList()
+                .Where(x => !x.GetExtension().Equals(FILE_EXTENSION))
+                .Select(x => x).ToList();
+            if (tmpList.Count <= 0) return;
+            var validList = options.Files.GetList()
+                .Where(x => x.GetExtension().Equals(FILE_EXTENSION))
+                .Select(x => x).ToList();
+            options.Files.SetList(validList);
+            _status.WriteLine("The following file(s) were not valid for decryption:");
+            foreach (var file in tmpList)
+                _status.WriteLine("-" + file.GetFilePath());
         }
 
         public static long GetElapsedBytes()
@@ -72,7 +91,7 @@ namespace KryptKeeper
                 if (File.Exists(fileData.GetFilePath()))
                 {
                     _status.WritePending($"{options.GetModeOfOperation()}: " + fileData.GetFilePath());
-                    _status.SetFileOperationMsg(options.GetModeOfOperation());
+                    _status.UpdateOperationStatus(options.GetModeOfOperation());
                     processFile(fileData.GetFilePath(), options);
                     _totalFilesState++;
                 }
@@ -107,7 +126,7 @@ namespace KryptKeeper
                     _status.WriteLine("* File not found: " + path);
                     return;
                 }
-                _status.SetFileProcessingMsg(Path.GetFileName(path));
+                _status.UpdateProcessedFile(Path.GetFileName(path));
                 if (options.Mode == Mode.Decrypt && isFileValidForDecryption(path))
                     workingPath = path.ReplaceLastOccurrence(FILE_EXTENSION, WORKING_FILE_EXTENSION);
                 else if (options.Mode == Mode.Encrypt)

@@ -1,6 +1,6 @@
 ﻿namespace KryptKeeper
 {
-    internal partial class Cipher
+    public partial class Cipher
     {
         public enum ProcessOrder
         {

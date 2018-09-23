@@ -2,7 +2,7 @@
 
 namespace KryptKeeper
 {
-    internal class FileListComparer : IComparer<FileData>
+    public class FileListComparer : IComparer<FileData>
     {
         private readonly bool _descending;
         private readonly Cipher.ProcessOrder _processOrder;

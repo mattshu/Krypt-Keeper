@@ -41,28 +41,32 @@ namespace KryptKeeper {
             return _instance ?? throw new Exception(@"Unable to get instance of status window!");
         }
 
-        public void StartProcessRateCollection()
+        public void StartProcessRateCollection(CipherOptions options)
         {
             _processRates = new ProcessRates(this);
             _processRates.Start();
         }
 
-        public void StopProcessRateCollection()
+        public void CompleteOperations()
         {
             _processRates.Stop();
+            UpdateOperationStatus("Done!");
+            UpdateProcessedFile("");
+            UpdateProcessRate("");
+            UpdateTimeRemaining("");
         }
 
-        public void SetFileOperationMsg(string msg)
+        public void UpdateOperationStatus(string msg)
         {
             updateLabel(_lblOperationStatus, msg);
         }
 
-        public void SetFileProcessingMsg(string msg)
+        public void UpdateProcessedFile(string msg)
         {
             updateLabel(_lblFileBeingProcessed, msg);
         }
 
-        public void UpdateProcessingRate(string msg)
+        public void UpdateProcessRate(string msg)
         {
             updateLabel(_lblProcessingRates, msg);
         }

@@ -11,9 +11,9 @@ namespace KryptKeeper
             TODO * MAJOR *
                 - IMPERATIVE: * REMOVE HARDCODED KEYFILE *
                 - Add Windows context menu options
-            TODO * MINOR *
-                - Dialog icons
                 - Add option to minimize to tray on close
+                - Dialog icons
+            TODO * MINOR *
                 - If planning on storing keys, ensure key storage security
                 - Always work toward single responsibility principle
         */
@@ -56,7 +56,7 @@ namespace KryptKeeper
             backgroundWorker.ProgressChanged += backgroundWorker_ProgressChanged;
             backgroundWorker.RunWorkerCompleted += backgroundWorker_RunWorkerCompleted;
             Cipher.SetBackgroundWorker(backgroundWorker);
-            buildFileList(DEBUG:true); // TODO DEBUG
+            buildFileList(DEBUG:true); // TODO DEBUG`
         }
 
         private void mainWindow_FormClosing(object sender, FormClosingEventArgs e)

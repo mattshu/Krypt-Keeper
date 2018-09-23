@@ -1,6 +1,6 @@
 ﻿namespace KryptKeeper
 {
-    internal static partial class Cipher
+    public static partial class Cipher
     {
         public const string FILE_EXTENSION = ".krpt";
         public const string WORKING_FILE_EXTENSION = ".krpt.tmp";

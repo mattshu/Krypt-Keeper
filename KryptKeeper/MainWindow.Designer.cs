@@ -66,6 +66,7 @@
             this.panelIconRestart = new MetroFramework.Controls.MetroPanel();
             this.panelIconShutdown = new MetroFramework.Controls.MetroPanel();
             this.txtStatus = new MetroFramework.Controls.MetroTextBox();
+            this.lblTimeRemaining = new MetroFramework.Controls.MetroLabel();
             this.lblProcessingRates = new MetroFramework.Controls.MetroLabel();
             this.lblCurrentPercentage = new MetroFramework.Controls.MetroLabel();
             this.progressCurrent = new MetroFramework.Controls.MetroProgressSpinner();
@@ -83,7 +84,6 @@
             this.lblVersionInformation = new MetroFramework.Controls.MetroLabel();
             this.backgroundWorker = new System.ComponentModel.BackgroundWorker();
             this.metroToolTip = new MetroFramework.Components.MetroToolTip();
-            this.lblTimeRemaining = new MetroFramework.Controls.MetroLabel();
             this.tabMain.SuspendLayout();
             this.tabOptions.SuspendLayout();
             this.panelKeyRads.SuspendLayout();
@@ -575,7 +575,7 @@
             this.progressTotalFiles.Name = "progressTotalFiles";
             this.progressTotalFiles.Size = new System.Drawing.Size(64, 64);
             this.progressTotalFiles.Spinning = false;
-            this.progressTotalFiles.Style = MetroFramework.MetroColorStyle.Teal;
+            this.progressTotalFiles.Style = MetroFramework.MetroColorStyle.Green;
             this.progressTotalFiles.TabIndex = 11;
             this.progressTotalFiles.Theme = MetroFramework.MetroThemeStyle.Dark;
             this.metroToolTip.SetToolTip(this.progressTotalFiles, "Total file progress");
@@ -742,12 +742,21 @@
             this.txtStatus.WaterMarkFont = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Pixel);
             this.txtStatus.TextChanged += new System.EventHandler(this.txtStatus_TextChanged);
             // 
+            // lblTimeRemaining
+            // 
+            this.lblTimeRemaining.FontSize = MetroFramework.MetroLabelSize.Small;
+            this.lblTimeRemaining.Location = new System.Drawing.Point(410, 204);
+            this.lblTimeRemaining.Name = "lblTimeRemaining";
+            this.lblTimeRemaining.Size = new System.Drawing.Size(166, 18);
+            this.lblTimeRemaining.TabIndex = 13;
+            this.lblTimeRemaining.Theme = MetroFramework.MetroThemeStyle.Dark;
+            // 
             // lblProcessingRates
             // 
             this.lblProcessingRates.FontSize = MetroFramework.MetroLabelSize.Small;
             this.lblProcessingRates.Location = new System.Drawing.Point(230, 204);
             this.lblProcessingRates.Name = "lblProcessingRates";
-            this.lblProcessingRates.Size = new System.Drawing.Size(158, 18);
+            this.lblProcessingRates.Size = new System.Drawing.Size(174, 18);
             this.lblProcessingRates.TabIndex = 13;
             this.lblProcessingRates.Theme = MetroFramework.MetroThemeStyle.Dark;
             // 
@@ -800,7 +809,7 @@
             this.progressTotalBytes.Name = "progressTotalBytes";
             this.progressTotalBytes.Size = new System.Drawing.Size(194, 194);
             this.progressTotalBytes.Spinning = false;
-            this.progressTotalBytes.Style = MetroFramework.MetroColorStyle.Green;
+            this.progressTotalBytes.Style = MetroFramework.MetroColorStyle.Lime;
             this.progressTotalBytes.TabIndex = 9;
             this.progressTotalBytes.Theme = MetroFramework.MetroThemeStyle.Dark;
             this.metroToolTip.SetToolTip(this.progressTotalBytes, "Total data progress");
@@ -950,15 +959,6 @@
             this.metroToolTip.Style = MetroFramework.MetroColorStyle.Blue;
             this.metroToolTip.StyleManager = null;
             this.metroToolTip.Theme = MetroFramework.MetroThemeStyle.Light;
-            // 
-            // lblTimeRemaining
-            // 
-            this.lblTimeRemaining.FontSize = MetroFramework.MetroLabelSize.Small;
-            this.lblTimeRemaining.Location = new System.Drawing.Point(394, 204);
-            this.lblTimeRemaining.Name = "lblTimeRemaining";
-            this.lblTimeRemaining.Size = new System.Drawing.Size(182, 18);
-            this.lblTimeRemaining.TabIndex = 13;
-            this.lblTimeRemaining.Theme = MetroFramework.MetroThemeStyle.Dark;
             // 
             // MainWindow
             // 

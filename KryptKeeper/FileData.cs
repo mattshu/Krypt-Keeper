@@ -8,6 +8,7 @@ namespace KryptKeeper
         public string Size { get; }
         public string Path { get; }
         public string GetFilePath() => Path + (Path[Path.Length - 1] == '\\' ? "" : "\\") + Name;
+        public string GetExtension() => new FileInfo(GetFilePath()).Extension;
 
         public FileData(string filePath)
         {

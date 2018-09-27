@@ -1,23 +1,29 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Windows.Forms;
 
 namespace KryptKeeper
 {
     public static partial class Cipher
     {
+        /*private static BackgroundWorker _worker1; // TODO #SplitLargeFileProject
+        private static BackgroundWorker _worker2;
+        private static BackgroundWorker _worker3;
+        private static readonly BackgroundWorker _worker4;
+        private static readonly BackgroundWorker[] _workers;
+
+        private static Stream _rStream;
+        private static Stream _cStream;*/
+
         public static readonly char[] ALLOWED_PLAINTEXT_KEY_SYMBOLS =
             {'!', '@', '#', '$', '%', '^', '&', '*', '?', '_', '~', '-', '£', '(', ')'};
 
         private static bool _cancelProcessing;
         private static BackgroundWorker _backgroundWorker;
         private static readonly Status _status = Status.GetInstance();
-
 
         private static long _currentPayloadState;
         private static long _currentPayloadTotal;
@@ -34,6 +40,77 @@ namespace KryptKeeper
 
         public static long GetPayloadState() => _totalPayloadState;
         public static long GetTotalSize() => _totalPayloadTotal;
+
+        /*static Cipher() {// TODO #SplitLargeFileProject
+            _worker1 = new BackgroundWorker();
+            _worker1.DoWork += worker1_DoWork;
+            _worker1.RunWorkerCompleted += worker1_RunWorkerCompleted;
+            _worker2 = new BackgroundWorker();
+            _worker2.DoWork += worker2_DoWork;
+            _worker2.RunWorkerCompleted += worker2_RunWorkerCompleted;
+            _worker3 = new BackgroundWorker();
+            _worker3.DoWork += worker3_DoWork;
+            _worker3.RunWorkerCompleted += worker3_RunWorkerCompleted;
+            _worker4 = new BackgroundWorker();
+            _worker4.DoWork += worker4_DoWork;
+            _worker4.RunWorkerCompleted += worker4_RunWorkerCompleted;
+        }
+
+        private static void worker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            var data = e.Result;
+            checkIfAllWorkersDone(0, data);
+        }
+
+        private static void worker2_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            var data = e.Result;
+            checkIfAllWorkersDone(1, data);
+        }
+
+        private static void worker3_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            var data = e.Result;
+            checkIfAllWorkersDone(2, data);
+        }
+
+        private static void worker4_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            var data = e.Result;
+            checkIfAllWorkersDone(3, data);
+        }
+
+        private static bool worker1Done;
+        private static bool worker2Done;
+        private static bool worker3Done;
+        private static bool worker4Done;
+
+        private static List<object> dataList = new List<object>();
+
+        private static void checkIfAllWorkersDone(int worker, object data)
+        {
+            dataList.Insert(worker, data);
+
+            switch (worker)
+            {
+                case 0:
+                    worker1Done = true;
+                    break;
+                case 1:
+                    worker2Done = true;
+                    break;
+                case 2:
+                    worker3Done = true;
+                    break;
+                case 3:
+                    worker4Done = true;
+                    break;
+            }
+
+            if (!worker1Done || !worker2Done || !worker3Done || !worker4Done) return;
+            Console.WriteLine(@"Data finished! Count: " + dataList.Count);
+        }
+        */
 
         public static void ProcessFiles(CipherOptions options)
         {
@@ -172,7 +249,7 @@ namespace KryptKeeper
             }
             catch (Exception ex)
             {
-                handleCipherExceptions(ex, path, workingPath, options);
+                handleCipherExceptions(ex, path, workingPath);
             }
         }
 
@@ -283,11 +360,120 @@ namespace KryptKeeper
             stream.Write(options.Salt, 0, options.Salt.Length); // Insert Salt
         }
 
+        /*private static void worker1_DoWork(object sender, DoWorkEventArgs e) // TODO #SplitLargeFileProject
+        {
+            taskWorker((BackgroundWorkerArguments)e.Argument);
+        }
+
+        private static void worker2_DoWork(object sender, DoWorkEventArgs e)
+        {
+            taskWorker((BackgroundWorkerArguments)e.Argument);
+        }
+
+        private static void worker3_DoWork(object sender, DoWorkEventArgs e)
+        {
+            taskWorker((BackgroundWorkerArguments)e.Argument);
+        }
+
+        private static void worker4_DoWork(object sender, DoWorkEventArgs e)
+        {
+            taskWorker((BackgroundWorkerArguments)e.Argument);
+        }
+
+        private static void taskWorker(BackgroundWorkerArguments args)
+        {
+            var path = args.Path;
+            var offset = args.Offset;
+            var size = new FileInfo(path).Length;
+            using (var rStream = args.ReadStream)
+            {
+                using (var cStream = args.CryptoStream)
+                {
+                    rStream.Seek(offset, SeekOrigin.Begin);
+                    _cancelProcessing = false;
+                    var buffer = new byte[CHUNK_SIZE];
+                    int bytesRead = rStream.Read(buffer, 0, CHUNK_SIZE);
+                    //_currentPayloadState = 0;
+                    //_currentPayloadTotal = new FileInfo(path).Length;
+                    int totalRead = 0;
+                    while (offset > size ? bytesRead > 0 : Math.Ceiling(size / 4D) >= totalRead || bytesRead != 0)
+                    {
+                        // todo I don't trust this
+                        if (_cancelProcessing)
+                            break;
+                        //_currentPayloadState += bytesRead;
+                        //_totalPayloadState += bytesRead;
+                        //var packet = buildProgressPacket();
+                        //_backgroundWorker.ReportProgress(0, packet);
+                        cStream.Write(buffer, 0, bytesRead);
+                        bytesRead = rStream.Read(buffer, 0, bytesRead);
+                        totalRead += bytesRead;
+                    }
+                }
+            }
+        }
+
+        private class BackgroundWorkerArguments {
+            public string Path { get; }
+            public long Offset { get; }
+            public Stream ReadStream { get; }
+            public Stream CryptoStream { get; }
+
+            public BackgroundWorkerArguments(string path, long offset, Stream readStream, Stream cryptoStream) {
+                Path = path;
+                Offset = offset;
+                ReadStream = readStream;
+                CryptoStream = cryptoStream;
+            }
+        }*/
+
         private static void processStreams(string path, Stream readStream, Stream cryptoStream)
         {
+            /* //TODO #SplitLargeFileProject
+                13413418 / 4 	= 3353354.5
+	                 ^ ceil	= 3353355 = a
+
+                Worker1: 0, 3353354 (a * 0, a * 1 - 1)
+                Worker2: 3353355, 6706709 (a * 1, a * 2 - 1)
+                Worker3: 6706710, 10060064 (a * 2, a * 3 - 1)
+                Worker4: 10060065, 13413420 (a * 3, a * 4 - 1)
+
+                Worker4.(while read != 0)
+
+            var size = new FileInfo(path).Length;
+            if (size > Utils.GetSizeFromString("64 MB"))
+            {
+                var offset = (long) Math.Ceiling((double)size / 4);
+                for (int i = 0; i < 4; i++)
+                {
+                    // Assign each background worker the task of decoding a quarter of the file each, going by the offset below
+                    var args = new BackgroundWorkerArguments(path, offset * (i + 1) - 1, readStream, cryptoStream);
+                    switch (i)
+                    {
+                        case 0:
+                            _worker1.RunWorkerAsync(args);
+                            break;
+                        case 1:
+                            _worker2.RunWorkerAsync(args);
+                            break;
+                        case 2:
+                            _worker3.RunWorkerAsync(args);
+                            break;
+                        case 3:
+                            _worker4.RunWorkerAsync(args);
+                            break;
+                    }
+                }
+            }
+            else
+            {
+                var args = new BackgroundWorkerArguments(path, 0, readStream, cryptoStream);
+                _worker1.RunWorkerAsync(args);
+            }
+            */
             _cancelProcessing = false;
             var buffer = new byte[CHUNK_SIZE];
-            int bytesRead = readStream.Read(buffer, 0, CHUNK_SIZE);
+             int bytesRead = readStream.Read(buffer, 0, CHUNK_SIZE);
             _currentPayloadState = 0;
             _currentPayloadTotal = new FileInfo(path).Length;
             while (bytesRead > 0)
@@ -366,7 +552,7 @@ namespace KryptKeeper
             return originalPath;
         }
 
-        private static void handleCipherExceptions(Exception ex, string path, string workingPath, CipherOptions options)
+        private static void handleCipherExceptions(Exception ex, string path, string workingPath)
         {
             var baseExceptionRaw = ex.GetBaseException().ToString();
             var baseExceptionPart = baseExceptionRaw.Substring(0, baseExceptionRaw.IndexOf(':'));
@@ -402,3 +588,4 @@ namespace KryptKeeper
         }
     }
 }
+ 

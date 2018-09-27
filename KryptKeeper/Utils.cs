@@ -33,13 +33,13 @@ namespace KryptKeeper
 
         public static long GetSizeFromString(string sizeString) {
             var split = sizeString.Split();
-            if (split.Length < 1) return -1;
+            if (split.Length < 2) return 0;
             string[] suf = { "B", "KB", "MB", "GB", "TB", "PB", "EB" };
            var size = (long)decimal.Parse(split[0].Replace(",", ""));
             var sizeSuffix = split[1];
             if (sizeSuffix == "B")
                 return size;
-            return (long)Math.Pow(1024, Array.IndexOf(suf, sizeSuffix));
+            return size * (long)Math.Pow(1024, Array.IndexOf(suf, sizeSuffix));
         }
 
         public static long GetTotalBytes(FileList files)

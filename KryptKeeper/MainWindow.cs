@@ -1,4 +1,15 @@
-﻿using KryptKeeper.Properties;
+﻿/* 
+    TODO * MAJOR *
+        - IMPERATIVE: * REMOVE HARDCODED KEYFILE *
+        - Add Windows context menu options
+        - Add option to minimize to tray on close
+        - Dialog icons
+        - Add version information to encrypted files for backwards compatibility
+    TODO * MINOR *
+        - If planning on storing keys, ensure key storage security
+        - Always work toward single responsibility principle
+*/
+using KryptKeeper.Properties;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
@@ -7,16 +18,7 @@ namespace KryptKeeper
 {
     public partial class MainWindow : MetroFramework.Forms.MetroForm
     {
-        /* 
-            TODO * MAJOR *
-                - IMPERATIVE: * REMOVE HARDCODED KEYFILE *
-                - Add Windows context menu options
-                - Add option to minimize to tray on close
-                - Dialog icons
-            TODO * MINOR *
-                - If planning on storing keys, ensure key storage security
-                - Always work toward single responsibility principle
-        */
+
         private static bool _CloseAfterCurrentOperation;
         private enum MainTabs { Options, Files, Status }
         private Status _status;
@@ -56,7 +58,7 @@ namespace KryptKeeper
             backgroundWorker.ProgressChanged += backgroundWorker_ProgressChanged;
             backgroundWorker.RunWorkerCompleted += backgroundWorker_RunWorkerCompleted;
             Cipher.SetBackgroundWorker(backgroundWorker);
-            buildFileList(DEBUG:true); // TODO DEBUG`
+            buildFileList(); // TODO DEBUG
         }
 
         private void mainWindow_FormClosing(object sender, FormClosingEventArgs e)

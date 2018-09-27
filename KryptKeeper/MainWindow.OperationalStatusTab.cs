@@ -29,9 +29,8 @@ namespace KryptKeeper
             lblJobInformation.Text = "";
             _fileList.Reset();
             _status.CompleteOperations();
-            if (!chkOnCompletion.Checked) return;
-            if (!validateOnCompletionIconsHaveOneSelection()) return;
-            handleOnCompletion();
+            if (chkOnCompletion.Checked && verifyOnCompletionIconSelected())
+                handleOnCompletion();
         }
 
         private void chkOnCompletion_CheckedChanged(object sender, EventArgs e)
@@ -134,7 +133,7 @@ namespace KryptKeeper
             Close();
         }
 
-        private bool validateOnCompletionIconsHaveOneSelection()
+        private bool verifyOnCompletionIconSelected()
         {
             var shutdownOption = bool.Parse(panelIconShutdown.Tag.ToString());
             var restartOption = bool.Parse(panelIconRestart.Tag.ToString());

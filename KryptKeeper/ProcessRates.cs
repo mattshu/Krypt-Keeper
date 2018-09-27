@@ -53,15 +53,14 @@ namespace KryptKeeper {
                 _ProcessData.InsertAndTrim(elapsed, MAX_DATA_POINTS);
                 var averageProcessRate = ((long) _ProcessData.Average(x => x * (1000 / INTERVAL))).BytesToSizeString();
                 _status.UpdateProcessRate($"Processing speed: {averageProcessRate}/s");
-                _status.UpdateTimeRemaining($"Est. time remaining: {TimeSpan.FromSeconds(Math.Floor(getSecondsRemaining()))}");
+                _status.UpdateTimeRemaining($"Est. time remaining: {TimeSpan.FromSeconds(Math.Ceiling(calculateSecondsRemaining()))}");
             }
 
-            private double getSecondsRemaining()
+            private double calculateSecondsRemaining()
             {
                 var payloadState = Cipher.GetPayloadState();
                 if (payloadState <= 0) return 0;
                 var remaining = (_stopWatch.Elapsed.Seconds / (double) payloadState) * (_totalDataSize - payloadState);
-                Console.WriteLine($@"({_stopWatch.Elapsed.Seconds}s / {(double)payloadState}B) * ({_totalDataSize}B - {payloadState}B) = {remaining} seconds remain");
                 return remaining;
             }
         }

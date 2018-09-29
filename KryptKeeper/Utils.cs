@@ -76,6 +76,14 @@ namespace KryptKeeper
             return Encoding.UTF8.GetBytes(value);
         }
 
+        public static List<FileData> GetFilesFromDialog() {
+            var openFileDialog =
+                new OpenFileDialog { Title = @"Select the files to be processed:", Multiselect = true };
+            var openResult = openFileDialog.ShowDialog();
+            if (openResult != DialogResult.OK || openFileDialog.FileNames.Length <= 0) return new List<FileData>();
+            return openFileDialog.FileNames.Select(x => new FileData(x)).ToList();
+        }
+
         public static int GetPercentProgress(long current, long total)
         {
             return (int)Math.Round((double)(100 * current) / total);
@@ -181,9 +189,14 @@ namespace KryptKeeper
             File.SetLastWriteTime(path, getRandomFileTime());
         }
 
-        public static void ShowErrorBox(string msg)
-        {
-            MessageBox.Show(msg, @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        public static void TrimFile(string path, long length) {
+            try {
+                using (var fOpen = new FileStream(path, FileMode.Open))
+                    fOpen.SetLength(fOpen.Length - length);
+            }
+            catch (FileNotFoundException) {
+
+            }
         }
 
         public static bool TryDeleteFile(string path)

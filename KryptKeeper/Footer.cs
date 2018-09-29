@@ -8,7 +8,7 @@ namespace KryptKeeper
     internal class Footer
     {
         public static readonly string FOOTER_TAG = "[KRYPTKEEPER]";
-        private static readonly byte[] FOOTER_SIGNATURE = Utils.GetBytes(FOOTER_TAG);
+        public static readonly byte[] FOOTER_SIGNATURE = Utils.GetBytes(FOOTER_TAG);
 
         public DateTime AccessedTime { get; set; }
         public DateTime CreationTime { get; set; }
@@ -75,16 +75,13 @@ namespace KryptKeeper
 
         public bool TryExtract(string path)
         {
-            if (!File.Exists(path))
-                throw new FileNotFoundException(path);
-            using (var rStream = new FileStream(path, FileMode.Open, FileAccess.Read))
+            if (!File.Exists(path)) throw new FileNotFoundException(path);
+            using (var rwStream = new FileStream(path, FileMode.Open, FileAccess.ReadWrite))
             {
-                if (rStream.Length > 1024)
-                {
-                    rStream.Seek(-1024, SeekOrigin.End);
-                }
+                if (rwStream.Length > 1024)
+                    rwStream.Seek(-1024, SeekOrigin.End);
                 var footerArray = new byte[1024];
-                rStream.Read(footerArray, 0, 1024);
+                rwStream.Read(footerArray, 0, 1024);
                 for (int i = footerArray.Length - 1; i >= 0; i--)
                 {
                     if (footerArray[i] != FOOTER_SIGNATURE[0]) continue;
@@ -94,6 +91,7 @@ namespace KryptKeeper
                     CreationTime = newFooter.CreationTime;
                     ModifiedTime = newFooter.ModifiedTime;
                     AccessedTime = newFooter.AccessedTime;
+                    rwStream.SetLength(rwStream.Length - newFooter.ToArray().Length);
                     return true;
                 }
             }

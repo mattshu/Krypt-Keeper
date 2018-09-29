@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -65,27 +66,9 @@ namespace KryptKeeper
         // TODO REMOVE DEBUG SIGNATURE AND FUNCTIONS
         private void buildFileList(bool DEBUG = false)
         {
-            if (!validateKeySettings())
-            {
-                focusTab(MainTabs.Options);
-                if (radKeyFile.Checked)
-                    txtCipherKey.Text = Utils.BrowseFiles(@"Select a key file", false);
-                return;
-            }
-            if (DEBUG)
-            {
-                _fileList = new FileList(Directory.GetFiles(@"D:\shu\Downloads\").Select(x => new FileData(x)).ToList(), datagridFileList);
-            }
-            else
-            {
-                var openFileDialog =
-                    new OpenFileDialog {Title = @"Select the files to be processed", Multiselect = true};
-                var openResult = openFileDialog.ShowDialog();
-                if (openResult != DialogResult.OK || openFileDialog.FileNames.Length <= 0) return;
-                _fileList.Clear();
-                _fileList = new FileList(openFileDialog.FileNames.Select(path => new FileData(path)).ToList(),
-                    datagridFileList);
-            }
+            if (!validateKeySettings()) return;
+            _fileList = DEBUG ? new FileList(Directory.GetFiles(@"D:\shu\Downloads\").Select(x => new FileData(x)).ToList(), datagridFileList)
+                              : new FileList(Utils.GetFilesFromDialog(), datagridFileList);
             if (chkProcessInOrder.Checked)
                 sortFileList();
             enableProcessButtons(datagridFileList.RowCount > 0);
@@ -113,7 +96,15 @@ namespace KryptKeeper
                     $"Password must be 8 or more characters, including at least one number, one upper/lowercase, and one symbol: ({string.Join(",", Cipher.ALLOWED_PLAINTEXT_KEY_SYMBOLS)})";
             if (errorMsg.Length <= 0) return true;
             MetroMessageBox.Show(this, errorMsg, "Invalid Settings", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            promptForKeyFile();
             return false;
+        }
+
+        private void promptForKeyFile()
+        {
+            focusTab(MainTabs.Options);
+            if (radKeyFile.Checked)
+                txtCipherKey.Text = Utils.BrowseFiles(@"Select a key file:", false);
         }
 
         private void enableProcessButtons(bool state)
@@ -177,25 +168,14 @@ namespace KryptKeeper
         {
             if (!validateKeySettings()) return false;
             if (_fileList.Count > 0) return true;
-            Utils.ShowErrorBox("There are no files to work.");
+            MetroMessageBox.Show(this, "There are no files to work.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             focusTab(MainTabs.Files);
             return false;
         }
 
         private CipherOptions generateOptions(Cipher.Mode cipherMode)
         {
-            byte[] key;
-            if (radPlaintextKey.Checked)
-                key = Utils.GetBytes(txtCipherKey.Text);
-            else if (radKeyFile.Checked && File.Exists(txtCipherKey.Text))
-            {
-                if (new FileInfo(txtCipherKey.Text).Length < Cipher.MAX_FILE_LENGTH)
-                    key = File.ReadAllBytes(txtCipherKey.Text);
-                else
-                    throw new FileLoadException(txtCipherKey.Text);
-            }
-            else
-                throw new FileNotFoundException(txtCipherKey.Text);
+            var key = getKey();
             var salt = Utils.GetBytes(BCrypt.GenerateSalt(5));
             var options = new CipherOptions
             {
@@ -209,6 +189,23 @@ namespace KryptKeeper
                 RemoveOriginalDecryption = chkRemoveAfterDecryption.Checked
             };
             return options;
+        }
+
+        private byte[] getKey()
+        {
+            byte[] key;
+            if (radPlaintextKey.Checked)
+                key = Utils.GetBytes(txtCipherKey.Text);
+            else if (radKeyFile.Checked && File.Exists(txtCipherKey.Text))
+            {
+                if (new FileInfo(txtCipherKey.Text).Length < Cipher.MAX_FILE_LENGTH)
+                    key = File.ReadAllBytes(txtCipherKey.Text);
+                else
+                    throw new FileLoadException(txtCipherKey.Text);
+            }
+            else
+                throw new FileNotFoundException(txtCipherKey.Text);
+            return key;
         }
 
         private void sortFileList()

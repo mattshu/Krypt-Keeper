@@ -39,7 +39,7 @@
             this.radKeyFile = new MetroFramework.Controls.MetroRadioButton();
             this.radPlaintextKey = new MetroFramework.Controls.MetroRadioButton();
             this.txtCipherKey = new MetroFramework.Controls.MetroTextBox();
-            this.chkConfirmExit = new MetroFramework.Controls.MetroCheckBox();
+            this.chkConfirmOnExit = new MetroFramework.Controls.MetroCheckBox();
             this.chkRememberSettings = new MetroFramework.Controls.MetroCheckBox();
             this.chkRemoveAfterDecryption = new MetroFramework.Controls.MetroCheckBox();
             this.chkRemoveAfterEncryption = new MetroFramework.Controls.MetroCheckBox();
@@ -65,9 +65,9 @@
             this.panelIconSleep = new MetroFramework.Controls.MetroPanel();
             this.panelIconRestart = new MetroFramework.Controls.MetroPanel();
             this.panelIconShutdown = new MetroFramework.Controls.MetroPanel();
-            this.txtStatus = new MetroFramework.Controls.MetroTextBox();
-            this.lblTimeRemaining = new MetroFramework.Controls.MetroLabel();
-            this.lblProcessingRates = new MetroFramework.Controls.MetroLabel();
+            this.txtStatusLogBox = new MetroFramework.Controls.MetroTextBox();
+            this.lblStatusTimeRemainingText = new MetroFramework.Controls.MetroLabel();
+            this.lblStatusProcessingRateText = new MetroFramework.Controls.MetroLabel();
             this.lblCurrentPercentage = new MetroFramework.Controls.MetroLabel();
             this.progressCurrent = new MetroFramework.Controls.MetroProgressSpinner();
             this.lblTotalBytesPercentage = new MetroFramework.Controls.MetroLabel();
@@ -77,10 +77,10 @@
             this.btnSelectFilesFromStatusTab = new MetroFramework.Controls.MetroButton();
             this.btnExport = new MetroFramework.Controls.MetroButton();
             this.btnClear = new MetroFramework.Controls.MetroButton();
-            this.lblTotalFiles = new MetroFramework.Controls.MetroLabel();
-            this.lblTimeElapsed = new MetroFramework.Controls.MetroLabel();
-            this.lblOperationStatus = new MetroFramework.Controls.MetroLabel();
-            this.lblFileBeingProcessed = new MetroFramework.Controls.MetroLabel();
+            this.lblStatusTopText = new MetroFramework.Controls.MetroLabel();
+            this.lblStatusTimeElapsedText = new MetroFramework.Controls.MetroLabel();
+            this.lblStatusOperationText = new MetroFramework.Controls.MetroLabel();
+            this.lblStatusFileWorkedText = new MetroFramework.Controls.MetroLabel();
             this.lblVersionInformation = new MetroFramework.Controls.MetroLabel();
             this.backgroundWorker = new System.ComponentModel.BackgroundWorker();
             this.metroToolTip = new MetroFramework.Components.MetroToolTip();
@@ -105,7 +105,7 @@
             this.tabMain.ItemSize = new System.Drawing.Size(300, 50);
             this.tabMain.Location = new System.Drawing.Point(20, 60);
             this.tabMain.Name = "tabMain";
-            this.tabMain.SelectedIndex = 2;
+            this.tabMain.SelectedIndex = 0;
             this.tabMain.Size = new System.Drawing.Size(746, 391);
             this.tabMain.Style = MetroFramework.MetroColorStyle.Green;
             this.tabMain.TabIndex = 0;
@@ -118,7 +118,7 @@
             this.tabOptions.Controls.Add(this.btnSelectFiles);
             this.tabOptions.Controls.Add(this.panelKeyRads);
             this.tabOptions.Controls.Add(this.txtCipherKey);
-            this.tabOptions.Controls.Add(this.chkConfirmExit);
+            this.tabOptions.Controls.Add(this.chkConfirmOnExit);
             this.tabOptions.Controls.Add(this.chkRememberSettings);
             this.tabOptions.Controls.Add(this.chkRemoveAfterDecryption);
             this.tabOptions.Controls.Add(this.chkRemoveAfterEncryption);
@@ -244,19 +244,19 @@
             this.txtCipherKey.ButtonClick += new MetroFramework.Controls.MetroTextBox.ButClick(this.txtCipherKey_ButtonClick);
             this.txtCipherKey.Click += new System.EventHandler(this.txtCipherKey_Click);
             // 
-            // chkConfirmExit
+            // chkConfirmOnExit
             // 
-            this.chkConfirmExit.AutoSize = true;
-            this.chkConfirmExit.Checked = true;
-            this.chkConfirmExit.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkConfirmExit.FontSize = MetroFramework.MetroCheckBoxSize.Medium;
-            this.chkConfirmExit.Location = new System.Drawing.Point(74, 278);
-            this.chkConfirmExit.Name = "chkConfirmExit";
-            this.chkConfirmExit.Size = new System.Drawing.Size(119, 19);
-            this.chkConfirmExit.TabIndex = 8;
-            this.chkConfirmExit.Text = "Confirm on exit";
-            this.chkConfirmExit.Theme = MetroFramework.MetroThemeStyle.Dark;
-            this.chkConfirmExit.UseSelectable = true;
+            this.chkConfirmOnExit.AutoSize = true;
+            this.chkConfirmOnExit.Checked = true;
+            this.chkConfirmOnExit.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkConfirmOnExit.FontSize = MetroFramework.MetroCheckBoxSize.Medium;
+            this.chkConfirmOnExit.Location = new System.Drawing.Point(74, 278);
+            this.chkConfirmOnExit.Name = "chkConfirmOnExit";
+            this.chkConfirmOnExit.Size = new System.Drawing.Size(119, 19);
+            this.chkConfirmOnExit.TabIndex = 8;
+            this.chkConfirmOnExit.Text = "Confirm on exit";
+            this.chkConfirmOnExit.Theme = MetroFramework.MetroThemeStyle.Dark;
+            this.chkConfirmOnExit.UseSelectable = true;
             // 
             // chkRememberSettings
             // 
@@ -537,9 +537,9 @@
             this.tabStatus.Controls.Add(this.progressTotalFiles);
             this.tabStatus.Controls.Add(this.chkOnCompletion);
             this.tabStatus.Controls.Add(this.panelOnCompletion);
-            this.tabStatus.Controls.Add(this.txtStatus);
-            this.tabStatus.Controls.Add(this.lblTimeRemaining);
-            this.tabStatus.Controls.Add(this.lblProcessingRates);
+            this.tabStatus.Controls.Add(this.txtStatusLogBox);
+            this.tabStatus.Controls.Add(this.lblStatusTimeRemainingText);
+            this.tabStatus.Controls.Add(this.lblStatusProcessingRateText);
             this.tabStatus.Controls.Add(this.lblCurrentPercentage);
             this.tabStatus.Controls.Add(this.progressCurrent);
             this.tabStatus.Controls.Add(this.lblTotalBytesPercentage);
@@ -549,10 +549,10 @@
             this.tabStatus.Controls.Add(this.btnSelectFilesFromStatusTab);
             this.tabStatus.Controls.Add(this.btnExport);
             this.tabStatus.Controls.Add(this.btnClear);
-            this.tabStatus.Controls.Add(this.lblTotalFiles);
-            this.tabStatus.Controls.Add(this.lblTimeElapsed);
-            this.tabStatus.Controls.Add(this.lblOperationStatus);
-            this.tabStatus.Controls.Add(this.lblFileBeingProcessed);
+            this.tabStatus.Controls.Add(this.lblStatusTopText);
+            this.tabStatus.Controls.Add(this.lblStatusTimeElapsedText);
+            this.tabStatus.Controls.Add(this.lblStatusOperationText);
+            this.tabStatus.Controls.Add(this.lblStatusFileWorkedText);
             this.tabStatus.HorizontalScrollbarBarColor = true;
             this.tabStatus.HorizontalScrollbarHighlightOnWheel = false;
             this.tabStatus.HorizontalScrollbarSize = 10;
@@ -703,62 +703,62 @@
             this.panelIconShutdown.VerticalScrollbarSize = 10;
             this.panelIconShutdown.Click += new System.EventHandler(this.panelIconShutdown_Click);
             // 
-            // txtStatus
+            // txtStatusLogBox
             // 
-            this.txtStatus.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.txtStatusLogBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             // 
             // 
             // 
-            this.txtStatus.CustomButton.Image = null;
-            this.txtStatus.CustomButton.Location = new System.Drawing.Point(404, 1);
-            this.txtStatus.CustomButton.Name = "";
-            this.txtStatus.CustomButton.Size = new System.Drawing.Size(103, 103);
-            this.txtStatus.CustomButton.Style = MetroFramework.MetroColorStyle.Blue;
-            this.txtStatus.CustomButton.TabIndex = 1;
-            this.txtStatus.CustomButton.Theme = MetroFramework.MetroThemeStyle.Light;
-            this.txtStatus.CustomButton.UseSelectable = true;
-            this.txtStatus.CustomButton.Visible = false;
-            this.txtStatus.FontWeight = MetroFramework.MetroTextBoxWeight.Light;
-            this.txtStatus.Lines = new string[0];
-            this.txtStatus.Location = new System.Drawing.Point(230, 225);
-            this.txtStatus.MaxLength = 32767;
-            this.txtStatus.Multiline = true;
-            this.txtStatus.Name = "txtStatus";
-            this.txtStatus.PasswordChar = '\0';
-            this.txtStatus.ReadOnly = true;
-            this.txtStatus.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtStatus.SelectedText = "";
-            this.txtStatus.SelectionLength = 0;
-            this.txtStatus.SelectionStart = 0;
-            this.txtStatus.ShortcutsEnabled = true;
-            this.txtStatus.ShowClearButton = true;
-            this.txtStatus.Size = new System.Drawing.Size(508, 105);
-            this.txtStatus.TabIndex = 3;
-            this.txtStatus.Theme = MetroFramework.MetroThemeStyle.Dark;
-            this.txtStatus.UseSelectable = true;
-            this.txtStatus.WaterMarkColor = System.Drawing.Color.FromArgb(((int)(((byte)(109)))), ((int)(((byte)(109)))), ((int)(((byte)(109)))));
-            this.txtStatus.WaterMarkFont = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Pixel);
-            this.txtStatus.TextChanged += new System.EventHandler(this.txtStatus_TextChanged);
+            this.txtStatusLogBox.CustomButton.Image = null;
+            this.txtStatusLogBox.CustomButton.Location = new System.Drawing.Point(404, 1);
+            this.txtStatusLogBox.CustomButton.Name = "";
+            this.txtStatusLogBox.CustomButton.Size = new System.Drawing.Size(103, 103);
+            this.txtStatusLogBox.CustomButton.Style = MetroFramework.MetroColorStyle.Blue;
+            this.txtStatusLogBox.CustomButton.TabIndex = 1;
+            this.txtStatusLogBox.CustomButton.Theme = MetroFramework.MetroThemeStyle.Light;
+            this.txtStatusLogBox.CustomButton.UseSelectable = true;
+            this.txtStatusLogBox.CustomButton.Visible = false;
+            this.txtStatusLogBox.FontWeight = MetroFramework.MetroTextBoxWeight.Light;
+            this.txtStatusLogBox.Lines = new string[0];
+            this.txtStatusLogBox.Location = new System.Drawing.Point(230, 225);
+            this.txtStatusLogBox.MaxLength = 32767;
+            this.txtStatusLogBox.Multiline = true;
+            this.txtStatusLogBox.Name = "txtStatusLogBox";
+            this.txtStatusLogBox.PasswordChar = '\0';
+            this.txtStatusLogBox.ReadOnly = true;
+            this.txtStatusLogBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.txtStatusLogBox.SelectedText = "";
+            this.txtStatusLogBox.SelectionLength = 0;
+            this.txtStatusLogBox.SelectionStart = 0;
+            this.txtStatusLogBox.ShortcutsEnabled = true;
+            this.txtStatusLogBox.ShowClearButton = true;
+            this.txtStatusLogBox.Size = new System.Drawing.Size(508, 105);
+            this.txtStatusLogBox.TabIndex = 3;
+            this.txtStatusLogBox.Theme = MetroFramework.MetroThemeStyle.Dark;
+            this.txtStatusLogBox.UseSelectable = true;
+            this.txtStatusLogBox.WaterMarkColor = System.Drawing.Color.FromArgb(((int)(((byte)(109)))), ((int)(((byte)(109)))), ((int)(((byte)(109)))));
+            this.txtStatusLogBox.WaterMarkFont = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Pixel);
+            this.txtStatusLogBox.TextChanged += new System.EventHandler(this.txtStatus_TextChanged);
             // 
-            // lblTimeRemaining
+            // lblStatusTimeRemainingText
             // 
-            this.lblTimeRemaining.FontSize = MetroFramework.MetroLabelSize.Small;
-            this.lblTimeRemaining.Location = new System.Drawing.Point(410, 204);
-            this.lblTimeRemaining.Name = "lblTimeRemaining";
-            this.lblTimeRemaining.Size = new System.Drawing.Size(166, 18);
-            this.lblTimeRemaining.TabIndex = 13;
-            this.lblTimeRemaining.Theme = MetroFramework.MetroThemeStyle.Dark;
+            this.lblStatusTimeRemainingText.FontSize = MetroFramework.MetroLabelSize.Small;
+            this.lblStatusTimeRemainingText.Location = new System.Drawing.Point(410, 204);
+            this.lblStatusTimeRemainingText.Name = "lblStatusTimeRemainingText";
+            this.lblStatusTimeRemainingText.Size = new System.Drawing.Size(166, 18);
+            this.lblStatusTimeRemainingText.TabIndex = 13;
+            this.lblStatusTimeRemainingText.Theme = MetroFramework.MetroThemeStyle.Dark;
             // 
-            // lblProcessingRates
+            // lblStatusProcessingRateText
             // 
-            this.lblProcessingRates.FontSize = MetroFramework.MetroLabelSize.Small;
-            this.lblProcessingRates.Location = new System.Drawing.Point(230, 204);
-            this.lblProcessingRates.Name = "lblProcessingRates";
-            this.lblProcessingRates.Size = new System.Drawing.Size(174, 18);
-            this.lblProcessingRates.TabIndex = 13;
-            this.lblProcessingRates.Theme = MetroFramework.MetroThemeStyle.Dark;
+            this.lblStatusProcessingRateText.FontSize = MetroFramework.MetroLabelSize.Small;
+            this.lblStatusProcessingRateText.Location = new System.Drawing.Point(230, 204);
+            this.lblStatusProcessingRateText.Name = "lblStatusProcessingRateText";
+            this.lblStatusProcessingRateText.Size = new System.Drawing.Size(174, 18);
+            this.lblStatusProcessingRateText.TabIndex = 13;
+            this.lblStatusProcessingRateText.Theme = MetroFramework.MetroThemeStyle.Dark;
             // 
             // lblCurrentPercentage
             // 
@@ -884,59 +884,59 @@
             this.btnClear.UseSelectable = true;
             this.btnClear.Click += new System.EventHandler(this.btnClear_Click);
             // 
-            // lblTotalFiles
+            // lblStatusTopText
             // 
-            this.lblTotalFiles.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.lblStatusTopText.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblTotalFiles.FontWeight = MetroFramework.MetroLabelWeight.Bold;
-            this.lblTotalFiles.Location = new System.Drawing.Point(236, 88);
-            this.lblTotalFiles.Name = "lblTotalFiles";
-            this.lblTotalFiles.Size = new System.Drawing.Size(272, 26);
-            this.lblTotalFiles.Style = MetroFramework.MetroColorStyle.Blue;
-            this.lblTotalFiles.TabIndex = 5;
-            this.lblTotalFiles.Text = "Don\'t forget your key!";
-            this.lblTotalFiles.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.lblTotalFiles.Theme = MetroFramework.MetroThemeStyle.Dark;
+            this.lblStatusTopText.FontWeight = MetroFramework.MetroLabelWeight.Bold;
+            this.lblStatusTopText.Location = new System.Drawing.Point(236, 88);
+            this.lblStatusTopText.Name = "lblStatusTopText";
+            this.lblStatusTopText.Size = new System.Drawing.Size(272, 26);
+            this.lblStatusTopText.Style = MetroFramework.MetroColorStyle.Blue;
+            this.lblStatusTopText.TabIndex = 5;
+            this.lblStatusTopText.Text = "Don\'t forget your key!";
+            this.lblStatusTopText.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.lblStatusTopText.Theme = MetroFramework.MetroThemeStyle.Dark;
             // 
-            // lblTimeElapsed
+            // lblStatusTimeElapsedText
             // 
-            this.lblTimeElapsed.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.lblStatusTimeElapsedText.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblTimeElapsed.FontWeight = MetroFramework.MetroLabelWeight.Regular;
-            this.lblTimeElapsed.Location = new System.Drawing.Point(298, 123);
-            this.lblTimeElapsed.Name = "lblTimeElapsed";
-            this.lblTimeElapsed.Size = new System.Drawing.Size(148, 26);
-            this.lblTimeElapsed.Style = MetroFramework.MetroColorStyle.Blue;
-            this.lblTimeElapsed.TabIndex = 5;
-            this.lblTimeElapsed.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.lblTimeElapsed.Theme = MetroFramework.MetroThemeStyle.Dark;
+            this.lblStatusTimeElapsedText.FontWeight = MetroFramework.MetroLabelWeight.Regular;
+            this.lblStatusTimeElapsedText.Location = new System.Drawing.Point(298, 123);
+            this.lblStatusTimeElapsedText.Name = "lblStatusTimeElapsedText";
+            this.lblStatusTimeElapsedText.Size = new System.Drawing.Size(148, 26);
+            this.lblStatusTimeElapsedText.Style = MetroFramework.MetroColorStyle.Blue;
+            this.lblStatusTimeElapsedText.TabIndex = 5;
+            this.lblStatusTimeElapsedText.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.lblStatusTimeElapsedText.Theme = MetroFramework.MetroThemeStyle.Dark;
             // 
-            // lblOperationStatus
+            // lblStatusOperationText
             // 
-            this.lblOperationStatus.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.lblStatusOperationText.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblOperationStatus.FontSize = MetroFramework.MetroLabelSize.Tall;
-            this.lblOperationStatus.FontWeight = MetroFramework.MetroLabelWeight.Regular;
-            this.lblOperationStatus.Location = new System.Drawing.Point(236, 149);
-            this.lblOperationStatus.Name = "lblOperationStatus";
-            this.lblOperationStatus.Size = new System.Drawing.Size(272, 29);
-            this.lblOperationStatus.TabIndex = 5;
-            this.lblOperationStatus.Text = "Awaiting instruction";
-            this.lblOperationStatus.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.lblOperationStatus.Theme = MetroFramework.MetroThemeStyle.Dark;
+            this.lblStatusOperationText.FontSize = MetroFramework.MetroLabelSize.Tall;
+            this.lblStatusOperationText.FontWeight = MetroFramework.MetroLabelWeight.Regular;
+            this.lblStatusOperationText.Location = new System.Drawing.Point(236, 149);
+            this.lblStatusOperationText.Name = "lblStatusOperationText";
+            this.lblStatusOperationText.Size = new System.Drawing.Size(272, 29);
+            this.lblStatusOperationText.TabIndex = 5;
+            this.lblStatusOperationText.Text = "Awaiting instruction";
+            this.lblStatusOperationText.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.lblStatusOperationText.Theme = MetroFramework.MetroThemeStyle.Dark;
             // 
-            // lblFileBeingProcessed
+            // lblStatusFileWorkedText
             // 
-            this.lblFileBeingProcessed.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.lblStatusFileWorkedText.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblFileBeingProcessed.FontSize = MetroFramework.MetroLabelSize.Small;
-            this.lblFileBeingProcessed.FontWeight = MetroFramework.MetroLabelWeight.Regular;
-            this.lblFileBeingProcessed.Location = new System.Drawing.Point(196, 178);
-            this.lblFileBeingProcessed.Name = "lblFileBeingProcessed";
-            this.lblFileBeingProcessed.Size = new System.Drawing.Size(342, 23);
-            this.lblFileBeingProcessed.TabIndex = 4;
-            this.lblFileBeingProcessed.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.lblFileBeingProcessed.Theme = MetroFramework.MetroThemeStyle.Dark;
+            this.lblStatusFileWorkedText.FontSize = MetroFramework.MetroLabelSize.Small;
+            this.lblStatusFileWorkedText.FontWeight = MetroFramework.MetroLabelWeight.Regular;
+            this.lblStatusFileWorkedText.Location = new System.Drawing.Point(196, 178);
+            this.lblStatusFileWorkedText.Name = "lblStatusFileWorkedText";
+            this.lblStatusFileWorkedText.Size = new System.Drawing.Size(342, 23);
+            this.lblStatusFileWorkedText.TabIndex = 4;
+            this.lblStatusFileWorkedText.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lblStatusFileWorkedText.Theme = MetroFramework.MetroThemeStyle.Dark;
             // 
             // lblVersionInformation
             // 
@@ -1005,7 +1005,7 @@
         private MetroFramework.Controls.MetroCheckBox chkMaskFileName;
         private MetroFramework.Controls.MetroRadioButton radPlaintextKey;
         private MetroFramework.Controls.MetroPanel panelKeyRads;
-        private MetroFramework.Controls.MetroCheckBox chkConfirmExit;
+        private MetroFramework.Controls.MetroCheckBox chkConfirmOnExit;
         private MetroFramework.Controls.MetroCheckBox chkRemoveAfterDecryption;
         private MetroFramework.Controls.MetroButton btnBrowseKeyFile;
         private MetroFramework.Controls.MetroLabel lblVersionInformation;
@@ -1016,23 +1016,23 @@
         private MetroFramework.Controls.MetroButton btnAddFiles;
         private MetroFramework.Controls.MetroGrid datagridFileList;
         private MetroFramework.Controls.MetroLabel lblJobInformation;
-        private MetroFramework.Controls.MetroLabel lblFileBeingProcessed;
-        private MetroFramework.Controls.MetroLabel lblOperationStatus;
+        private MetroFramework.Controls.MetroLabel lblStatusFileWorkedText;
+        private MetroFramework.Controls.MetroLabel lblStatusOperationText;
         private MetroFramework.Controls.MetroButton btnExport;
         private MetroFramework.Controls.MetroButton btnClear;
         private MetroFramework.Controls.MetroButton btnCancelOperation;
-        private MetroFramework.Controls.MetroTextBox txtStatus;
+        private MetroFramework.Controls.MetroTextBox txtStatusLogBox;
         private System.ComponentModel.BackgroundWorker backgroundWorker;
         private MetroFramework.Controls.MetroButton btnSelectFiles;
-        private MetroFramework.Controls.MetroLabel lblTimeElapsed;
-        private MetroFramework.Controls.MetroLabel lblTotalFiles;
+        private MetroFramework.Controls.MetroLabel lblStatusTimeElapsedText;
+        private MetroFramework.Controls.MetroLabel lblStatusTopText;
         private MetroFramework.Controls.MetroButton btnExit;
         private MetroFramework.Controls.MetroLabel lblTotalBytesPercentage;
         private MetroFramework.Controls.MetroProgressSpinner progressTotalBytes;
         private MetroFramework.Controls.MetroLabel lblCurrentPercentage;
         private MetroFramework.Controls.MetroProgressSpinner progressCurrent;
         private MetroFramework.Controls.MetroButton btnSelectFilesFromStatusTab;
-        private MetroFramework.Controls.MetroLabel lblProcessingRates;
+        private MetroFramework.Controls.MetroLabel lblStatusProcessingRateText;
         private MetroFramework.Controls.MetroCheckBox chkProcessInOrder;
         private MetroFramework.Controls.MetroComboBox cbxProcessOrderBy;
         private MetroFramework.Controls.MetroCheckBox chkProcessOrderDesc;
@@ -1044,6 +1044,6 @@
         private MetroFramework.Components.MetroToolTip metroToolTip;
         private MetroFramework.Controls.MetroProgressSpinner progressTotalFiles;
         private MetroFramework.Controls.MetroPanel panelIconClose;
-        private MetroFramework.Controls.MetroLabel lblTimeRemaining;
+        private MetroFramework.Controls.MetroLabel lblStatusTimeRemainingText;
     }
 }

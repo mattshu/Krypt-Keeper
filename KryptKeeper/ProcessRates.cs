@@ -11,57 +11,54 @@ namespace KryptKeeper {
         {
             private const int MAX_DATA_POINTS = 5;
             private const int INTERVAL = 500;
-            private static List<long> _ProcessData;
-            private readonly Timer _timer;
             private readonly Status _status;
+            private readonly Timer _timer;
             private readonly Stopwatch _stopWatch;
-            private long _totalDataSize;
-            private DateTime _startTime;
+            private static List<long> _DataProcessed;
+            private long _totalDataLength;
 
             public ProcessRates(Status status)
             {
                 _status = status;
-                _stopWatch = new Stopwatch();
                 _timer = new Timer { Enabled = true, Interval = INTERVAL };
                 _timer.Elapsed += timerElapsed;
-                _totalDataSize = Cipher.GetTotalSize();
+                _stopWatch = new Stopwatch();
+                _DataProcessed = new List<long>();
             }
 
             public void Start()
             {
+                _totalDataLength = Cipher.GetTotalSize();
                 _stopWatch.Start();
                 _timer.Start();
-                _startTime = DateTime.Now;
-                _ProcessData = new List<long>();
             }
 
             public void Stop()
             {
                 _timer.Stop();
-                _stopWatch.Stop();
                 _stopWatch.Reset();
-                _ProcessData.Clear();
-                _totalDataSize = 0;
+                _DataProcessed.Clear();
+                _totalDataLength = 0;
             }
 
             private void timerElapsed(object sender, ElapsedEventArgs e)
             {
-                _status.UpdateTimeElapsed(Utils.GetSpannedTime(_startTime.Ticks, hideMs: true) +  @"elapsed");
-                var elapsed = Cipher.GetElapsedBytes();
-                if (elapsed <= 0)
-                    return;
-                _ProcessData.InsertAndTrim(elapsed, MAX_DATA_POINTS);
-                var averageProcessRate = ((long) _ProcessData.Average(x => x * (1000 / INTERVAL))).BytesToSizeString();
-                _status.UpdateProcessRate($"Processing speed: {averageProcessRate}/s");
-                _status.UpdateTimeRemaining($"Est. time remaining: {TimeSpan.FromSeconds(Math.Ceiling(calculateSecondsRemaining()))}");
+                _status.SetTimeElapsed(Utils.GetSpannedTime(DateTime.Now.Ticks - _stopWatch.ElapsedTicks, hideMs: true) +  @"elapsed");
+                var elapsedBytes = Cipher.GetElapsedBytes();
+                if (elapsedBytes <= 0) return;
+                _DataProcessed.InsertAndTrim(elapsedBytes, MAX_DATA_POINTS);
+                var averageProcessRate = ((long) _DataProcessed.Average(x => x * (1000 / INTERVAL))).BytesToSizeString();
+                _status.SetProcessingRateText($"Processing speed: {averageProcessRate}/s");
+                _status.SetTimeRemaining($"Est. time remaining: {getTimeRemaining()}");
             }
 
-            private double calculateSecondsRemaining()
+            // TODO Could be more accurate, especially near the end
+            private string getTimeRemaining()
             {
                 var payloadState = Cipher.GetPayloadState();
-                if (payloadState <= 0) return 0;
-                var remaining = (_stopWatch.Elapsed.Seconds / (double) payloadState) * (_totalDataSize - payloadState);
-                return remaining;
+                if (payloadState <= 0) return "";
+                var remaining = (_stopWatch.Elapsed.Seconds / (double) payloadState) * (_totalDataLength - payloadState);
+                return TimeSpan.FromSeconds(Math.Ceiling(remaining)).ToString();
             }
         }
     }

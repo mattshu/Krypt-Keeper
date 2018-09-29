@@ -13,6 +13,7 @@ using KryptKeeper.Properties;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using MetroFramework.Controls;
 
 namespace KryptKeeper
 {
@@ -31,23 +32,16 @@ namespace KryptKeeper
             InitializeComponent();
             _fileList = new FileList(new List<FileData>(), datagridFileList);
         }
-        
-        public List<Control> GetStatusObjects()
-        {
-            return new List<Control>
-            {
-                lblOperationStatus,
-                lblFileBeingProcessed,
-                lblProcessingRates,
-                txtStatus,
-                lblTimeElapsed,
-                lblTimeRemaining
-            };
-        }
+
+        public MetroLabel GetOperationText => lblStatusOperationText;
+        public MetroLabel GetFileWorkedText => lblStatusFileWorkedText;
+        public MetroLabel GetProcessingRateText => lblStatusProcessingRateText;
+        public MetroTextBox GetLogBox => txtStatusLogBox;
+        public MetroLabel GetTimeElapsedText => lblStatusTimeElapsedText;
+        public MetroLabel GetTimeRemainingText => lblStatusTimeRemainingText;
 
         private void mainWindow_Shown(object sender, EventArgs e)
         {
-            focusTab(MainTabs.Options);
             loadSettings();
             _status = new Status(this);
             _fileList.UpdateDataSource();
@@ -58,38 +52,33 @@ namespace KryptKeeper
             backgroundWorker.ProgressChanged += backgroundWorker_ProgressChanged;
             backgroundWorker.RunWorkerCompleted += backgroundWorker_RunWorkerCompleted;
             Cipher.SetBackgroundWorker(backgroundWorker);
-            buildFileList(); // TODO DEBUG
+            buildFileList(DEBUG: true); // TODO DEBUG
         }
 
         private void mainWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
+            e.Cancel = false;
             if (_forceExit)
             {
-                if (chkRememberSettings.Checked)
-                    saveSettings();
+                saveSettings();
+                return;
             }
             if (backgroundWorker.IsBusy)
             {
                 e.Cancel = true;
                 handleExitWhileBusy();
+                return;
             }
-            else
+            if (_CloseAfterCurrentOperation)
+                return;
+            if (!confirmOnExit())
             {
-                e.Cancel = false;
-                if (_CloseAfterCurrentOperation)
-                    return;
-                if (!confirmExit())
-                {
-                    e.Cancel = true;
-                    return;
-                }
-                if (chkRememberSettings.Checked)
-                    saveSettings();
-                else if (!settingsAreDefault())
-                {
-                    e.Cancel = handleSettingsOnExit();
-                }
+                e.Cancel = true;
+                return;
             }
+            saveSettings();
+            if (!settingsAreDefault() && !chkRememberSettings.Checked)
+                e.Cancel = handleSettingsOnExit();
         }
 
         private void focusTab(MainTabs tab)
@@ -114,12 +103,12 @@ namespace KryptKeeper
             chkRemoveAfterEncryption.Checked = settings.removeAfterEncryption;
             chkRemoveAfterDecryption.Checked = settings.removeAfterDecryption;
             chkRememberSettings.Checked = settings.rememberSettings;
-            chkConfirmExit.Checked = settings.confirmOnExit;
+            chkConfirmOnExit.Checked = settings.confirmOnExit;
         }
 
-        private bool confirmExit()
+        private bool confirmOnExit()
         {
-            if (chkConfirmExit.Checked)
+            if (chkConfirmOnExit.Checked)
                 return MessageBox.Show(Resources.ExitApplicationMsg, Resources.ExitApplicationTitle,
                            MessageBoxButtons.OKCancel,
                            MessageBoxIcon.Question) == DialogResult.OK;
@@ -128,6 +117,7 @@ namespace KryptKeeper
 
         private void saveSettings()
         {
+            if (!chkRememberSettings.Checked) return;
             var settings = Settings.Default;
             settings.encryptionMaskFileName = chkMaskFileInformation.Checked && chkMaskFileName.Checked;
             settings.encryptionMaskFileDate = chkMaskFileInformation.Checked && chkMaskFileDate.Checked;
@@ -136,7 +126,7 @@ namespace KryptKeeper
             settings.processInOrder = chkProcessInOrder.Checked;
             settings.processInOrderBy = cbxProcessOrderBy.SelectedIndex;
             settings.rememberSettings = true; // always true in case user exits with saving
-            settings.confirmOnExit = chkConfirmExit.Checked;
+            settings.confirmOnExit = chkConfirmOnExit.Checked;
             settings.Save();
         }
 

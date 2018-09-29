@@ -22,15 +22,20 @@ namespace KryptKeeper
                 Close();
                 return;
             }
+            finishOperations(cancelled: e.Cancelled);
+            if (chkOnCompletion.Checked && verifyOnCompletionIconSelected())
+                handleOnCompletion();
+        }
+
+        private void finishOperations(bool cancelled = false)
+        {
             _status.WriteLine("Operation finished. ");
             disableButtonsDuringOperation(false);
             updateProgress();
-            lblTotalFiles.Text = e.Cancelled ? "Some" : "All" + " files processed";
+            lblStatusTopText.Text = cancelled ? "Some" : "All" + " files processed";
             lblJobInformation.Text = "";
             _fileList.Reset();
-            _status.CompleteOperations();
-            if (chkOnCompletion.Checked && verifyOnCompletionIconSelected())
-                handleOnCompletion();
+            _status.StopCollection();
         }
 
         private void chkOnCompletion_CheckedChanged(object sender, EventArgs e)
@@ -72,19 +77,25 @@ namespace KryptKeeper
         private void btnCancelOperation_Click(object sender, EventArgs e)
         {
             if (!backgroundWorker.IsBusy) return;
+            if (!confirmCancel()) return;
+            backgroundWorker.CancelAsync();
+            btnCancelOperation.Enabled = false;
+        }
+
+        private static bool confirmCancel()
+        {
             var dlgConfirmCancel = MessageBox.Show(Resources.AbortOperationDlgMsg,
                 Resources.OperationBusyTitleMsg, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
             if (dlgConfirmCancel == DialogResult.Yes)
                 Cipher.CancelProcessing();
             else if (dlgConfirmCancel == DialogResult.Cancel)
-                return;
-            backgroundWorker.CancelAsync();
-            btnCancelOperation.Enabled = false;
+                return false;
+            return true;
         }
 
         private void txtStatus_TextChanged(object sender, EventArgs e)
         {
-            btnExport.Enabled = txtStatus.Text.Length > 0;
+            btnExport.Enabled = txtStatusLogBox.Text.Length > 0;
         }
 
         private void btnExport_Click(object sender, EventArgs e)
@@ -94,7 +105,7 @@ namespace KryptKeeper
 
         private void btnClear_Click(object sender, EventArgs e)
         {
-            txtStatus.Clear();
+            txtStatusLogBox.Clear();
         }
 
         private void btnExit_Click(object sender, EventArgs e)
@@ -185,7 +196,7 @@ namespace KryptKeeper
             progressTotalFiles.Value = Utils.Clamp(totalFileProgress, 0, 100);
             progressTotalBytes.Value = Utils.Clamp(totalBytesProgress, 0, 100);
             lblTotalBytesPercentage.Text = $@"{totalBytesProgress}%";
-            lblTotalFiles.Text = Cipher.GetFileProgress();
+            lblStatusTopText.Text = Cipher.GetFileProgress();
         }
 
         private void exportStatusLog()
@@ -197,7 +208,7 @@ namespace KryptKeeper
             {
                 var logHeader = Utils.GenerateLogHeader();
                 fStream.Write(logHeader, 0, logHeader.Length);
-                fStream.Write(Utils.GetBytes(txtStatus.Text), 0, txtStatus.Text.Length);
+                fStream.Write(Utils.GetBytes(txtStatusLogBox.Text), 0, txtStatusLogBox.Text.Length);
             }
             _status.WriteLine("Exported log to " + saveFileDialog.FileName);
         }

@@ -4,12 +4,12 @@ namespace KryptKeeper
 {
     internal class ProgressPacket
     {
-        private long _currentBytesState { get; }
-        private long _currentBytesTotal { get; }
-        private long _totalBytesState { get; }
-        private long _totalBytesTotal { get; }
-        private int _totalFilesState { get; }
-        private int _totalFilesTotal { get; }
+        private readonly long _currentBytesState;
+        private readonly long _currentBytesTotal;
+        private readonly long _totalBytesState;
+        private readonly long _totalBytesTotal;
+        private readonly int _totalFilesState;
+        private readonly int _totalFilesTotal;
 
         public ProgressPacket(IReadOnlyList<long> currentBytes, IReadOnlyList<int> totalFiles, IReadOnlyList<long> totalBytes)
         {

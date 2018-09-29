@@ -85,7 +85,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Cipher.Constants.cs" />
+    <Compile Include="Cipher.Eternals.cs" />
     <Compile Include="Cipher.cs" />
     <Compile Include="Cipher.Mode.cs" />
     <Compile Include="CipherOptions.cs" />

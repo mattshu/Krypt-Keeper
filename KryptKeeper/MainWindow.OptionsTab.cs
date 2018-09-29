@@ -27,9 +27,7 @@ namespace KryptKeeper
                 txtCipherKey.WaterMark = @"You must browse for a key file...";
             }
             else
-            {
                 txtCipherKey.WaterMark = "";
-            }
         }
 
         private void txtCipherKey_ButtonClick(object sender, EventArgs e)

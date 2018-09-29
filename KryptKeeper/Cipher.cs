@@ -14,33 +14,23 @@ namespace KryptKeeper
         private static BackgroundWorker _worker3;
         private static readonly BackgroundWorker _worker4;
         private static readonly BackgroundWorker[] _workers;
-
         private static Stream _rStream;
         private static Stream _cStream;*/
-
-        public static readonly char[] ALLOWED_PLAINTEXT_KEY_SYMBOLS =
-            {'!', '@', '#', '$', '%', '^', '&', '*', '?', '_', '~', '-', '£', '(', ')'};
-
-        private static bool _cancelProcessing;
-        private static BackgroundWorker _backgroundWorker;
+        public static void CancelProcessing() => _CancelProcessing = true;
+        public static string GetFileProgress() => $"{_TotalFilesState}/{_TotalFilesTotal} files processed";
+        public static long GetPayloadState() => _TotalPayloadState;
+        public static long GetTotalSize() => _TotalPayloadTotal;
+        private static bool _CancelProcessing;
+        private static BackgroundWorker _BackgroundWorker;
         private static readonly Status _status = Status.GetInstance();
-
-        private static long _currentPayloadState;
-        private static long _currentPayloadTotal;
-        private static long _totalPayloadState;
-        private static long _totalPayloadTotal;
-        private static int _totalFilesState;
-        private static int _totalFilesTotal;
-
-        private static long _lastDataSizeWorked;
-
-        public static void CancelProcessing() => _cancelProcessing = true;
-
-        public static string GetFileProgress() => $"{_totalFilesState}/{_totalFilesTotal} files processed";
-
-        public static long GetPayloadState() => _totalPayloadState;
-        public static long GetTotalSize() => _totalPayloadTotal;
-
+        private static long _CurrentPayloadState;
+        private static long _CurrentPayloadTotal;
+        private static long _TotalPayloadState;
+        private static long _TotalPayloadTotal;
+        private static int _TotalFilesState;
+        private static int _TotalFilesTotal;
+        private static long _LastDataSizeWorked;
+        
         /*static Cipher() {// TODO #SplitLargeFileProject
             _worker1 = new BackgroundWorker();
             _worker1.DoWork += worker1_DoWork;
@@ -111,21 +101,19 @@ namespace KryptKeeper
             Console.WriteLine(@"Data finished! Count: " + dataList.Count);
         }
         */
-
         public static void ProcessFiles(CipherOptions options)
         {
             if (options.Files.Count <= 0) return;
-            _totalFilesState = 0;
+            _TotalFilesState = 0;
             if (options.Mode == Mode.Decrypt)
                 validateFilesForDecryption(options);
-            _totalFilesTotal = options.Files.Count;
-            _totalPayloadTotal = Utils.GetTotalBytes(options.Files);
-            _status.StartProcessRateCollection(options);
-            _backgroundWorker.RunWorkerAsync(options);
+            _TotalFilesTotal = options.Files.Count;
+            _TotalPayloadTotal = Utils.GetTotalBytes(options.Files);
+            _status.StartCollection(options);
+            _BackgroundWorker.RunWorkerAsync(options);
         }
 
-        private static void validateFilesForDecryption(CipherOptions options)
-        {
+        private static void validateFilesForDecryption(CipherOptions options) {
             var tmpList = options.Files.GetList()
                 .Where(x => !x.GetExtension().Equals(FILE_EXTENSION))
                 .Select(x => x).ToList();
@@ -139,23 +127,20 @@ namespace KryptKeeper
                 _status.WriteLine("-" + file.GetFilePath());
         }
 
-        public static long GetElapsedBytes()
-        {
-            if (_lastDataSizeWorked == 0)
-            {
-                _lastDataSizeWorked = _totalPayloadState;
+        public static long GetElapsedBytes() {
+            if (_LastDataSizeWorked == 0) {
+                _LastDataSizeWorked = _TotalPayloadState;
                 return 0;
             }
-            var difference = Math.Abs(_totalPayloadState - _lastDataSizeWorked);
-            _lastDataSizeWorked = _totalPayloadState;
+            var difference = Math.Abs(_TotalPayloadState - _LastDataSizeWorked);
+            _LastDataSizeWorked = _TotalPayloadState;
             return difference;
         }
 
-        public static void SetBackgroundWorker(BackgroundWorker bgWorker)
-        {
-            _backgroundWorker = bgWorker;
-            _backgroundWorker.DoWork += backgroundWorker_DoWork;
-            _backgroundWorker.RunWorkerCompleted += backgroundWorker_RunWorkerCompleted;
+        public static void SetBackgroundWorker(BackgroundWorker bgWorker) {
+            _BackgroundWorker = bgWorker;
+            _BackgroundWorker.DoWork += backgroundWorker_DoWork;
+            _BackgroundWorker.RunWorkerCompleted += backgroundWorker_RunWorkerCompleted;
         }
 
         private static void backgroundWorker_DoWork(object sender, DoWorkEventArgs e)
@@ -163,14 +148,14 @@ namespace KryptKeeper
             var options = (CipherOptions) e.Argument;
             foreach (var fileData in options.Files.GetList().ToList())
             {
-                if (_backgroundWorker.CancellationPending)
+                if (_BackgroundWorker.CancellationPending)
                     break;
                 if (File.Exists(fileData.GetFilePath()))
                 {
                     _status.WritePending($"{options.GetModeOfOperation()}: " + fileData.GetFilePath());
-                    _status.UpdateOperationStatus(options.GetModeOfOperation());
+                    _status.SetOperationText(options.GetModeOfOperation());
                     processFile(fileData.GetFilePath(), options);
-                    _totalFilesState++;
+                    _TotalFilesState++;
                 }
                 else
                     _status.WriteLine("* Unable to find: " + fileData);
@@ -184,13 +169,13 @@ namespace KryptKeeper
 
         private static void resetProgressPoints()
         {
-            _currentPayloadState = 0;
-            _currentPayloadTotal = 0;
-            _totalPayloadState = 0;
-            _totalPayloadTotal = 0;
-            _totalFilesState = 0;
-            _totalFilesTotal = 0;
-            _lastDataSizeWorked = 0;
+            _CurrentPayloadState = 0;
+            _CurrentPayloadTotal = 0;
+            _TotalPayloadState = 0;
+            _TotalPayloadTotal = 0;
+            _TotalFilesState = 0;
+            _TotalFilesTotal = 0;
+            _LastDataSizeWorked = 0;
         }
 
         private static void processFile(string path, CipherOptions options)
@@ -198,17 +183,21 @@ namespace KryptKeeper
             string workingPath = "";
             try
             {
-                if (!File.Exists(path))
-                {
+                if (!File.Exists(path)) {
                     _status.WriteLine("* File not found: " + path);
                     return;
                 }
-                _status.UpdateProcessedFile(Path.GetFileName(path));
-                if (options.Mode == Mode.Decrypt && isFileValidForDecryption(path))
-                    workingPath = path.ReplaceLastOccurrence(FILE_EXTENSION, WORKING_FILE_EXTENSION);
-                else if (options.Mode == Mode.Encrypt)
-                    workingPath = getEncryptionWorkingPath(path, options);
-                else return;
+                _status.SetFileWorkedText(Path.GetFileName(path));
+                switch (options.Mode) {
+                    case Mode.Decrypt when fileIsValidForDecryption(path):
+                        workingPath = path.ReplaceLastOccurrence(FILE_EXTENSION, WORKING_FILE_EXTENSION);
+                        break;
+                    case Mode.Encrypt:
+                        workingPath = getEncryptionWorkingPath(path, options);
+                        break;
+                    default:
+                        return;
+                }
                 if (File.Exists(workingPath)) workingPath = Utils.PadExistingFileName(workingPath);
                 using (var aes = Aes.Create())
                 {
@@ -234,7 +223,7 @@ namespace KryptKeeper
                         }
                     }
                 }
-                if (_cancelProcessing)
+                if (_CancelProcessing)
                 {
                     _status.WriteLine("Process cancelled, deleting temp file: " + workingPath);
                     if (!Utils.TryDeleteFile(workingPath))
@@ -251,6 +240,12 @@ namespace KryptKeeper
             {
                 handleCipherExceptions(ex, path, workingPath);
             }
+        }
+
+        private static bool preProcessFileHandling(string path, CipherOptions options, ref string workingPath)
+        {
+
+            return true;
         }
 
         private static string getEncryptionWorkingPath(string path, CipherOptions options)
@@ -270,7 +265,7 @@ namespace KryptKeeper
             return workingPath;
         }
 
-        private static bool isFileValidForDecryption(string path)
+        private static bool fileIsValidForDecryption(string path)
         {
             if (Path.GetExtension(path) == FILE_EXTENSION && new FileInfo(path).Length >= MINIMUM_FILE_LENGTH)
                 return true;
@@ -426,64 +421,64 @@ namespace KryptKeeper
                 CryptoStream = cryptoStream;
             }
         }*/
+        /* //TODO #SplitLargeFileProject
+               13413418 / 4 	= 3353354.5
+                    ^ ceil	= 3353355 = a
+
+               Worker1: 0, 3353354 (a * 0, a * 1 - 1)
+               Worker2: 3353355, 6706709 (a * 1, a * 2 - 1)
+               Worker3: 6706710, 10060064 (a * 2, a * 3 - 1)
+               Worker4: 10060065, 13413420 (a * 3, a * 4 - 1)
+
+               Worker4.(while read != 0)
+
+           var size = new FileInfo(path).Length;
+           if (size > Utils.GetSizeFromString("64 MB"))
+           {
+               var offset = (long) Math.Ceiling((double)size / 4);
+               for (int i = 0; i < 4; i++)
+               {
+                   // Assign each background worker the task of decoding a quarter of the file each, going by the offset below
+                   var args = new BackgroundWorkerArguments(path, offset * (i + 1) - 1, readStream, cryptoStream);
+                   switch (i)
+                   {
+                       case 0:
+                           _worker1.RunWorkerAsync(args);
+                           break;
+                       case 1:
+                           _worker2.RunWorkerAsync(args);
+                           break;
+                       case 2:
+                           _worker3.RunWorkerAsync(args);
+                           break;
+                       case 3:
+                           _worker4.RunWorkerAsync(args);
+                           break;
+                   }
+               }
+           }
+           else
+           {
+               var args = new BackgroundWorkerArguments(path, 0, readStream, cryptoStream);
+               _worker1.RunWorkerAsync(args);
+           }
+           */
 
         private static void processStreams(string path, Stream readStream, Stream cryptoStream)
         {
-            /* //TODO #SplitLargeFileProject
-                13413418 / 4 	= 3353354.5
-	                 ^ ceil	= 3353355 = a
-
-                Worker1: 0, 3353354 (a * 0, a * 1 - 1)
-                Worker2: 3353355, 6706709 (a * 1, a * 2 - 1)
-                Worker3: 6706710, 10060064 (a * 2, a * 3 - 1)
-                Worker4: 10060065, 13413420 (a * 3, a * 4 - 1)
-
-                Worker4.(while read != 0)
-
-            var size = new FileInfo(path).Length;
-            if (size > Utils.GetSizeFromString("64 MB"))
-            {
-                var offset = (long) Math.Ceiling((double)size / 4);
-                for (int i = 0; i < 4; i++)
-                {
-                    // Assign each background worker the task of decoding a quarter of the file each, going by the offset below
-                    var args = new BackgroundWorkerArguments(path, offset * (i + 1) - 1, readStream, cryptoStream);
-                    switch (i)
-                    {
-                        case 0:
-                            _worker1.RunWorkerAsync(args);
-                            break;
-                        case 1:
-                            _worker2.RunWorkerAsync(args);
-                            break;
-                        case 2:
-                            _worker3.RunWorkerAsync(args);
-                            break;
-                        case 3:
-                            _worker4.RunWorkerAsync(args);
-                            break;
-                    }
-                }
-            }
-            else
-            {
-                var args = new BackgroundWorkerArguments(path, 0, readStream, cryptoStream);
-                _worker1.RunWorkerAsync(args);
-            }
-            */
-            _cancelProcessing = false;
+            _CancelProcessing = false;
             var buffer = new byte[CHUNK_SIZE];
              int bytesRead = readStream.Read(buffer, 0, CHUNK_SIZE);
-            _currentPayloadState = 0;
-            _currentPayloadTotal = new FileInfo(path).Length;
+            _CurrentPayloadState = 0;
+            _CurrentPayloadTotal = new FileInfo(path).Length;
             while (bytesRead > 0)
             {
-                if (_cancelProcessing)
+                if (_CancelProcessing)
                     break;
-                _currentPayloadState += bytesRead;
-                _totalPayloadState += bytesRead;
+                _CurrentPayloadState += bytesRead;
+                _TotalPayloadState += bytesRead;
                 var packet = buildProgressPacket();
-                _backgroundWorker.ReportProgress(0, packet);
+                _BackgroundWorker.ReportProgress(0, packet);
                 cryptoStream.Write(buffer, 0, bytesRead);
                 bytesRead = readStream.Read(buffer, 0, bytesRead);
             }
@@ -492,9 +487,9 @@ namespace KryptKeeper
         private static ProgressPacket buildProgressPacket()
         {
             return new ProgressPacket(
-                new[] { _currentPayloadState, _currentPayloadTotal},
-                new[] {_totalFilesState, _totalFilesTotal},
-                new[] {_totalPayloadState, _totalPayloadTotal});
+                new[] { _CurrentPayloadState, _CurrentPayloadTotal},
+                new[] {_TotalFilesState, _TotalFilesTotal},
+                new[] {_TotalPayloadState, _TotalPayloadTotal});
         }
 
         private static void buildAndWriteFooter(string path, Stream cryptoStream)
@@ -528,16 +523,14 @@ namespace KryptKeeper
                 _status.WriteLine("* File possibly corrupt: " + workingPath);
                 return string.Empty;
             }
-            using (var fOpen = new FileStream(workingPath, FileMode.Open))
-                fOpen.SetLength(fOpen.Length - footer.ToArray().Length);
             var originalPath = workingPath.Replace(Path.GetFileName(workingPath), footer.Name)
                 .ReplaceLastOccurrence(WORKING_FILE_EXTENSION, "");
             if (File.Exists(originalPath))
                 originalPath = Utils.PadExistingFileName(originalPath);
             File.Move(workingPath, originalPath); // Copy worked file to original file
-            Utils.SetFileTimesFromFooter(originalPath, footer);
             if (new FileInfo(originalPath).Length > 0)
             {
+                Utils.SetFileTimesFromFooter(originalPath, footer);
                 if (options.RemoveOriginalDecryption && !Utils.TryDeleteFile(path))
                     _status.WriteLine("Unable to remove original file: " + path);
             }

@@ -12,5 +12,6 @@
         public const int ENTROPY_SIZE = 15;
         public const int KEY_SIZE = 256;
         public const int CHUNK_SIZE = 0x1000000; // 16MB 
+        public static readonly char[] ALLOWED_PLAINTEXT_KEY_SYMBOLS = { '!', '@', '#', '$', '%', '^', '&', '*', '?', '_', '~', '-', '£', '(', ')' };
     }
 }

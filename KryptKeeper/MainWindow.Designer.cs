@@ -28,9 +28,11 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
             this.tabMain = new MetroFramework.Controls.MetroTabControl();
             this.tabOptions = new MetroFramework.Controls.MetroTabPage();
             this.btnBrowseKeyFile = new MetroFramework.Controls.MetroButton();
@@ -39,6 +41,7 @@
             this.radKeyFile = new MetroFramework.Controls.MetroRadioButton();
             this.radPlaintextKey = new MetroFramework.Controls.MetroRadioButton();
             this.txtCipherKey = new MetroFramework.Controls.MetroTextBox();
+            this.chkMinimizeToTrayOnClose = new MetroFramework.Controls.MetroCheckBox();
             this.chkConfirmOnExit = new MetroFramework.Controls.MetroCheckBox();
             this.chkRememberSettings = new MetroFramework.Controls.MetroCheckBox();
             this.chkRemoveAfterDecryption = new MetroFramework.Controls.MetroCheckBox();
@@ -84,6 +87,13 @@
             this.lblVersionInformation = new MetroFramework.Controls.MetroLabel();
             this.backgroundWorker = new System.ComponentModel.BackgroundWorker();
             this.metroToolTip = new MetroFramework.Components.MetroToolTip();
+            this.systemTrayIcon = new System.Windows.Forms.NotifyIcon(this.components);
+            this.contextMenu = new MetroFramework.Controls.MetroContextMenu(this.components);
+            this.status = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.menuItemOpen = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.menuItemExit = new System.Windows.Forms.ToolStripMenuItem();
             this.tabMain.SuspendLayout();
             this.tabOptions.SuspendLayout();
             this.panelKeyRads.SuspendLayout();
@@ -92,6 +102,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.datagridFileList)).BeginInit();
             this.tabStatus.SuspendLayout();
             this.panelOnCompletion.SuspendLayout();
+            this.contextMenu.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabMain
@@ -118,6 +129,7 @@
             this.tabOptions.Controls.Add(this.btnSelectFiles);
             this.tabOptions.Controls.Add(this.panelKeyRads);
             this.tabOptions.Controls.Add(this.txtCipherKey);
+            this.tabOptions.Controls.Add(this.chkMinimizeToTrayOnClose);
             this.tabOptions.Controls.Add(this.chkConfirmOnExit);
             this.tabOptions.Controls.Add(this.chkRememberSettings);
             this.tabOptions.Controls.Add(this.chkRemoveAfterDecryption);
@@ -244,6 +256,20 @@
             this.txtCipherKey.ButtonClick += new MetroFramework.Controls.MetroTextBox.ButClick(this.txtCipherKey_ButtonClick);
             this.txtCipherKey.Click += new System.EventHandler(this.txtCipherKey_Click);
             // 
+            // chkMinimizeToTrayOnClose
+            // 
+            this.chkMinimizeToTrayOnClose.AutoSize = true;
+            this.chkMinimizeToTrayOnClose.Checked = true;
+            this.chkMinimizeToTrayOnClose.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkMinimizeToTrayOnClose.FontSize = MetroFramework.MetroCheckBoxSize.Medium;
+            this.chkMinimizeToTrayOnClose.Location = new System.Drawing.Point(74, 303);
+            this.chkMinimizeToTrayOnClose.Name = "chkMinimizeToTrayOnClose";
+            this.chkMinimizeToTrayOnClose.Size = new System.Drawing.Size(251, 19);
+            this.chkMinimizeToTrayOnClose.TabIndex = 8;
+            this.chkMinimizeToTrayOnClose.Text = "Minimize to system tray when closed";
+            this.chkMinimizeToTrayOnClose.Theme = MetroFramework.MetroThemeStyle.Dark;
+            this.chkMinimizeToTrayOnClose.UseSelectable = true;
+            // 
             // chkConfirmOnExit
             // 
             this.chkConfirmOnExit.AutoSize = true;
@@ -262,7 +288,7 @@
             // 
             this.chkRememberSettings.AutoSize = true;
             this.chkRememberSettings.FontSize = MetroFramework.MetroCheckBoxSize.Medium;
-            this.chkRememberSettings.Location = new System.Drawing.Point(74, 230);
+            this.chkRememberSettings.Location = new System.Drawing.Point(74, 253);
             this.chkRememberSettings.Name = "chkRememberSettings";
             this.chkRememberSettings.Size = new System.Drawing.Size(242, 19);
             this.chkRememberSettings.TabIndex = 7;
@@ -960,6 +986,56 @@
             this.metroToolTip.StyleManager = null;
             this.metroToolTip.Theme = MetroFramework.MetroThemeStyle.Light;
             // 
+            // systemTrayIcon
+            // 
+            this.systemTrayIcon.ContextMenuStrip = this.contextMenu;
+            this.systemTrayIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("systemTrayIcon.Icon")));
+            this.systemTrayIcon.Text = "Krypt Keeper";
+            this.systemTrayIcon.Visible = true;
+            this.systemTrayIcon.DoubleClick += new System.EventHandler(this.systemTrayIcon_DoubleClick);
+            // 
+            // contextMenu
+            // 
+            this.contextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.status,
+            this.menuItemSeparator1,
+            this.menuItemOpen,
+            this.menuItemSeparator2,
+            this.menuItemExit});
+            this.contextMenu.Name = "contextMenu";
+            this.contextMenu.Size = new System.Drawing.Size(132, 82);
+            // 
+            // status
+            // 
+            this.status.Enabled = false;
+            this.status.Name = "status";
+            this.status.Size = new System.Drawing.Size(131, 22);
+            this.status.Text = "Status: idle";
+            // 
+            // menuItemSeparator1
+            // 
+            this.menuItemSeparator1.Name = "menuItemSeparator1";
+            this.menuItemSeparator1.Size = new System.Drawing.Size(128, 6);
+            // 
+            // menuItemOpen
+            // 
+            this.menuItemOpen.Name = "menuItemOpen";
+            this.menuItemOpen.Size = new System.Drawing.Size(131, 22);
+            this.menuItemOpen.Text = "Open";
+            this.menuItemOpen.Click += new System.EventHandler(this.menuItemOpen_Click);
+            // 
+            // menuItemSeparator2
+            // 
+            this.menuItemSeparator2.Name = "menuItemSeparator2";
+            this.menuItemSeparator2.Size = new System.Drawing.Size(128, 6);
+            // 
+            // menuItemExit
+            // 
+            this.menuItemExit.Name = "menuItemExit";
+            this.menuItemExit.Size = new System.Drawing.Size(131, 22);
+            this.menuItemExit.Text = "Exit";
+            this.menuItemExit.Click += new System.EventHandler(this.menuItemExit_Click);
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -975,6 +1051,7 @@
             this.Theme = MetroFramework.MetroThemeStyle.Dark;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.mainWindow_FormClosing);
             this.Shown += new System.EventHandler(this.mainWindow_Shown);
+            this.Resize += new System.EventHandler(this.MainWindow_Resize);
             this.tabMain.ResumeLayout(false);
             this.tabOptions.ResumeLayout(false);
             this.tabOptions.PerformLayout();
@@ -987,6 +1064,7 @@
             this.tabStatus.ResumeLayout(false);
             this.tabStatus.PerformLayout();
             this.panelOnCompletion.ResumeLayout(false);
+            this.contextMenu.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -1045,5 +1123,13 @@
         private MetroFramework.Controls.MetroProgressSpinner progressTotalFiles;
         private MetroFramework.Controls.MetroPanel panelIconClose;
         private MetroFramework.Controls.MetroLabel lblStatusTimeRemainingText;
+        private System.Windows.Forms.NotifyIcon systemTrayIcon;
+        private MetroFramework.Controls.MetroContextMenu contextMenu;
+        private System.Windows.Forms.ToolStripMenuItem status;
+        private System.Windows.Forms.ToolStripSeparator menuItemSeparator1;
+        private System.Windows.Forms.ToolStripMenuItem menuItemOpen;
+        private System.Windows.Forms.ToolStripSeparator menuItemSeparator2;
+        private System.Windows.Forms.ToolStripMenuItem menuItemExit;
+        private MetroFramework.Controls.MetroCheckBox chkMinimizeToTrayOnClose;
     }
 }

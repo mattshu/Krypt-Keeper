@@ -6,6 +6,7 @@
         - Dialog icons
         - Add version information to encrypted files for backwards compatibility
     TODO * MINOR *
+        - Tooltips on completion or error if app is minimized to tray
         - If planning on storing keys, ensure key storage security
         - Always work toward single responsibility principle
 */
@@ -19,7 +20,6 @@ namespace KryptKeeper
 {
     public partial class MainWindow : MetroFramework.Forms.MetroForm
     {
-
         private static bool _CloseAfterCurrentOperation;
         private enum MainTabs { Options, Files, Status }
         private Status _status;
@@ -53,6 +53,33 @@ namespace KryptKeeper
             backgroundWorker.RunWorkerCompleted += backgroundWorker_RunWorkerCompleted;
             Cipher.SetBackgroundWorker(backgroundWorker);
             buildFileList(DEBUG: true); // TODO DEBUG
+        }
+
+        private void MainWindow_Resize(object sender, EventArgs e) {
+            if (WindowState != FormWindowState.Minimized) return;
+            Hide();
+            systemTrayIcon.Visible = true;
+        }
+
+        private void menuItemOpen_Click(object sender, EventArgs e)
+        {
+            restoreWindow();
+        }
+
+        private void menuItemExit_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
+
+        private void systemTrayIcon_DoubleClick(object sender, EventArgs e)
+        {
+            restoreWindow();
+        }
+
+        private void restoreWindow()
+        {
+            Show();
+            WindowState = FormWindowState.Normal;
         }
 
         private void mainWindow_FormClosing(object sender, FormClosingEventArgs e)

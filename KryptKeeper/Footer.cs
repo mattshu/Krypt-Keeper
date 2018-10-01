@@ -5,7 +5,7 @@ using System.Text;
 
 namespace KryptKeeper
 {
-    internal class Footer
+    public class Footer
     {
         public static readonly string FOOTER_TAG = "[KRYPTKEEPER]";
         public static readonly byte[] FOOTER_SIGNATURE = Utils.GetBytes(FOOTER_TAG);

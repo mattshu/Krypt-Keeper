@@ -5,10 +5,9 @@ VisualStudioVersion = 15.0.27428.2037
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KryptKeeper", "KryptKeeper\KryptKeeper.csproj", "{4F01C23A-02D2-47B2-BD54-ABBBD629B68B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KryptKeeperTests", "KryptKeeperTests\KryptKeeperTests.csproj", "{0F4D8166-41CE-4FE1-A407-01C73270A076}"
+EndProject
 Global
-	GlobalSection(Performance) = preSolution
-		HasPerformanceSessions = true
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -18,11 +17,18 @@ Global
 		{4F01C23A-02D2-47B2-BD54-ABBBD629B68B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4F01C23A-02D2-47B2-BD54-ABBBD629B68B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4F01C23A-02D2-47B2-BD54-ABBBD629B68B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0F4D8166-41CE-4FE1-A407-01C73270A076}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0F4D8166-41CE-4FE1-A407-01C73270A076}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0F4D8166-41CE-4FE1-A407-01C73270A076}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0F4D8166-41CE-4FE1-A407-01C73270A076}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {741F4A4E-235D-492D-835A-BF1D6EAF4ECB}
+	EndGlobalSection
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
 	EndGlobalSection
 EndGlobal

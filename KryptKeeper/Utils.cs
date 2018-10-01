@@ -11,7 +11,7 @@ using System.Windows.Forms;
 
 namespace KryptKeeper
 {
-    internal static class Utils
+    public static class Utils
     {
         public static string BrowseFiles(string title = "Select a file", bool multiSelect = true)
         {
@@ -190,11 +190,13 @@ namespace KryptKeeper
         }
 
         public static void TrimFile(string path, long length) {
-            try {
+            try
+            {
                 using (var fOpen = new FileStream(path, FileMode.Open))
                     fOpen.SetLength(fOpen.Length - length);
             }
-            catch (FileNotFoundException) {
+            catch (FileNotFoundException)
+            {
 
             }
         }
@@ -203,8 +205,9 @@ namespace KryptKeeper
         {
             try
             {
-                if (File.Exists(path))
-                    File.Delete(path);
+                if (!File.Exists(path))
+                    return false;
+                File.Delete(path);
                 return true;
             }
             catch (Exception)

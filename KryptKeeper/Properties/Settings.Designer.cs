@@ -142,5 +142,17 @@ namespace KryptKeeper.Properties {
                 this["processInOrderDesc"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool minimizeToTrayOnClose {
+            get {
+                return ((bool)(this["minimizeToTrayOnClose"]));
+            }
+            set {
+                this["minimizeToTrayOnClose"] = value;
+            }
+        }
     }
 }

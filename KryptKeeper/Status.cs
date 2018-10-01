@@ -6,8 +6,8 @@ namespace KryptKeeper {
     public partial class Status
     {
         private static Status _Instance;
-        private static readonly string _timestamp = $"[{DateTime.Now:HH:mm:ss.fff}]: ";
-        private static ProcessRates _processRates;
+        private static string Timestamp => $"[{DateTime.Now:HH:mm:ss.fff}]: ";
+        private static ProcessRates _ProcessRates;
         private readonly MetroLabel _lblFileWorked;
         private readonly MetroLabel _lblOperation;
         private readonly MetroLabel _lblProcessingRate;
@@ -40,13 +40,13 @@ namespace KryptKeeper {
 
         public void StartCollection(CipherOptions options)
         {
-            _processRates = new ProcessRates(this);
-            _processRates.Start();
+            _ProcessRates = new ProcessRates(this);
+            _ProcessRates.Start();
         }
 
         public void StopCollection()
         {
-            _processRates.Stop();
+            _ProcessRates.Stop();
             SetOperationText("Done!");
             SetFileWorkedText("");
             SetProcessingRateText("");
@@ -87,7 +87,7 @@ namespace KryptKeeper {
             if (_isPending)
                 finishPending();
             _isPending = false;
-            updateStatus(_timestamp + msg + _newLine);
+            updateStatus(Timestamp + msg + _newLine);
         }
 
         private void finishPending() {
@@ -105,7 +105,7 @@ namespace KryptKeeper {
             else
                 _isPending = true;
             _pendingStartTime = DateTime.Now;
-            updateStatus(_timestamp + msg + "...");
+            updateStatus(Timestamp + msg + "...");
         }
     }
 }

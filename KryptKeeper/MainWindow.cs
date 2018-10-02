@@ -21,8 +21,16 @@ namespace KryptKeeper
     public partial class MainWindow : MetroFramework.Forms.MetroForm
     {
         private static bool _CloseAfterCurrentOperation;
-        private enum MainTabs { Options, Files, Status }
+        public static Version Version;
+        private enum MainTabs
+        {
+            Options,
+            Files,
+            Status
+        }
+
         private Status _status;
+        private Options _options;
         private bool _settingsNeedConfirmed = true;
         private bool _forceExit;
         private FileList _fileList;
@@ -33,17 +41,86 @@ namespace KryptKeeper
             _fileList = new FileList(new List<FileData>(), datagridFileList);
         }
 
-        public MetroLabel GetOperationText => lblStatusOperationText;
-        public MetroLabel GetFileWorkedText => lblStatusFileWorkedText;
-        public MetroLabel GetProcessingRateText => lblStatusProcessingRateText;
-        public MetroTextBox GetLogBox => txtStatusLogBox;
-        public MetroLabel GetTimeElapsedText => lblStatusTimeElapsedText;
-        public MetroLabel GetTimeRemainingText => lblStatusTimeRemainingText;
+        protected internal MetroLabel GetOperationText => lblStatusOperationText;
+        protected internal MetroLabel GetFileWorkedText => lblStatusFileWorkedText;
+        protected internal MetroLabel GetProcessingRateText => lblStatusProcessingRateText;
+        protected internal MetroTextBox GetLogBox => txtStatusLogBox;
+        protected internal MetroLabel GetTimeElapsedText => lblStatusTimeElapsedText;
+        protected internal MetroLabel GetTimeRemainingText => lblStatusTimeRemainingText;
+
+        #region Refernces of controls for the Options class
+        protected internal bool RememberSettings
+        {
+            get => chkRememberSettings.Checked;
+            set => chkRememberSettings.Checked = value;
+        }
+
+        protected internal bool MaskFileInformation
+        {
+            get => chkMaskFileInformation.Checked;
+            set => chkMaskFileInformation.Checked = value;
+        }
+
+        protected internal bool MaskFileName
+        {
+            get => chkMaskFileName.Checked;
+            set => chkMaskFileName.Checked = value;
+        }
+
+        protected internal bool MaskFileDate
+        {
+            get => chkMaskFileDate.Checked;
+            set => chkMaskFileDate.Checked = value;
+        }
+
+        protected internal bool RemoveAfterEncryption
+        {
+            get => chkRemoveAfterEncryption.Checked;
+            set => chkRemoveAfterEncryption.Checked = value;
+        }
+
+        protected internal bool RemoveAfterDecryption
+        {
+            get => chkRemoveAfterDecryption.Checked;
+            set => chkRemoveAfterDecryption.Checked = value;
+        }
+
+        protected internal bool ProcessInOrder
+        {
+            get => chkProcessInOrder.Checked;
+            set => chkProcessInOrder.Checked = value;
+        }
+
+        protected internal bool ProcessInOrderDesc
+        {
+            get => chkProcessInOrderDesc.Checked;
+            set => chkProcessInOrderDesc.Checked = value;
+        }
+
+        protected internal int ProcessInOrderBy
+        {
+            get => cbxProcessOrderBy.SelectedIndex;
+            set => cbxProcessOrderBy.SelectedIndex = value;
+        }
+
+        protected internal bool ConfirmOnExit
+        {
+            get => chkConfirmOnExit.Checked;
+            set => chkConfirmOnExit.Checked = value;
+        }
+
+        protected internal bool MinimizeToTrayOnClose
+        {
+            get => chkMinimizeToTrayOnClose.Checked;
+            set => chkMinimizeToTrayOnClose.Checked = value;
+        }
+        #endregion
 
         private void mainWindow_Shown(object sender, EventArgs e)
         {
-            loadSettings();
             _status = new Status(this);
+            _options = new Options(this);
+            _options.Load();
             _fileList.UpdateDataSource();
             setDefaultColumnWidths();
             datagridFileList.DataSourceChanged += datagridFileList_DataSourceChanged;
@@ -52,13 +129,9 @@ namespace KryptKeeper
             backgroundWorker.ProgressChanged += backgroundWorker_ProgressChanged;
             backgroundWorker.RunWorkerCompleted += backgroundWorker_RunWorkerCompleted;
             Cipher.SetBackgroundWorker(backgroundWorker);
+            Version = System.Reflection.Assembly.GetEntryAssembly().GetName().Version;
+            lblVersionInformation.Text = Version.ToString();
             buildFileList(DEBUG: true); // TODO DEBUG
-        }
-
-        private void MainWindow_Resize(object sender, EventArgs e) {
-            if (WindowState != FormWindowState.Minimized) return;
-            Hide();
-            systemTrayIcon.Visible = true;
         }
 
         private void menuItemOpen_Click(object sender, EventArgs e)
@@ -85,52 +158,38 @@ namespace KryptKeeper
         private void mainWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
             e.Cancel = false;
-            if (_forceExit)
+            if (WindowState == FormWindowState.Normal && chkMinimizeToTrayOnClose.Checked)
             {
-                saveSettings();
-                return;
+                e.Cancel = true;
+                Hide();
             }
+            if (_forceExit) return;
             if (backgroundWorker.IsBusy)
             {
                 e.Cancel = true;
                 handleExitWhileBusy();
                 return;
             }
-            if (_CloseAfterCurrentOperation)
-                return;
+            if (_CloseAfterCurrentOperation) return;
             if (!confirmOnExit())
             {
                 e.Cancel = true;
                 return;
             }
-            saveSettings();
-            if (!settingsAreDefault() && !chkRememberSettings.Checked)
+            if (!chkMaskFileName.Checked && !chkMaskFileDate.Checked && chkRemoveAfterDecryption.Checked &&
+                chkRemoveAfterEncryption.Checked && radKeyFile.Checked && txtCipherKey.Text.Length == 0 &&
+                !chkRememberSettings.Checked)
                 e.Cancel = handleSettingsOnExit();
+        }
+
+        private void MainWindow_FormClosed(object sender, FormClosedEventArgs e) {
+            if (chkRememberSettings.Checked)
+                _options.Save();
         }
 
         private void focusTab(MainTabs tab)
         {
             tabMain.SelectedIndex = (int)tab;
-        }
-
-        private void loadSettings()
-        {
-            progressCurrent.Reset();
-            progressTotalBytes.Reset();
-            var settings = Settings.Default;
-            if (!settings.rememberSettings)
-                Utils.ResetSettings();
-            chkMaskFileInformation.Checked = settings.encryptionMaskFileName || settings.encryptionMaskFileDate;
-            chkMaskFileName.Checked = settings.encryptionMaskFileName;
-            chkMaskFileDate.Checked = settings.encryptionMaskFileDate;
-            chkProcessInOrder.Checked = settings.processInOrder;
-            chkProcessOrderDesc.Enabled = cbxProcessOrderBy.Enabled = chkProcessInOrder.Checked;
-            cbxProcessOrderBy.SelectedIndex = settings.processInOrderBy;
-            chkProcessOrderDesc.Checked = settings.processInOrderDesc;
-            chkRemoveAfterEncryption.Checked = settings.removeAfterEncryption;
-            chkRemoveAfterDecryption.Checked = settings.removeAfterDecryption;
-            chkRememberSettings.Checked = settings.rememberSettings;
-            chkConfirmOnExit.Checked = settings.confirmOnExit;
         }
 
         private bool confirmOnExit()
@@ -142,38 +201,17 @@ namespace KryptKeeper
             return true;
         }
 
-        private void saveSettings()
-        {
-            if (!chkRememberSettings.Checked) return;
-            var settings = Settings.Default;
-            settings.encryptionMaskFileName = chkMaskFileInformation.Checked && chkMaskFileName.Checked;
-            settings.encryptionMaskFileDate = chkMaskFileInformation.Checked && chkMaskFileDate.Checked;
-            settings.removeAfterDecryption = chkRemoveAfterDecryption.Checked;
-            settings.removeAfterEncryption = chkRemoveAfterEncryption.Checked;
-            settings.processInOrder = chkProcessInOrder.Checked;
-            settings.processInOrderBy = cbxProcessOrderBy.SelectedIndex;
-            settings.rememberSettings = true; // always true in case user exits with saving
-            settings.confirmOnExit = chkConfirmOnExit.Checked;
-            settings.Save();
-        }
-
-        private bool settingsAreDefault()
-        {
-            return !chkMaskFileName.Checked && !chkMaskFileDate.Checked && chkRemoveAfterDecryption.Checked &&
-                chkRemoveAfterEncryption.Checked && radKeyFile.Checked && txtCipherKey.Text.Length == 0;
-        }
-
         private bool handleSettingsOnExit()
         {
             switch (MessageBox.Show(Resources.SaveSettingsMsg, Resources.SaveSettingsTitle,
                 MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question))
             {
                 case DialogResult.Yes:
-                    saveSettings();
+                    _options.Save();
                     return false;
 
                 case DialogResult.No:
-                    Utils.ResetSettings();
+                    _options.Reset();
                     return false;
 
                 default:
@@ -203,6 +241,6 @@ namespace KryptKeeper
                     break;
             }
         }
-
     }
 }
+

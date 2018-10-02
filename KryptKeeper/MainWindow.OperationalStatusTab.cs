@@ -69,11 +69,6 @@ namespace KryptKeeper
             toggleOnCompleteTags("close");
         }
 
-        private void btnSelectFilesFromStatusTab_Click(object sender, EventArgs e)
-        {
-            buildFileList();
-        }
-
         private void btnCancelOperation_Click(object sender, EventArgs e)
         {
             if (!backgroundWorker.IsBusy) return;

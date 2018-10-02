@@ -54,6 +54,7 @@ namespace KryptKeeper
 
         public void UpdateDataSource()
         {
+            if (_fileList.Count <= 0) return;
             _dataGridView.DataSource = null;
             _dataGridView.DataSource = _fileList.ToList();
         }

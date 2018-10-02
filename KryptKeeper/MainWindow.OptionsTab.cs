@@ -46,10 +46,6 @@ namespace KryptKeeper
             txtCipherKey.Text = Utils.BrowseFiles(multiSelect: false);
         }
 
-        private void btnSelectFiles_Click(object sender, EventArgs e)
-        {
-            buildFileList();
-        }
         #endregion
     }
 }

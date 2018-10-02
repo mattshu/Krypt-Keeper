@@ -44,12 +44,13 @@ namespace KryptKeeper {
             private void timerElapsed(object sender, ElapsedEventArgs e)
             {
                 _status.SetTimeElapsed(Utils.GetSpannedTime(DateTime.Now.Ticks - _stopWatch.ElapsedTicks, hideMs: true) +  @"elapsed");
+                _status.SetTimeRemaining($"Est. time remaining: {getTimeRemaining()}");
                 var elapsedBytes = Cipher.GetElapsedBytes();
                 if (elapsedBytes <= 0) return;
                 _DataProcessed.InsertAndTrim(elapsedBytes, MAX_DATA_POINTS);
+                if (_DataProcessed.Count <= 0) return;
                 var averageProcessRate = ((long) _DataProcessed.Average(x => x * (1000 / INTERVAL))).BytesToSizeString();
                 _status.SetProcessingRateText($"Processing speed: {averageProcessRate}/s");
-                _status.SetTimeRemaining($"Est. time remaining: {getTimeRemaining()}");
             }
 
             // TODO Could be more accurate, especially near the end

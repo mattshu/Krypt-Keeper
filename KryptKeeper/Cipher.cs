@@ -303,7 +303,7 @@ namespace KryptKeeper
         private static void buildAndWriteFooter(string path, Stream cryptoStream)
         {
             var footer = new Footer();
-            footer.Build(path);
+            footer.Build(path, MainWindow.Version);
             var footerData = footer.ToArray();
             cryptoStream.Write(footerData, 0, footerData.Length);
         }
@@ -348,8 +348,6 @@ namespace KryptKeeper
                 _status.WriteLine("* File possibly corrupt: " + originalPath);
                 return string.Empty;
             }
-            if (!Utils.TryDeleteFile(workingPath))
-                _status.WriteLine("Unable to remove temp file: " + workingPath);
             return originalPath;
         }
 

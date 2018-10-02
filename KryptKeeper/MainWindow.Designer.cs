@@ -50,7 +50,7 @@
             this.chkMaskFileName = new MetroFramework.Controls.MetroCheckBox();
             this.chkMaskFileInformation = new MetroFramework.Controls.MetroCheckBox();
             this.tabFileProcessing = new MetroFramework.Controls.MetroTabPage();
-            this.chkProcessOrderDesc = new MetroFramework.Controls.MetroCheckBox();
+            this.chkProcessInOrderDesc = new MetroFramework.Controls.MetroCheckBox();
             this.cbxProcessOrderBy = new MetroFramework.Controls.MetroComboBox();
             this.chkProcessInOrder = new MetroFramework.Controls.MetroCheckBox();
             this.lblJobInformation = new MetroFramework.Controls.MetroLabel();
@@ -164,12 +164,12 @@
             // btnSelectFiles
             // 
             this.btnSelectFiles.Highlight = true;
-            this.btnSelectFiles.Location = new System.Drawing.Point(476, 228);
+            this.btnSelectFiles.Location = new System.Drawing.Point(476, 266);
             this.btnSelectFiles.Name = "btnSelectFiles";
-            this.btnSelectFiles.Size = new System.Drawing.Size(262, 81);
+            this.btnSelectFiles.Size = new System.Drawing.Size(262, 56);
             this.btnSelectFiles.Style = MetroFramework.MetroColorStyle.Lime;
             this.btnSelectFiles.TabIndex = 9;
-            this.btnSelectFiles.Text = "Select Files";
+            this.btnSelectFiles.Text = "Select Files...";
             this.btnSelectFiles.Theme = MetroFramework.MetroThemeStyle.Dark;
             this.btnSelectFiles.UseSelectable = true;
             this.btnSelectFiles.Click += new System.EventHandler(this.btnSelectFiles_Click);
@@ -359,7 +359,7 @@
             // 
             // tabFileProcessing
             // 
-            this.tabFileProcessing.Controls.Add(this.chkProcessOrderDesc);
+            this.tabFileProcessing.Controls.Add(this.chkProcessInOrderDesc);
             this.tabFileProcessing.Controls.Add(this.cbxProcessOrderBy);
             this.tabFileProcessing.Controls.Add(this.chkProcessInOrder);
             this.tabFileProcessing.Controls.Add(this.lblJobInformation);
@@ -383,24 +383,22 @@
             this.tabFileProcessing.VerticalScrollbarHighlightOnWheel = false;
             this.tabFileProcessing.VerticalScrollbarSize = 10;
             // 
-            // chkProcessOrderDesc
+            // chkProcessInOrderDesc
             // 
-            this.chkProcessOrderDesc.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.chkProcessOrderDesc.AutoSize = true;
-            this.chkProcessOrderDesc.Enabled = false;
-            this.chkProcessOrderDesc.Location = new System.Drawing.Point(365, 279);
-            this.chkProcessOrderDesc.Name = "chkProcessOrderDesc";
-            this.chkProcessOrderDesc.Size = new System.Drawing.Size(85, 15);
-            this.chkProcessOrderDesc.TabIndex = 4;
-            this.chkProcessOrderDesc.Text = "Descending";
-            this.chkProcessOrderDesc.Theme = MetroFramework.MetroThemeStyle.Dark;
-            this.chkProcessOrderDesc.UseSelectable = true;
-            this.chkProcessOrderDesc.CheckedChanged += new System.EventHandler(this.chkProcessOrderDesc_CheckedChanged);
+            this.chkProcessInOrderDesc.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.chkProcessInOrderDesc.AutoSize = true;
+            this.chkProcessInOrderDesc.Location = new System.Drawing.Point(365, 279);
+            this.chkProcessInOrderDesc.Name = "chkProcessInOrderDesc";
+            this.chkProcessInOrderDesc.Size = new System.Drawing.Size(85, 15);
+            this.chkProcessInOrderDesc.TabIndex = 4;
+            this.chkProcessInOrderDesc.Text = "Descending";
+            this.chkProcessInOrderDesc.Theme = MetroFramework.MetroThemeStyle.Dark;
+            this.chkProcessInOrderDesc.UseSelectable = true;
+            this.chkProcessInOrderDesc.CheckedChanged += new System.EventHandler(this.chkProcessOrderDesc_CheckedChanged);
             // 
             // cbxProcessOrderBy
             // 
             this.cbxProcessOrderBy.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.cbxProcessOrderBy.Enabled = false;
             this.cbxProcessOrderBy.FontSize = MetroFramework.MetroComboBoxSize.Small;
             this.cbxProcessOrderBy.FontWeight = MetroFramework.MetroComboBoxWeight.Light;
             this.cbxProcessOrderBy.FormattingEnabled = true;
@@ -485,10 +483,10 @@
             this.btnAddFiles.Name = "btnAddFiles";
             this.btnAddFiles.Size = new System.Drawing.Size(224, 39);
             this.btnAddFiles.TabIndex = 0;
-            this.btnAddFiles.Text = "Add Files...";
+            this.btnAddFiles.Text = "Select Files...";
             this.btnAddFiles.Theme = MetroFramework.MetroThemeStyle.Dark;
             this.btnAddFiles.UseSelectable = true;
-            this.btnAddFiles.Click += new System.EventHandler(this.btnAddFiles_Click);
+            this.btnAddFiles.Click += new System.EventHandler(this.btnSelectFiles_Click);
             // 
             // panelFiles
             // 
@@ -882,7 +880,7 @@
             this.btnSelectFilesFromStatusTab.Text = "Select More Files...";
             this.btnSelectFilesFromStatusTab.Theme = MetroFramework.MetroThemeStyle.Dark;
             this.btnSelectFilesFromStatusTab.UseSelectable = true;
-            this.btnSelectFilesFromStatusTab.Click += new System.EventHandler(this.btnSelectFilesFromStatusTab_Click);
+            this.btnSelectFilesFromStatusTab.Click += new System.EventHandler(this.btnSelectFiles_Click);
             // 
             // btnExport
             // 
@@ -968,7 +966,7 @@
             // 
             this.lblVersionInformation.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.lblVersionInformation.FontSize = MetroFramework.MetroLabelSize.Small;
-            this.lblVersionInformation.Location = new System.Drawing.Point(592, 53);
+            this.lblVersionInformation.Location = new System.Drawing.Point(595, 43);
             this.lblVersionInformation.Name = "lblVersionInformation";
             this.lblVersionInformation.Size = new System.Drawing.Size(167, 14);
             this.lblVersionInformation.TabIndex = 1;
@@ -1050,8 +1048,8 @@
             this.Text = "Krypt Keeper";
             this.Theme = MetroFramework.MetroThemeStyle.Dark;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.mainWindow_FormClosing);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainWindow_FormClosed);
             this.Shown += new System.EventHandler(this.mainWindow_Shown);
-            this.Resize += new System.EventHandler(this.MainWindow_Resize);
             this.tabMain.ResumeLayout(false);
             this.tabOptions.ResumeLayout(false);
             this.tabOptions.PerformLayout();
@@ -1113,7 +1111,7 @@
         private MetroFramework.Controls.MetroLabel lblStatusProcessingRateText;
         private MetroFramework.Controls.MetroCheckBox chkProcessInOrder;
         private MetroFramework.Controls.MetroComboBox cbxProcessOrderBy;
-        private MetroFramework.Controls.MetroCheckBox chkProcessOrderDesc;
+        private MetroFramework.Controls.MetroCheckBox chkProcessInOrderDesc;
         private MetroFramework.Controls.MetroPanel panelOnCompletion;
         private MetroFramework.Controls.MetroCheckBox chkOnCompletion;
         private MetroFramework.Controls.MetroPanel panelIconSleep;

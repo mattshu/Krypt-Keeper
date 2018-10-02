@@ -57,9 +57,9 @@ namespace KryptKeeper
         {
             if (pass.Length < Cipher.MINIMUM_PLAINTEXT_KEY_LENGTH)
                 return false;
-            if (!pass.Any(Char.IsUpper))
+            if (!pass.Any(char.IsUpper))
                 return false;
-            if (!Regex.IsMatch(pass, $"[{String.Join("", Cipher.ALLOWED_PLAINTEXT_KEY_SYMBOLS)}]+"))
+            if (!Regex.IsMatch(pass, $"[{string.Join("", Cipher.ALLOWED_PLAINTEXT_KEY_SYMBOLS)}]+"))
                 return false;
             return true;
         }
@@ -157,22 +157,6 @@ namespace KryptKeeper
                 return source;
             var result = source.Remove(place, find.Length).Insert(place, replace);
             return result;
-        }
-
-        public static void ResetSettings()
-        {
-            var settings = Settings.Default;
-            settings.cipherKeyType = 0;
-            settings.encryptionMaskFileName = false;
-            settings.encryptionMaskFileDate = false;
-            settings.removeAfterEncryption = true;
-            settings.removeAfterDecryption = true;
-            settings.rememberSettings = false;
-            settings.processInOrder = false;
-            settings.processInOrderBy = 0;
-            settings.processInOrderDesc = false;
-            settings.confirmOnExit = true;
-            settings.Save();
         }
 
         public static void SetFileTimesFromFooter(string path, Footer footer)

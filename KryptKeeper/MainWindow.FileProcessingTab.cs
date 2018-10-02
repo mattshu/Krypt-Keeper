@@ -12,7 +12,7 @@ namespace KryptKeeper
         private readonly int[] DEFAULT_COLUMN_WIDTHS = {274, 86, 315};
 
         #region File Processing Tab Form Events
-        private void btnAddFiles_Click(object sender, EventArgs e)
+        private void btnSelectFiles_Click(object sender, EventArgs e)
         {
             buildFileList();
         }
@@ -36,7 +36,6 @@ namespace KryptKeeper
 
         private void chkProcessInOrder_CheckedChanged(object sender, EventArgs e)
         {
-            cbxProcessOrderBy.Enabled = chkProcessOrderDesc.Enabled = chkProcessInOrder.Checked;
             sortFileList();
         }
 
@@ -67,8 +66,10 @@ namespace KryptKeeper
         private void buildFileList(bool DEBUG = false)
         {
             if (!validateKeySettings()) return;
-            _fileList = DEBUG ? new FileList(Directory.GetFiles(@"D:\shu\Downloads\").Select(x => new FileData(x)).ToList(), datagridFileList)
+            var newFileList = DEBUG ? new FileList(Directory.GetFiles(@"D:\shu\Downloads\").Select(x => new FileData(x)).ToList(), datagridFileList)
                               : new FileList(Utils.GetFilesFromDialog(), datagridFileList);
+            if (newFileList.Count <= 0) return;
+            _fileList = newFileList;
             if (chkProcessInOrder.Checked)
                 sortFileList();
             enableProcessButtons(datagridFileList.RowCount > 0);
@@ -159,7 +160,7 @@ namespace KryptKeeper
         {
             btnSelectFiles.Enabled = btnAddFiles.Enabled = btnRemoveSelectedFiles.Enabled =
                 btnEncrypt.Enabled = btnDecrypt.Enabled = btnSelectFilesFromStatusTab.Enabled = 
-                chkProcessInOrder.Enabled = cbxProcessOrderBy.Enabled = chkProcessOrderDesc.Enabled =
+                chkProcessInOrder.Enabled = cbxProcessOrderBy.Enabled = chkProcessInOrderDesc.Enabled =
                 !disable;
             btnCancelOperation.Enabled = disable;
         }
@@ -211,7 +212,7 @@ namespace KryptKeeper
         private void sortFileList()
         {
             if (_fileList.Count <= 0) return;
-            sortFiles((Cipher.ProcessOrder)cbxProcessOrderBy.SelectedIndex, chkProcessOrderDesc.Checked);
+            sortFiles((Cipher.ProcessOrder)cbxProcessOrderBy.SelectedIndex, chkProcessInOrderDesc.Checked);
         }
 
         private void sortFiles(Cipher.ProcessOrder processOrder, bool descending = false)

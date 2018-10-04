@@ -73,6 +73,7 @@ namespace KryptKeeper
         {
             if (!backgroundWorker.IsBusy) return;
             if (!confirmCancel()) return;
+            _ExitButtonPressed = true;
             backgroundWorker.CancelAsync();
             btnCancelOperation.Enabled = false;
         }

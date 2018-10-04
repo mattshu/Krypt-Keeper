@@ -2,7 +2,7 @@
     TODO * MAJOR *
         - IMPERATIVE: * REMOVE HARDCODED KEYFILE *
         - Add Windows context menu options
-        - Add option to minimize to tray on close
+        - Add option to minimize to tray on close TODO: FIX
         - Dialog icons
         - Add version information to encrypted files for backwards compatibility
     TODO * MINOR *
@@ -21,6 +21,7 @@ namespace KryptKeeper
     public partial class MainWindow : MetroFramework.Forms.MetroForm
     {
         private static bool _CloseAfterCurrentOperation;
+        private static bool _ExitButtonPressed = false;
         public static Version Version;
         private enum MainTabs
         {
@@ -155,15 +156,17 @@ namespace KryptKeeper
             WindowState = FormWindowState.Normal;
         }
 
+        // TODO Needs serious refactoring
         private void mainWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
             e.Cancel = false;
-            if (WindowState == FormWindowState.Normal && chkMinimizeToTrayOnClose.Checked)
+            if (e.CloseReason == CloseReason.WindowsShutDown || _forceExit)
+                return;
+            if (!_ExitButtonPressed && chkMinimizeToTrayOnClose.Checked)
             {
                 e.Cancel = true;
                 Hide();
             }
-            if (_forceExit) return;
             if (backgroundWorker.IsBusy)
             {
                 e.Cancel = true;
@@ -221,6 +224,11 @@ namespace KryptKeeper
 
         private void handleExitWhileBusy()
         {
+            if (_forceExit)
+            {
+                Cipher.CancelProcessing();
+                backgroundWorker.CancelAsync();
+            }
             switch (new ConfirmExitWhileBusy().ShowDialog())
             {
                 case DialogResult.Abort: // Abort and Exit

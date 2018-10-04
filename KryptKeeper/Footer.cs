@@ -9,8 +9,8 @@ namespace KryptKeeper
     {
         public static readonly string FOOTER_TAG = "[KRYPTKEEPER]";
         public static readonly byte[] FOOTER_SIGNATURE = Utils.GetBytes(FOOTER_TAG);
-
-        public Version Version { get; set; }
+        
+        //public Version Version { get; set; }
         public string Name { get; set; }
         public DateTime CreationTime { get; set; }
         public DateTime ModifiedTime { get; set; }
@@ -21,16 +21,16 @@ namespace KryptKeeper
             var footerSplit = footerString.Replace(FOOTER_TAG, "").Split(',');
             string name = Utils.GetRandomAlphanumericString(8) + ".krpt.place"; // Default if name's blank
             long created = 0, modified = 0, accessed = 0;
-            var version = new Version();
+            //var version = new Version();
             foreach (var data in footerSplit)
             {
                 var item = data.Split(':')[0];
                 var value = data.Split(':')[1];
                 switch (item)
                 {
-                    case "version":
-                        version = Version.Parse(value);
-                        break;
+                    //case "version":
+                        //version = Version.Parse(value);
+                        //break;
                     case "name":
                         name = value;
                         break;
@@ -47,7 +47,7 @@ namespace KryptKeeper
             }
             var newFooter = new Footer
             {
-                Version = version,
+                //Version = version,
                 Name = name,
                 CreationTime = DateTime.FromFileTime(created),
                 ModifiedTime = DateTime.FromFileTime(modified),
@@ -59,7 +59,7 @@ namespace KryptKeeper
         public void Build(string path, Version version)
         {
             if (!File.Exists(path)) throw new FileNotFoundException(path);
-            Version = version;
+            //Version = version;
             Name = Path.GetFileName(path);
             CreationTime = File.GetCreationTime(path);
             ModifiedTime = File.GetLastWriteTime(path);
@@ -72,8 +72,8 @@ namespace KryptKeeper
         }
 
         public override string ToString()
-        {
-            return FOOTER_TAG + "version:" + Version + ",name:" + Name + ",creationTime:" + CreationTime.ToFileTime() +
+        { //"version:" + Version +
+            return FOOTER_TAG + "name:" + Name + ",creationTime:" + CreationTime.ToFileTime() +
                    ",modifiedTime:" + ModifiedTime.ToFileTime() + ",accessedTime:" + AccessedTime.ToFileTime();
         }
 
@@ -91,7 +91,7 @@ namespace KryptKeeper
                     if (footerArray[i] != FOOTER_SIGNATURE[0]) continue;
                     if (!FOOTER_SIGNATURE.SequenceEqual(footerArray.Skip(i).Take(FOOTER_SIGNATURE.Length))) continue;
                     var newFooter = FromString(Encoding.UTF8.GetString(footerArray.Skip(i).ToArray()));
-                    Version = newFooter.Version;
+                    //Version = newFooter.Version;
                     Name = newFooter.Name;
                     CreationTime = newFooter.CreationTime;
                     ModifiedTime = newFooter.ModifiedTime;

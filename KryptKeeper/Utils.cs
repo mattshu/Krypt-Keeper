@@ -1,5 +1,4 @@
-﻿using KryptKeeper.Properties;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -130,8 +129,9 @@ namespace KryptKeeper
             return sb.ToString();
         }
 
-        public static string PadExistingFileName(string fullPath)
+        public static string PadFileNameIfExists(string fullPath)
         {
+            if (!File.Exists(fullPath)) return fullPath;
             var count = 1;
             var path = Path.GetDirectoryName(fullPath);
             var fileNameOnly = Path.GetFileNameWithoutExtension(fullPath);

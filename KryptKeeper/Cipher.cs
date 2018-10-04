@@ -111,17 +111,16 @@ namespace KryptKeeper
                     return;
                 }
                 _status.SetFileWorkedText(Path.GetFileName(path));
-                switch (options.Mode) {
-                    case Mode.Decrypt when fileIsValidForDecryption(path):
-                        workingPath = path.ReplaceLastOccurrence(FILE_EXTENSION, WORKING_FILE_EXTENSION);
-                        break;
-                    case Mode.Encrypt:
-                        workingPath = getEncryptionWorkingPath(path, options);
-                        break;
-                    default:
-                        return;
+                if (options.Mode == Mode.Decrypt && isFileValidForDecryption(path))
+                {
+                    workingPath = Utils.PadFileNameIfExists(path.ReplaceLastOccurrence(FILE_EXTENSION, WORKING_FILE_EXTENSION));
+                    var version = trimVersionFromFile(path);
+                    // TODO Handle different versions
                 }
-                if (File.Exists(workingPath)) workingPath = Utils.PadExistingFileName(workingPath);
+                else if (options.Mode == Mode.Encrypt)
+                    workingPath = Utils.PadFileNameIfExists(getEncryptionWorkingPath(path, options));
+                else
+                    return;
                 using (var aes = Aes.Create())
                 {
                     if (aes == null)
@@ -165,6 +164,22 @@ namespace KryptKeeper
             }
         }
 
+        private static Version trimVersionFromFile(string path)
+        {
+            var version = new Version();
+            using (var fStream = new FileStream(path, FileMode.Open, FileAccess.ReadWrite))
+            {
+                fStream.Seek(-16, SeekOrigin.End); // Set cursor 16 bytes from end of file
+                var buffer = new byte[16];
+                fStream.Read(buffer, 0, buffer.Length); // Read last 16 bytes of file
+                var extractedVersion = string.Join("", Encoding.ASCII.GetString(buffer).Skip(2))
+                    .Replace("V", "."); // Format: V:1V0V6849V40960
+                if (Version.TryParse(extractedVersion, out version))
+                    fStream.SetLength(fStream.Length - 16); // Erase last 16 bytes of file
+            }
+            return version;
+        }
+
         private static string getEncryptionWorkingPath(string path, CipherOptions options)
         {
             string workingPath;
@@ -175,14 +190,14 @@ namespace KryptKeeper
             else
             {
                 if (Path.GetExtension(path) == FILE_EXTENSION)
-                    workingPath = Utils.PadExistingFileName(path);
+                    workingPath = Utils.PadFileNameIfExists(path);
                 else
                     workingPath = path + FILE_EXTENSION;
             }
             return workingPath;
         }
 
-        private static bool fileIsValidForDecryption(string path)
+        private static bool isFileValidForDecryption(string path)
         {
             if (Path.GetExtension(path) == FILE_EXTENSION && new FileInfo(path).Length >= MINIMUM_FILE_LENGTH)
                 return true;
@@ -223,14 +238,12 @@ namespace KryptKeeper
             {
                 using (var fStream = new FileStream(path, FileMode.Open, FileAccess.Read))
                 {
-                    using (var bReader = new BinaryReader(fStream))
-                    {
-                        fStream.Seek(ENTROPY_SIZE, SeekOrigin.Begin);
-                        var read = bReader.ReadBytes(IV_SIZE);
-                        if (read.Length > 0)
-                            return read;
-                        throw new CryptographicException("There was a problem extracting the IV from: " + path);
-                    }
+                    fStream.Seek(ENTROPY_SIZE, SeekOrigin.Begin);
+                    var buffer = new byte[IV_SIZE];
+                    var read = fStream.Read(buffer, 0, buffer.Length);
+                    if (read > 0)
+                        return buffer;
+                    throw new CryptographicException("Error extracting IV from: " + path);
                 }
             }
             catch (Exception ex)
@@ -276,7 +289,7 @@ namespace KryptKeeper
         {
             _CancelProcessing = false;
             var buffer = new byte[CHUNK_SIZE];
-             int bytesRead = readStream.Read(buffer, 0, CHUNK_SIZE);
+             int bytesRead = readStream.Read(buffer, 0, buffer.Length);
             _CurrentPayloadState = 0;
             _CurrentPayloadTotal = new FileInfo(path).Length;
             while (bytesRead > 0)
@@ -310,16 +323,22 @@ namespace KryptKeeper
 
         private static string postProcessFileHandling(string path, string workingPath, CipherOptions options)
         {
-            return options.Mode == Mode.Encrypt ? encryptionPostProcess(path, workingPath, options) : decryptionPostProcess(path, workingPath, options);
+            return options.Mode == Mode.Encrypt
+                ? encryptionPostProcess(path, workingPath, options)
+                : decryptionPostProcess(path, workingPath, options);
         }
 
-        private static string encryptionPostProcess(string path, string workingPath, CipherOptions options)
+        private static string encryptionPostProcess(string originalPath, string newPath, CipherOptions options)
         {
-            if (options.RemoveOriginalEncryption && !Utils.TryDeleteFile(path))
-                _status.WriteLine("Unable to remove original (access denied): " + path);
+            if (options.RemoveOriginalEncryption && !Utils.TryDeleteFile(originalPath))
+                _status.WriteLine("Unable to remove original (access denied): " + originalPath);
             if (options.MaskFileDate)
-                Utils.SetRandomFileTimes(workingPath);
-            return workingPath;
+                Utils.SetRandomFileTimes(newPath);
+            using (var wStream = File.AppendText(newPath))
+            {
+                wStream.Write("V:" + MainWindow.Version.ToString().Replace(".", "V"));
+            }
+            return newPath;
         }
 
         private static string decryptionPostProcess(string path, string workingPath, CipherOptions options)
@@ -333,8 +352,7 @@ namespace KryptKeeper
             }
             var originalPath = workingPath.Replace(Path.GetFileName(workingPath), footer.Name)
                 .ReplaceLastOccurrence(WORKING_FILE_EXTENSION, "");
-            if (File.Exists(originalPath))
-                originalPath = Utils.PadExistingFileName(originalPath);
+            originalPath = Utils.PadFileNameIfExists(originalPath);
             File.Move(workingPath, originalPath); // Copy worked file to original file
             if (new FileInfo(originalPath).Length > 0)
             {

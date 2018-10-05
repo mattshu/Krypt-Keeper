@@ -11,7 +11,8 @@
         public const int SALT_SIZE = 29;
         public const int ENTROPY_SIZE = 15;
         public const int KEY_SIZE = 256;
-        public const int CHUNK_SIZE = 0x1000000; // 16MB 
+        public const int CHUNK_SIZE = 0x800000; // 8MB 
+        public const int VERSION_CHUNK_SIZE = 32;
         public static readonly char[] ALLOWED_PLAINTEXT_KEY_SYMBOLS = { '!', '@', '#', '$', '%', '^', '&', '*', '?', '_', '~', '-', '£', '(', ')' };
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace KryptKeeper
 {
-    partial class ConfirmExitWhileBusy
+    partial class ConfirmStopWhileBusy
     {
         /// <summary>
         /// Required designer variable.
@@ -31,9 +31,9 @@
             this.metroLabel1 = new MetroFramework.Controls.MetroLabel();
             this.lblSubLabel = new MetroFramework.Controls.MetroLabel();
             this.btnAbort = new MetroFramework.Controls.MetroButton();
-            this.btnStop = new MetroFramework.Controls.MetroButton();
             this.btnFinish = new MetroFramework.Controls.MetroButton();
             this.btnCancel = new MetroFramework.Controls.MetroButton();
+            this.toolTip = new MetroFramework.Components.MetroToolTip();
             this.SuspendLayout();
             // 
             // metroLabel1
@@ -60,66 +60,64 @@
             // btnAbort
             // 
             this.btnAbort.DialogResult = System.Windows.Forms.DialogResult.Abort;
-            this.btnAbort.Location = new System.Drawing.Point(334, 150);
+            this.btnAbort.FontSize = MetroFramework.MetroButtonSize.Medium;
+            this.btnAbort.Location = new System.Drawing.Point(29, 177);
             this.btnAbort.Name = "btnAbort";
-            this.btnAbort.Size = new System.Drawing.Size(182, 23);
+            this.btnAbort.Size = new System.Drawing.Size(156, 33);
             this.btnAbort.TabIndex = 2;
-            this.btnAbort.Text = "Abort and Exit";
+            this.btnAbort.Text = "Abort";
             this.btnAbort.Theme = MetroFramework.MetroThemeStyle.Dark;
+            this.toolTip.SetToolTip(this.btnAbort, "Abort all processing immediately");
             this.btnAbort.UseSelectable = true;
             this.btnAbort.Click += new System.EventHandler(this.btnAbort_Click);
-            // 
-            // btnStop
-            // 
-            this.btnStop.DialogResult = System.Windows.Forms.DialogResult.Retry;
-            this.btnStop.Location = new System.Drawing.Point(334, 179);
-            this.btnStop.Name = "btnStop";
-            this.btnStop.Size = new System.Drawing.Size(182, 23);
-            this.btnStop.TabIndex = 2;
-            this.btnStop.Text = "Finish File and Exit";
-            this.btnStop.Theme = MetroFramework.MetroThemeStyle.Dark;
-            this.btnStop.UseSelectable = true;
-            this.btnStop.Click += new System.EventHandler(this.btnStop_Click);
             // 
             // btnFinish
             // 
             this.btnFinish.DialogResult = System.Windows.Forms.DialogResult.Ignore;
-            this.btnFinish.Location = new System.Drawing.Point(334, 208);
+            this.btnFinish.FontSize = MetroFramework.MetroButtonSize.Medium;
+            this.btnFinish.Location = new System.Drawing.Point(191, 177);
             this.btnFinish.Name = "btnFinish";
-            this.btnFinish.Size = new System.Drawing.Size(182, 23);
+            this.btnFinish.Size = new System.Drawing.Size(156, 33);
             this.btnFinish.TabIndex = 2;
-            this.btnFinish.Text = "Finish All in Background";
+            this.btnFinish.Text = "Finish";
             this.btnFinish.Theme = MetroFramework.MetroThemeStyle.Dark;
+            this.toolTip.SetToolTip(this.btnFinish, "Finish the current file and stop");
             this.btnFinish.UseSelectable = true;
             this.btnFinish.Click += new System.EventHandler(this.btnFinish_Click);
             // 
             // btnCancel
             // 
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.btnCancel.FontSize = MetroFramework.MetroButtonSize.Medium;
             this.btnCancel.Highlight = true;
-            this.btnCancel.Location = new System.Drawing.Point(334, 237);
+            this.btnCancel.Location = new System.Drawing.Point(353, 177);
             this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Size = new System.Drawing.Size(182, 23);
+            this.btnCancel.Size = new System.Drawing.Size(156, 33);
             this.btnCancel.TabIndex = 2;
-            this.btnCancel.Text = "Cancel";
+            this.btnCancel.Text = "Nevermind";
             this.btnCancel.Theme = MetroFramework.MetroThemeStyle.Dark;
             this.btnCancel.UseSelectable = true;
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
             // 
-            // ConfirmExitWhileBusy
+            // toolTip
+            // 
+            this.toolTip.Style = MetroFramework.MetroColorStyle.Blue;
+            this.toolTip.StyleManager = null;
+            this.toolTip.Theme = MetroFramework.MetroThemeStyle.Light;
+            // 
+            // ConfirmStopWhileBusy
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(539, 283);
+            this.ClientSize = new System.Drawing.Size(539, 248);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnFinish);
-            this.Controls.Add(this.btnStop);
             this.Controls.Add(this.btnAbort);
             this.Controls.Add(this.lblSubLabel);
             this.Controls.Add(this.metroLabel1);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "ConfirmExitWhileBusy";
+            this.Name = "ConfirmStopWhileBusy";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.Text = "Operation in Progress";
             this.Theme = MetroFramework.MetroThemeStyle.Dark;
@@ -133,8 +131,8 @@
         private MetroFramework.Controls.MetroLabel metroLabel1;
         private MetroFramework.Controls.MetroLabel lblSubLabel;
         private MetroFramework.Controls.MetroButton btnAbort;
-        private MetroFramework.Controls.MetroButton btnStop;
         private MetroFramework.Controls.MetroButton btnFinish;
         private MetroFramework.Controls.MetroButton btnCancel;
+        private MetroFramework.Components.MetroToolTip toolTip;
     }
 }

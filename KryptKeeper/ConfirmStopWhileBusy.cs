@@ -2,26 +2,21 @@
 
 namespace KryptKeeper
 {
-    public partial class ConfirmExitWhileBusy : MetroFramework.Forms.MetroForm
+    public partial class ConfirmStopWhileBusy : MetroFramework.Forms.MetroForm
     {
-        public ConfirmExitWhileBusy()
+        public ConfirmStopWhileBusy()
         {
             InitializeComponent();
         }
 
         private void btnAbort_Click(object sender, EventArgs e)
         {
-            Close(); // Abort and Exit
-        }
-
-        private void btnStop_Click(object sender, EventArgs e)
-        {
-            Close(); // Finish File and Exit
+            Close();
         }
 
         private void btnFinish_Click(object sender, EventArgs e)
         {
-            Close(); // Finish in Background
+            Close();
         }
 
         private void btnCancel_Click(object sender, EventArgs e)

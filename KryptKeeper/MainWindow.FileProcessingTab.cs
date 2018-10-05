@@ -155,7 +155,6 @@ namespace KryptKeeper
             }
         }
 
-
         private void disableButtonsDuringOperation(bool disable = true)
         {
             btnSelectFiles.Enabled = btnAddFiles.Enabled = btnRemoveSelectedFiles.Enabled =

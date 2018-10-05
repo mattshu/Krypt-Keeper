@@ -44,22 +44,27 @@ namespace KryptKeeper {
             private void timerElapsed(object sender, ElapsedEventArgs e)
             {
                 _status.SetTimeElapsed(Utils.GetSpannedTime(DateTime.Now.Ticks - _stopWatch.ElapsedTicks, hideMs: true) +  @"elapsed");
-                _status.SetTimeRemaining($"Est. time remaining: {getTimeRemaining()}");
+                _status.SetTimeRemaining($"Est. time remaining: {TimeSpan.FromSeconds(getSecondsRemaining())}");
                 var elapsedBytes = Cipher.GetElapsedBytes();
                 if (elapsedBytes <= 0) return;
-                _DataProcessed.InsertAndTrim(elapsedBytes, MAX_DATA_POINTS);
+                _DataProcessed.Push(elapsedBytes, MAX_DATA_POINTS);
                 if (_DataProcessed.Count <= 0) return;
                 var averageProcessRate = ((long) _DataProcessed.Average(x => x * (1000 / INTERVAL))).BytesToSizeString();
                 _status.SetProcessingRateText($"Processing speed: {averageProcessRate}/s");
             }
 
-            // TODO Could be more accurate, especially near the end
-            private string getTimeRemaining()
+            // TODO Could be more accurate, especially near the end (in progress)
+            private int _lastSecondsRemaining = 0;
+            private int getSecondsRemaining()
             {
                 var payloadState = Cipher.GetPayloadState();
-                if (payloadState <= 0) return "";
+                if (payloadState <= 0) return 0;
                 var remaining = (_stopWatch.Elapsed.Seconds / (double) payloadState) * (_totalDataLength - payloadState);
-                return TimeSpan.FromSeconds(Math.Ceiling(remaining)).ToString();
+                var seconds = (int)Math.Ceiling(remaining);
+                if (seconds == _lastSecondsRemaining)
+                    seconds++;
+                _lastSecondsRemaining = seconds;
+                return seconds;
             }
         }
     }

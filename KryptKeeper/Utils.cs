@@ -105,7 +105,7 @@ namespace KryptKeeper
                 return sha.ComputeHash(value);
         }
 
-        public static void InsertAndTrim<T>(this List<T> list, T item, int capacity)
+        public static void Push<T>(this List<T> list, T item, int capacity)
         {
             list.Insert(0, item);
             if (list.Count > capacity)

@@ -169,15 +169,31 @@ namespace KryptKeeper
             var version = new Version();
             using (var fStream = new FileStream(path, FileMode.Open, FileAccess.ReadWrite))
             {
-                fStream.Seek(-16, SeekOrigin.End); // Set cursor 16 bytes from end of file
-                var buffer = new byte[16];
-                fStream.Read(buffer, 0, buffer.Length); // Read last 16 bytes of file
-                var extractedVersion = string.Join("", Encoding.ASCII.GetString(buffer).Skip(2))
-                    .Replace("V", "."); // Format: V:1V0V6849V40960
-                if (Version.TryParse(extractedVersion, out version))
-                    fStream.SetLength(fStream.Length - 16); // Erase last 16 bytes of file
+                fStream.Seek(-VERSION_CHUNK_SIZE, SeekOrigin.End); // Set cursor n bytes from end of file
+                var buffer = new byte[VERSION_CHUNK_SIZE];
+                fStream.Read(buffer, 0, buffer.Length); // Read last n bytes of file
+                int i = VERSION_CHUNK_SIZE - 1;
+                for (; i >= 0; i--)
+                {
+                    var versionMarkerSniffer = (char) buffer[i - 1] + "" + (char) buffer[i];
+                    if (!versionMarkerSniffer.Equals("V:"))
+                        continue;
+                    var rawExtract = buffer.Skip(i - 1).ToArray();
+                    var extract = Encoding.Default.GetString(rawExtract);
+                    var stripped = extract.Replace("V:", "").Replace("V", ".");
+                    if (Version.TryParse(stripped, out version))
+                        fStream.SetLength(fStream.Length - rawExtract.Length); // Erase last n bytes of file
+                    break;
+                }
+                if (i <= -1)
+                    handleOlderVersions(path);
             }
             return version;
+        }
+
+        private static void handleOlderVersions(string file)
+        {
+            // TODO handle old versions of application
         }
 
         private static string getEncryptionWorkingPath(string path, CipherOptions options)
@@ -287,7 +303,6 @@ namespace KryptKeeper
 
         private static void processStreams(string path, Stream readStream, Stream cryptoStream)
         {
-            _CancelProcessing = false;
             var buffer = new byte[CHUNK_SIZE];
              int bytesRead = readStream.Read(buffer, 0, buffer.Length);
             _CurrentPayloadState = 0;

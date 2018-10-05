@@ -2,10 +2,9 @@
     TODO * MAJOR *
         - IMPERATIVE: * REMOVE HARDCODED KEYFILE *
         - Add Windows context menu options
-        - Add option to minimize to tray on close TODO: FIX
-        - Dialog icons
-        - Add version information to encrypted files for backwards compatibility
+        - Needs work when closing while busy
     TODO * MINOR *
+        - Ensure notification of failure to process if exited without task completion
         - Tooltips on completion or error if app is minimized to tray
         - If planning on storing keys, ensure key storage security
         - Always work toward single responsibility principle
@@ -156,38 +155,59 @@ namespace KryptKeeper
             WindowState = FormWindowState.Normal;
         }
 
-        // TODO Needs serious refactoring
         private void mainWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
-            e.Cancel = false;
-            if (e.CloseReason == CloseReason.WindowsShutDown || _forceExit)
-                return;
-            if (!_ExitButtonPressed && chkMinimizeToTrayOnClose.Checked)
-            {
-                e.Cancel = true;
-                Hide();
-            }
+            e.Cancel = false; // Reset previous cancellation
             if (backgroundWorker.IsBusy)
             {
-                e.Cancel = true;
-                handleExitWhileBusy();
-                return;
+                e.Cancel = true; // Hold off on closing so user can decide to abort or finish
+                var unexpectedExit = e.CloseReason == CloseReason.TaskManagerClosing ||
+                                e.CloseReason == CloseReason.WindowsShutDown; // Unless someone upstairs wants us to stop
+                if (unexpectedExit || _forceExit) // Or if we've been here before, just exit
+                    cancelAllOperations(closeAfterwards: true);
+                else
+                {
+                    var confirmStop = confirmStopWhileBusy();
+                    if (confirmStop == DialogResult.Abort)
+                        cancelAllOperations(closeAfterwards: true);
+                    else if (confirmStop == DialogResult.Ignore) // Finish
+                    {
+                        _status.SetOperationText("Finishing up...");
+                        _CloseAfterCurrentOperation = true;
+                    }
+                }
+                return; // Close event is cancelled
             }
-            if (_CloseAfterCurrentOperation) return;
-            if (!confirmOnExit())
+            if (_forceExit || _CloseAfterCurrentOperation)
+                return; // Close
+            if (_ExitButtonPressed)
             {
-                e.Cancel = true;
-                return;
+                _ExitButtonPressed = false;
+                e.Cancel = chkConfirmOnExit.Checked && !confirmOnExit();
             }
-            if (!chkMaskFileName.Checked && !chkMaskFileDate.Checked && chkRemoveAfterDecryption.Checked &&
-                chkRemoveAfterEncryption.Checked && radKeyFile.Checked && txtCipherKey.Text.Length == 0 &&
-                !chkRememberSettings.Checked)
-                e.Cancel = handleSettingsOnExit();
+            else
+            {
+                if (!MinimizeToTrayOnClose)
+                    e.Cancel = chkConfirmOnExit.Checked && !confirmOnExit();
+                else
+                {
+                    e.Cancel = true;
+                    Hide();
+                }
+            }
+        }
+
+        private void cancelAllOperations(bool closeAfterwards = false)
+        {
+            _CloseAfterCurrentOperation = closeAfterwards;
+            Cipher.CancelProcessing();
+            backgroundWorker.CancelAsync();
         }
 
         private void MainWindow_FormClosed(object sender, FormClosedEventArgs e) {
             if (chkRememberSettings.Checked)
                 _options.Save();
+            systemTrayIcon.Dispose();
         }
 
         private void focusTab(MainTabs tab)
@@ -204,51 +224,6 @@ namespace KryptKeeper
             return true;
         }
 
-        private bool handleSettingsOnExit()
-        {
-            switch (MessageBox.Show(Resources.SaveSettingsMsg, Resources.SaveSettingsTitle,
-                MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question))
-            {
-                case DialogResult.Yes:
-                    _options.Save();
-                    return false;
-
-                case DialogResult.No:
-                    _options.Reset();
-                    return false;
-
-                default:
-                    return true;
-            }
-        }
-
-        private void handleExitWhileBusy()
-        {
-            if (_forceExit)
-            {
-                Cipher.CancelProcessing();
-                backgroundWorker.CancelAsync();
-            }
-            switch (new ConfirmExitWhileBusy().ShowDialog())
-            {
-                case DialogResult.Abort: // Abort and Exit
-                    Cipher.CancelProcessing();
-                    _CloseAfterCurrentOperation = true;
-                    backgroundWorker.CancelAsync();
-                    break;
-
-                case DialogResult.Retry: // Finish File and Exit
-                    _CloseAfterCurrentOperation = true;
-                    backgroundWorker.CancelAsync();
-                    Hide();
-                    break;
-
-                case DialogResult.Ignore: // Finish in Background
-                    _CloseAfterCurrentOperation = true;
-                    Hide();
-                    break;
-            }
-        }
+        private static DialogResult confirmStopWhileBusy() => new ConfirmStopWhileBusy().ShowDialog();
     }
 }
-

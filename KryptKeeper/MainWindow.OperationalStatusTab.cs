@@ -72,21 +72,20 @@ namespace KryptKeeper
         private void btnCancelOperation_Click(object sender, EventArgs e)
         {
             if (!backgroundWorker.IsBusy) return;
-            if (!confirmCancel()) return;
-            _ExitButtonPressed = true;
-            backgroundWorker.CancelAsync();
-            btnCancelOperation.Enabled = false;
-        }
-
-        private static bool confirmCancel()
-        {
-            var dlgConfirmCancel = MessageBox.Show(Resources.AbortOperationDlgMsg,
-                Resources.OperationBusyTitleMsg, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
-            if (dlgConfirmCancel == DialogResult.Yes)
+            var confirmStop = confirmStopWhileBusy();
+            if (confirmStop == DialogResult.Abort)
+            {
                 Cipher.CancelProcessing();
-            else if (dlgConfirmCancel == DialogResult.Cancel)
-                return false;
-            return true;
+                backgroundWorker.CancelAsync();
+            }
+            else if (confirmStop == DialogResult.Ignore)
+            {
+                backgroundWorker.CancelAsync();
+                _status.SetOperationText("Finishing up...");
+            }
+            else
+                return; // Cancel cancelled
+            btnCancelOperation.Enabled = false;
         }
 
         private void txtStatus_TextChanged(object sender, EventArgs e)
@@ -106,6 +105,7 @@ namespace KryptKeeper
 
         private void btnExit_Click(object sender, EventArgs e)
         {
+            _ExitButtonPressed = true;
             Close();
         }
 

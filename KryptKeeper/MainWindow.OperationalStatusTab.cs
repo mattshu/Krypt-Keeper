@@ -8,7 +8,6 @@ namespace KryptKeeper
     public partial class MainWindow
     {
         #region Operational Status Tab Form Events
-
         private void backgroundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             if (_CloseAfterCurrentOperation) return;
@@ -74,14 +73,11 @@ namespace KryptKeeper
             if (!backgroundWorker.IsBusy) return;
             var confirmStop = confirmStopWhileBusy();
             if (confirmStop == DialogResult.Abort)
-            {
-                Cipher.CancelProcessing();
-                backgroundWorker.CancelAsync();
-            }
+                cancelAllOperations();
             else if (confirmStop == DialogResult.Ignore)
             {
-                backgroundWorker.CancelAsync();
                 _status.SetOperationText("Finishing up...");
+                backgroundWorker.CancelAsync();
             }
             else
                 return; // Cancel cancelled

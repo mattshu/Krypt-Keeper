@@ -1054,7 +1054,7 @@
             this.Text = "Krypt Keeper";
             this.Theme = MetroFramework.MetroThemeStyle.Dark;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.mainWindow_FormClosing);
-            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainWindow_FormClosed);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.mainWindow_FormClosed);
             this.Shown += new System.EventHandler(this.mainWindow_Shown);
             this.tabMain.ResumeLayout(false);
             this.tabOptions.ResumeLayout(false);

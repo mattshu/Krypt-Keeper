@@ -61,6 +61,7 @@ namespace KryptKeeper {
         public void SetFileWorkedText(string msg)
         {
             updateLabel(_lblFileWorked, msg);
+            _mainWindow.SetLastFileWorked(msg);
         }
 
         public void SetProcessingRateText(string msg)

@@ -115,7 +115,7 @@ namespace KryptKeeper
                 {
                     workingPath = Utils.PadFileNameIfExists(path.ReplaceLastOccurrence(FILE_EXTENSION, WORKING_FILE_EXTENSION));
                     var version = trimVersionFromFile(path);
-                    // TODO Handle different versions
+                    // TODO Handle different versions ({0.0} = old version)
                 }
                 else if (options.Mode == Mode.Encrypt)
                     workingPath = Utils.PadFileNameIfExists(getEncryptionWorkingPath(path, options));
@@ -176,8 +176,7 @@ namespace KryptKeeper
                 for (; i >= 0; i--)
                 {
                     var versionMarkerSniffer = (char) buffer[i - 1] + "" + (char) buffer[i];
-                    if (!versionMarkerSniffer.Equals("V:"))
-                        continue;
+                    if (!versionMarkerSniffer.Equals("V:")) continue;
                     var rawExtract = buffer.Skip(i - 1).ToArray();
                     var extract = Encoding.Default.GetString(rawExtract);
                     var stripped = extract.Replace("V:", "").Replace("V", ".");
@@ -185,15 +184,8 @@ namespace KryptKeeper
                         fStream.SetLength(fStream.Length - rawExtract.Length); // Erase last n bytes of file
                     break;
                 }
-                if (i <= -1)
-                    handleOlderVersions(path);
             }
             return version;
-        }
-
-        private static void handleOlderVersions(string file)
-        {
-            // TODO handle old versions of application
         }
 
         private static string getEncryptionWorkingPath(string path, CipherOptions options)
@@ -411,7 +403,7 @@ namespace KryptKeeper
 
                 default:
                     _status.WriteLine("*** UNHANDLED EXCEPTION: " + msgWhenUnhandled);
-                    _status.WriteLine("Partially processed file will be preserved: " + workingPath);
+                    _status.WriteLine("Attempting to preserve temporary file: " + workingPath);
                     preserveTempFile = true;
                     break;
             }

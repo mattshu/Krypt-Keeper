@@ -142,5 +142,29 @@ namespace KryptKeeper.Properties {
                 this["minimizeToTrayOnClose"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool lastExitSuccess {
+            get {
+                return ((bool)(this["lastExitSuccess"]));
+            }
+            set {
+                this["lastExitSuccess"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string lastFileWorked {
+            get {
+                return ((string)(this["lastFileWorked"]));
+            }
+            set {
+                this["lastFileWorked"] = value;
+            }
+        }
     }
 }

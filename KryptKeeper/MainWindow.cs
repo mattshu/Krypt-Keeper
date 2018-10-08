@@ -4,7 +4,6 @@
         - Add Windows context menu options
     TODO * MINOR *
         - Tooltips on completion or error if app is minimized to tray
-        - Ensure 
         - If planning on storing keys, ensure key storage security
         - Always work toward single responsibility principle
 */
@@ -41,12 +40,13 @@ namespace KryptKeeper
             _fileList = new FileList(new List<FileData>(), datagridFileList);
         }
 
-        protected internal MetroLabel GetOperationText => lblStatusOperationText;
-        protected internal MetroLabel GetFileWorkedText => lblStatusFileWorkedText;
-        protected internal MetroLabel GetProcessingRateText => lblStatusProcessingRateText;
-        protected internal MetroTextBox GetLogBox => txtStatusLogBox;
-        protected internal MetroLabel GetTimeElapsedText => lblStatusTimeElapsedText;
-        protected internal MetroLabel GetTimeRemainingText => lblStatusTimeRemainingText;
+        protected internal MetroLabel GetOperationLabel() => lblStatusOperationText;
+        protected internal MetroLabel GetFileWorkedLabel() => lblStatusFileWorkedText;
+        protected internal MetroLabel GetProcessingRateLabel() => lblStatusProcessingRateText;
+        protected internal MetroTextBox GetLogBox() => txtStatusLogBox;
+        protected internal MetroLabel GetTimeElapsedLabel() => lblStatusTimeElapsedText;
+        protected internal MetroLabel GetTimeRemainingLabel() => lblStatusTimeRemainingText;
+
         protected internal void SetLastFileWorked(string file)
         {
             Settings.Default.lastFileWorked = file;
@@ -158,7 +158,7 @@ namespace KryptKeeper
                     "Remember to exit properly to avoid possible data loss.", "Unexpected Exit", MessageBoxButtons.OK,
                     MessageBoxIcon.Warning);
             }
-            setLastExitSuccess(reset: true);
+            setLastExitSuccess(reset: true); // Reset bad exit flag
         }
 
         private void menuItemOpen_Click(object sender, EventArgs e)
@@ -168,6 +168,8 @@ namespace KryptKeeper
 
         private void menuItemExit_Click(object sender, EventArgs e)
         {
+            restoreWindow();
+            _ExitButtonPressed = true;
             Close();
         }
 
@@ -185,12 +187,12 @@ namespace KryptKeeper
         private void mainWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
             e.Cancel = false; // Reset previous cancellation
+            var unexpectedExit = e.CloseReason == CloseReason.TaskManagerClosing || 
+                                 e.CloseReason == CloseReason.WindowsShutDown;
             if (backgroundWorker.IsBusy)
             {
                 e.Cancel = true; // Hold off on closing so user can decide to abort or finish
-                var unexpectedExit = e.CloseReason == CloseReason.TaskManagerClosing ||
-                                e.CloseReason == CloseReason.WindowsShutDown; // Unless someone upstairs wants us to stop
-                if (unexpectedExit || _forceExit) // Or if we've been here before, just exit
+                if (unexpectedExit || _forceExit)
                     cancelAllOperations(closeAfterwards: true);
                 else
                 {
@@ -234,6 +236,8 @@ namespace KryptKeeper
         private void mainWindow_FormClosed(object sender, FormClosedEventArgs e) {
             if (chkRememberSettings.Checked)
                 _options.Save();
+            else
+                _options.Reset();
             systemTrayIcon.Dispose();
             setLastExitSuccess();
         }
@@ -260,5 +264,10 @@ namespace KryptKeeper
         }
 
         private static DialogResult confirmStopWhileBusy() => new ConfirmStopWhileBusy().ShowDialog();
+
+        private void contextMenu_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            menuItemStatus.Text = @"Status: " + _status.GetCurrentStatus();
+        }
     }
 }

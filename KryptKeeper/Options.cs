@@ -12,10 +12,14 @@ namespace KryptKeeper
         }
 
         public void Load()
-        { // TODO https://stackoverflow.com/questions/23924183/keep-users-settings-after-altering-assembly-file-version
+        {
             var settings = Settings.Default;
-            if (!settings.rememberSettings)
-                Reset();
+            if (settings.UpdateSettings) // Hack to update settings after file version change
+            {
+                settings.Upgrade();
+                settings.UpdateSettings = false;
+                settings.Save();
+            }
             _main.MaskFileInformation = settings.encryptionMaskFileName || settings.encryptionMaskFileDate;
             _main.MaskFileName = settings.encryptionMaskFileName;
             _main.MaskFileDate = settings.encryptionMaskFileDate;
@@ -58,6 +62,5 @@ namespace KryptKeeper
             settings.minimizeToTrayOnClose = true;
             settings.Save();
         }
-        // test
     }
 }

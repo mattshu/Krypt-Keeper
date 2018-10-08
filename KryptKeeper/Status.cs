@@ -25,12 +25,12 @@ namespace KryptKeeper {
                 return;
             _Instance = this;
             _mainWindow = mainWindow;
-            _lblOperation = mainWindow.GetOperationText;
-            _lblFileWorked = mainWindow.GetFileWorkedText;
-            _lblProcessingRate = mainWindow.GetProcessingRateText;
-            _txtLogBox = mainWindow.GetLogBox;
-            _lblTimeElapsed = mainWindow.GetTimeElapsedText;
-            _lblTimeRemaining = mainWindow.GetTimeRemainingText;
+            _lblOperation = mainWindow.GetOperationLabel();
+            _lblFileWorked = mainWindow.GetFileWorkedLabel();
+            _lblProcessingRate = mainWindow.GetProcessingRateLabel();
+            _txtLogBox = mainWindow.GetLogBox();
+            _lblTimeElapsed = mainWindow.GetTimeElapsedLabel();
+            _lblTimeRemaining = mainWindow.GetTimeRemainingLabel();
         }
 
         public static Status GetInstance()
@@ -51,6 +51,11 @@ namespace KryptKeeper {
             SetFileWorkedText("");
             SetProcessingRateText("");
             SetTimeRemaining("");
+        }
+
+        public string GetCurrentStatus()
+        {
+            return _lblOperation.Text.Equals("Done!") ? "Idle" : _lblOperation.Text;
         }
 
         public void SetOperationText(string msg)

@@ -15,6 +15,7 @@ namespace KryptKeeper {
             private readonly Timer _timer;
             private readonly Stopwatch _stopWatch;
             private static List<long> _DataProcessed;
+            private DateTime _startTime;
             private long _totalDataLength;
 
             public ProcessRates(Status status)
@@ -29,6 +30,7 @@ namespace KryptKeeper {
             public void Start()
             {
                 _totalDataLength = Cipher.GetTotalSize();
+                _startTime = DateTime.Now;
                 _stopWatch.Start();
                 _timer.Start();
             }
@@ -43,8 +45,8 @@ namespace KryptKeeper {
 
             private void timerElapsed(object sender, ElapsedEventArgs e)
             {
-                _status.SetTimeElapsed(Utils.GetSpannedTime(DateTime.Now.Ticks - _stopWatch.ElapsedTicks, hideMs: true) +  @"elapsed");
-                _status.SetTimeRemaining($"Est. time remaining: {TimeSpan.FromSeconds(getSecondsRemaining())}");
+                _status.SetTimeElapsed(Utils.GetSpannedTime(_startTime.Ticks, hideMs: true) +  @"elapsed");
+                _status.SetTimeRemaining($"Est. time remaining: {TimeSpan.FromSeconds((int)Math.Ceiling(getSecondsRemaining()))}");
                 var elapsedBytes = Cipher.GetElapsedBytes();
                 if (elapsedBytes <= 0) return;
                 _DataProcessed.Push(elapsedBytes, MAX_DATA_POINTS);
@@ -53,18 +55,17 @@ namespace KryptKeeper {
                 _status.SetProcessingRateText($"Processing speed: {averageProcessRate}/s");
             }
 
-            // TODO Could be more accurate, especially near the end (in progress)
-            private int _lastSecondsRemaining = 0;
-            private int getSecondsRemaining()
+            // TODO Could be more accurate, especially near the end
+            private double _lastSecondsRemaining;
+            private double getSecondsRemaining()
             {
                 var payloadState = Cipher.GetPayloadState();
                 if (payloadState <= 0) return 0;
-                var remaining = (_stopWatch.Elapsed.Seconds / (double) payloadState) * (_totalDataLength - payloadState);
-                var seconds = (int)Math.Ceiling(remaining);
-                if (seconds == _lastSecondsRemaining)
-                    seconds++;
-                _lastSecondsRemaining = seconds;
-                return seconds;
+                var remainingSeconds = (_stopWatch.Elapsed.Seconds / (double) payloadState) * (_totalDataLength - payloadState);
+                if (Math.Abs(remainingSeconds - _lastSecondsRemaining) < 1)
+                    remainingSeconds += 0.4;
+                _lastSecondsRemaining = remainingSeconds;
+                return remainingSeconds;
             }
         }
     }

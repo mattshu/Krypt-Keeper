@@ -13,6 +13,7 @@ namespace KryptKeeper {
         private readonly MetroLabel _lblProcessingRate;
         private readonly MetroLabel _lblTimeElapsed;
         private readonly MetroLabel _lblTimeRemaining;
+        private readonly NotifyIcon _notifyIcon;
         private readonly MainWindow _mainWindow;
         private readonly string _newLine = Environment.NewLine;
         private readonly MetroTextBox _txtLogBox;
@@ -29,6 +30,7 @@ namespace KryptKeeper {
             _lblFileWorked = mainWindow.GetFileWorkedLabel();
             _lblProcessingRate = mainWindow.GetProcessingRateLabel();
             _txtLogBox = mainWindow.GetLogBox();
+            _notifyIcon = mainWindow.GetNotifyIcon();
             _lblTimeElapsed = mainWindow.GetTimeElapsedLabel();
             _lblTimeRemaining = mainWindow.GetTimeRemainingLabel();
         }
@@ -38,13 +40,13 @@ namespace KryptKeeper {
             return _Instance ?? throw new Exception(@"Unable to get instance of status window!");
         }
 
-        public void StartCollection(CipherOptions options)
+        public void StartRateCollection(CipherOptions options)
         {
             _ProcessRates = new ProcessRates(this);
             _ProcessRates.Start();
         }
 
-        public void StopCollection()
+        public void StopRateCollection()
         {
             _ProcessRates.Stop();
             SetOperationText("Done!");
@@ -88,19 +90,38 @@ namespace KryptKeeper {
             _mainWindow?.Invoke((Action)(() => label.Text = msg));
         }
 
-        public void WriteLine(string msg)
+        public void WriteLine(string msg, bool showPopup = false)
         {
             if (_isPending)
                 finishPending();
             _isPending = false;
             updateStatus(Timestamp + msg + _newLine);
+            if (showPopup && _mainWindow.IsMinimized())
+                showToolTip(msg, @"Notification", ToolTipIcon.Info);
         }
 
-        private void finishPending() {
+        public void Error(string msg, bool showPopup = false)
+        {
+            if (_isPending)
+                updateStatus("failed!" + _newLine);
+            _isPending = false;
+            updateStatus(Timestamp + "*** [ERROR: " + msg + "]" + _newLine);
+            if (!showPopup && !_mainWindow.IsMinimized()) return;
+            showToolTip(msg, @"Error Occured", ToolTipIcon.Error);
+        }
+
+        private void showToolTip(string text, string title, ToolTipIcon icon)
+        {
+            _notifyIcon.ShowBalloonTip(0, title, text, icon);
+        }
+
+        private void finishPending()
+        {
             updateStatus($"done! ({Utils.GetSpannedTime(_pendingStartTime.Ticks)}){_newLine}");
         }
 
-        private void updateStatus(string msg) {
+        private void updateStatus(string msg)
+        {
             _mainWindow?.Invoke((Action)(() => _txtLogBox?.AppendText(msg)));
         }
 

@@ -1,6 +1,6 @@
 ﻿/* 
     TODO * MAJOR *
-        - IMPERATIVE: * REMOVE HARDCODED KEYFILE *
+        - IMPERATIVE: * REMOVE HARDCODED KEY FILE *
         - Add Windows context menu options
     TODO * MINOR *
         - Tooltips on completion or error if app is minimized to tray
@@ -9,7 +9,7 @@
 */
 using KryptKeeper.Properties;
 using System;
-using System.Collections.Generic;
+using System.Diagnostics;
 using System.Windows.Forms;
 using MetroFramework;
 using MetroFramework.Controls;
@@ -18,6 +18,7 @@ namespace KryptKeeper
 {
     public partial class MainWindow : MetroFramework.Forms.MetroForm
     {
+        public bool IsMinimized() => WindowState == FormWindowState.Minimized;
         private static bool _CloseAfterCurrentOperation;
         private static bool _ExitButtonPressed = false;
         public static Version Version;
@@ -37,15 +38,18 @@ namespace KryptKeeper
         public MainWindow()
         {
             InitializeComponent();
-            _fileList = new FileList(new List<FileData>(), datagridFileList);
+            _fileList = new FileList(datagridFileList);
         }
 
+        #region References of controls for the Status class
         protected internal MetroLabel GetOperationLabel() => lblStatusOperationText;
         protected internal MetroLabel GetFileWorkedLabel() => lblStatusFileWorkedText;
         protected internal MetroLabel GetProcessingRateLabel() => lblStatusProcessingRateText;
         protected internal MetroTextBox GetLogBox() => txtStatusLogBox;
         protected internal MetroLabel GetTimeElapsedLabel() => lblStatusTimeElapsedText;
         protected internal MetroLabel GetTimeRemainingLabel() => lblStatusTimeRemainingText;
+        protected internal NotifyIcon GetNotifyIcon() => notifyIcon;
+        #endregion
 
         protected internal void SetLastFileWorked(string file)
         {
@@ -53,7 +57,7 @@ namespace KryptKeeper
             Settings.Default.Save();
         }
 
-        #region Refernces of controls for the Options class
+        #region References of controls for the Options class
         protected internal bool RememberSettings
         {
             get => chkRememberSettings.Checked;
@@ -90,22 +94,16 @@ namespace KryptKeeper
             set => chkRemoveAfterDecryption.Checked = value;
         }
 
-        protected internal bool ProcessInOrder
+        protected internal bool FileListOrderDesc
         {
-            get => chkProcessInOrder.Checked;
-            set => chkProcessInOrder.Checked = value;
+            get => chkFileListOrderDesc.Checked;
+            set => chkFileListOrderDesc.Checked = value;
         }
 
-        protected internal bool ProcessInOrderDesc
+        protected internal int FileListOrderBy
         {
-            get => chkProcessInOrderDesc.Checked;
-            set => chkProcessInOrderDesc.Checked = value;
-        }
-
-        protected internal int ProcessInOrderBy
-        {
-            get => cbxProcessOrderBy.SelectedIndex;
-            set => cbxProcessOrderBy.SelectedIndex = value;
+            get => cbxFileListOrderBy.SelectedIndex;
+            set => cbxFileListOrderBy.SelectedIndex = value;
         }
 
         protected internal bool ConfirmOnExit
@@ -134,13 +132,16 @@ namespace KryptKeeper
             Cipher.SetBackgroundWorker(backgroundWorker);
             Version = System.Reflection.Assembly.GetEntryAssembly().GetName().Version;
             lblVersionInformation.Text = Version.ToString();
+            notifyIcon.Visible = true;
+            var args = Environment.GetCommandLineArgs();
+            if (args.Length > 1)
+                AddFile(args[1]);
         }
 
         private void setInitialControlEvents()
         {
             datagridFileList.DataSourceChanged += datagridFileList_DataSourceChanged;
-            chkProcessInOrder.CheckedChanged += chkProcessInOrder_CheckedChanged;
-            cbxProcessOrderBy.SelectedIndexChanged += cbxProcessOrderBy_SelectedIndexChanged;
+            cbxFileListOrderBy.SelectedIndexChanged += cbxFileListOrderBySelectedIndexChanged;
             backgroundWorker.ProgressChanged += backgroundWorker_ProgressChanged;
             backgroundWorker.RunWorkerCompleted += backgroundWorker_RunWorkerCompleted;
         }
@@ -189,6 +190,12 @@ namespace KryptKeeper
             e.Cancel = false; // Reset previous cancellation
             var unexpectedExit = e.CloseReason == CloseReason.TaskManagerClosing || 
                                  e.CloseReason == CloseReason.WindowsShutDown;
+            if (!unexpectedExit && MinimizeToTrayOnClose)
+            {
+                e.Cancel = true;
+                Hide();
+                return;
+            }
             if (backgroundWorker.IsBusy)
             {
                 e.Cancel = true; // Hold off on closing so user can decide to abort or finish
@@ -215,15 +222,7 @@ namespace KryptKeeper
                 e.Cancel = chkConfirmOnExit.Checked && !confirmOnExit(); // Final confirmation in this case
             }
             else // X button pressed
-            {
-                if (MinimizeToTrayOnClose)
-                {
-                    e.Cancel = true;
-                    Hide();
-                }
-                else
-                    e.Cancel = chkConfirmOnExit.Checked && !confirmOnExit(); // Final confirmation
-            }
+                e.Cancel = chkConfirmOnExit.Checked && !confirmOnExit(); // Final confirmation
         }
 
         private void cancelAllOperations(bool closeAfterwards = false)
@@ -238,7 +237,7 @@ namespace KryptKeeper
                 _options.Save();
             else
                 _options.Reset();
-            systemTrayIcon.Dispose();
+            notifyIcon.Dispose();
             setLastExitSuccess();
         }
 
@@ -268,6 +267,19 @@ namespace KryptKeeper
         private void contextMenu_Opening(object sender, System.ComponentModel.CancelEventArgs e)
         {
             menuItemStatus.Text = @"Status: " + _status.GetCurrentStatus();
+        }
+
+        private void cbxFileListOrderBy_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            sortFileList();
+        }
+        
+        public void AddFile(string file)
+        {
+            restoreWindow();
+            _fileList.Add(new FileData(file));
+            refreshFileList();
+            focusTab(MainTabs.Files);
         }
     }
 }

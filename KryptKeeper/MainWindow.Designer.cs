@@ -50,9 +50,9 @@
             this.chkMaskFileName = new MetroFramework.Controls.MetroCheckBox();
             this.chkMaskFileInformation = new MetroFramework.Controls.MetroCheckBox();
             this.tabFileProcessing = new MetroFramework.Controls.MetroTabPage();
-            this.chkProcessInOrderDesc = new MetroFramework.Controls.MetroCheckBox();
-            this.cbxProcessOrderBy = new MetroFramework.Controls.MetroComboBox();
-            this.chkProcessInOrder = new MetroFramework.Controls.MetroCheckBox();
+            this.metroLabel1 = new MetroFramework.Controls.MetroLabel();
+            this.chkFileListOrderDesc = new MetroFramework.Controls.MetroCheckBox();
+            this.cbxFileListOrderBy = new MetroFramework.Controls.MetroComboBox();
             this.lblJobInformation = new MetroFramework.Controls.MetroLabel();
             this.btnRemoveSelectedFiles = new MetroFramework.Controls.MetroButton();
             this.btnDecrypt = new MetroFramework.Controls.MetroButton();
@@ -87,7 +87,7 @@
             this.lblVersionInformation = new MetroFramework.Controls.MetroLabel();
             this.backgroundWorker = new System.ComponentModel.BackgroundWorker();
             this.metroToolTip = new MetroFramework.Components.MetroToolTip();
-            this.systemTrayIcon = new System.Windows.Forms.NotifyIcon(this.components);
+            this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.contextMenu = new MetroFramework.Controls.MetroContextMenu(this.components);
             this.menuItemStatus = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemSeparator1 = new System.Windows.Forms.ToolStripSeparator();
@@ -116,7 +116,7 @@
             this.tabMain.ItemSize = new System.Drawing.Size(300, 50);
             this.tabMain.Location = new System.Drawing.Point(20, 60);
             this.tabMain.Name = "tabMain";
-            this.tabMain.SelectedIndex = 0;
+            this.tabMain.SelectedIndex = 1;
             this.tabMain.Size = new System.Drawing.Size(746, 391);
             this.tabMain.Style = MetroFramework.MetroColorStyle.Green;
             this.tabMain.TabIndex = 0;
@@ -367,9 +367,9 @@
             // 
             // tabFileProcessing
             // 
-            this.tabFileProcessing.Controls.Add(this.chkProcessInOrderDesc);
-            this.tabFileProcessing.Controls.Add(this.cbxProcessOrderBy);
-            this.tabFileProcessing.Controls.Add(this.chkProcessInOrder);
+            this.tabFileProcessing.Controls.Add(this.metroLabel1);
+            this.tabFileProcessing.Controls.Add(this.chkFileListOrderDesc);
+            this.tabFileProcessing.Controls.Add(this.cbxFileListOrderBy);
             this.tabFileProcessing.Controls.Add(this.lblJobInformation);
             this.tabFileProcessing.Controls.Add(this.btnRemoveSelectedFiles);
             this.tabFileProcessing.Controls.Add(this.btnDecrypt);
@@ -391,48 +391,46 @@
             this.tabFileProcessing.VerticalScrollbarHighlightOnWheel = false;
             this.tabFileProcessing.VerticalScrollbarSize = 10;
             // 
-            // chkProcessInOrderDesc
+            // metroLabel1
             // 
-            this.chkProcessInOrderDesc.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.chkProcessInOrderDesc.AutoSize = true;
-            this.chkProcessInOrderDesc.Location = new System.Drawing.Point(365, 279);
-            this.chkProcessInOrderDesc.Name = "chkProcessInOrderDesc";
-            this.chkProcessInOrderDesc.Size = new System.Drawing.Size(85, 15);
-            this.chkProcessInOrderDesc.TabIndex = 4;
-            this.chkProcessInOrderDesc.Text = "Descending";
-            this.chkProcessInOrderDesc.Theme = MetroFramework.MetroThemeStyle.Dark;
-            this.chkProcessInOrderDesc.UseSelectable = true;
-            this.chkProcessInOrderDesc.CheckedChanged += new System.EventHandler(this.chkProcessOrderDesc_CheckedChanged);
+            this.metroLabel1.AutoSize = true;
+            this.metroLabel1.Location = new System.Drawing.Point(281, 249);
+            this.metroLabel1.Name = "metroLabel1";
+            this.metroLabel1.Size = new System.Drawing.Size(78, 19);
+            this.metroLabel1.TabIndex = 7;
+            this.metroLabel1.Text = "Arrange by:";
+            this.metroLabel1.Theme = MetroFramework.MetroThemeStyle.Dark;
             // 
-            // cbxProcessOrderBy
+            // chkFileListOrderDesc
             // 
-            this.cbxProcessOrderBy.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.cbxProcessOrderBy.FontSize = MetroFramework.MetroComboBoxSize.Small;
-            this.cbxProcessOrderBy.FontWeight = MetroFramework.MetroComboBoxWeight.Light;
-            this.cbxProcessOrderBy.FormattingEnabled = true;
-            this.cbxProcessOrderBy.ItemHeight = 19;
-            this.cbxProcessOrderBy.Items.AddRange(new object[] {
+            this.chkFileListOrderDesc.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.chkFileListOrderDesc.AutoSize = true;
+            this.chkFileListOrderDesc.Location = new System.Drawing.Point(365, 280);
+            this.chkFileListOrderDesc.Name = "chkFileListOrderDesc";
+            this.chkFileListOrderDesc.Size = new System.Drawing.Size(85, 15);
+            this.chkFileListOrderDesc.TabIndex = 4;
+            this.chkFileListOrderDesc.Text = "Descending";
+            this.chkFileListOrderDesc.Theme = MetroFramework.MetroThemeStyle.Dark;
+            this.chkFileListOrderDesc.UseSelectable = true;
+            this.chkFileListOrderDesc.CheckedChanged += new System.EventHandler(this.chkProcessOrderDesc_CheckedChanged);
+            // 
+            // cbxFileListOrderBy
+            // 
+            this.cbxFileListOrderBy.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.cbxFileListOrderBy.FontSize = MetroFramework.MetroComboBoxSize.Small;
+            this.cbxFileListOrderBy.FontWeight = MetroFramework.MetroComboBoxWeight.Light;
+            this.cbxFileListOrderBy.FormattingEnabled = true;
+            this.cbxFileListOrderBy.ItemHeight = 19;
+            this.cbxFileListOrderBy.Items.AddRange(new object[] {
             "File name",
             "File size"});
-            this.cbxProcessOrderBy.Location = new System.Drawing.Point(365, 248);
-            this.cbxProcessOrderBy.Name = "cbxProcessOrderBy";
-            this.cbxProcessOrderBy.Size = new System.Drawing.Size(105, 25);
-            this.cbxProcessOrderBy.TabIndex = 3;
-            this.cbxProcessOrderBy.Theme = MetroFramework.MetroThemeStyle.Dark;
-            this.cbxProcessOrderBy.UseSelectable = true;
-            // 
-            // chkProcessInOrder
-            // 
-            this.chkProcessInOrder.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.chkProcessInOrder.AutoSize = true;
-            this.chkProcessInOrder.FontSize = MetroFramework.MetroCheckBoxSize.Medium;
-            this.chkProcessInOrder.Location = new System.Drawing.Point(233, 249);
-            this.chkProcessInOrder.Name = "chkProcessInOrder";
-            this.chkProcessInOrder.Size = new System.Drawing.Size(126, 19);
-            this.chkProcessInOrder.TabIndex = 2;
-            this.chkProcessInOrder.Text = "Process in order:";
-            this.chkProcessInOrder.Theme = MetroFramework.MetroThemeStyle.Dark;
-            this.chkProcessInOrder.UseSelectable = true;
+            this.cbxFileListOrderBy.Location = new System.Drawing.Point(365, 249);
+            this.cbxFileListOrderBy.Name = "cbxFileListOrderBy";
+            this.cbxFileListOrderBy.Size = new System.Drawing.Size(105, 25);
+            this.cbxFileListOrderBy.TabIndex = 3;
+            this.cbxFileListOrderBy.Theme = MetroFramework.MetroThemeStyle.Dark;
+            this.cbxFileListOrderBy.UseSelectable = true;
+            this.cbxFileListOrderBy.SelectedIndexChanged += new System.EventHandler(this.cbxFileListOrderBy_SelectedIndexChanged);
             // 
             // lblJobInformation
             // 
@@ -990,13 +988,12 @@
             this.metroToolTip.StyleManager = null;
             this.metroToolTip.Theme = MetroFramework.MetroThemeStyle.Light;
             // 
-            // systemTrayIcon
+            // notifyIcon
             // 
-            this.systemTrayIcon.ContextMenuStrip = this.contextMenu;
-            this.systemTrayIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("systemTrayIcon.Icon")));
-            this.systemTrayIcon.Text = "Krypt Keeper";
-            this.systemTrayIcon.Visible = true;
-            this.systemTrayIcon.DoubleClick += new System.EventHandler(this.systemTrayIcon_DoubleClick);
+            this.notifyIcon.ContextMenuStrip = this.contextMenu;
+            this.notifyIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon.Icon")));
+            this.notifyIcon.Text = "Krypt Keeper";
+            this.notifyIcon.DoubleClick += new System.EventHandler(this.systemTrayIcon_DoubleClick);
             // 
             // contextMenu
             // 
@@ -1007,37 +1004,37 @@
             this.menuItemSeparator2,
             this.menuItemExit});
             this.contextMenu.Name = "contextMenu";
-            this.contextMenu.Size = new System.Drawing.Size(181, 104);
+            this.contextMenu.Size = new System.Drawing.Size(132, 82);
             this.contextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenu_Opening);
             // 
             // menuItemStatus
             // 
             this.menuItemStatus.Enabled = false;
             this.menuItemStatus.Name = "menuItemStatus";
-            this.menuItemStatus.Size = new System.Drawing.Size(180, 22);
+            this.menuItemStatus.Size = new System.Drawing.Size(131, 22);
             this.menuItemStatus.Text = "Status: idle";
             // 
             // menuItemSeparator1
             // 
             this.menuItemSeparator1.Name = "menuItemSeparator1";
-            this.menuItemSeparator1.Size = new System.Drawing.Size(177, 6);
+            this.menuItemSeparator1.Size = new System.Drawing.Size(128, 6);
             // 
             // menuItemOpen
             // 
             this.menuItemOpen.Name = "menuItemOpen";
-            this.menuItemOpen.Size = new System.Drawing.Size(180, 22);
+            this.menuItemOpen.Size = new System.Drawing.Size(131, 22);
             this.menuItemOpen.Text = "Open";
             this.menuItemOpen.Click += new System.EventHandler(this.menuItemOpen_Click);
             // 
             // menuItemSeparator2
             // 
             this.menuItemSeparator2.Name = "menuItemSeparator2";
-            this.menuItemSeparator2.Size = new System.Drawing.Size(177, 6);
+            this.menuItemSeparator2.Size = new System.Drawing.Size(128, 6);
             // 
             // menuItemExit
             // 
             this.menuItemExit.Name = "menuItemExit";
-            this.menuItemExit.Size = new System.Drawing.Size(180, 22);
+            this.menuItemExit.Size = new System.Drawing.Size(131, 22);
             this.menuItemExit.Text = "Exit";
             this.menuItemExit.Click += new System.EventHandler(this.menuItemExit_Click);
             // 
@@ -1048,6 +1045,7 @@
             this.ClientSize = new System.Drawing.Size(786, 471);
             this.Controls.Add(this.tabMain);
             this.Controls.Add(this.lblVersionInformation);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MinimumSize = new System.Drawing.Size(786, 450);
             this.Name = "MainWindow";
             this.ShadowType = MetroFramework.Forms.MetroFormShadowType.DropShadow;
@@ -1116,9 +1114,8 @@
         private MetroFramework.Controls.MetroProgressSpinner progressCurrent;
         private MetroFramework.Controls.MetroButton btnSelectFilesFromStatusTab;
         private MetroFramework.Controls.MetroLabel lblStatusProcessingRateText;
-        private MetroFramework.Controls.MetroCheckBox chkProcessInOrder;
-        private MetroFramework.Controls.MetroComboBox cbxProcessOrderBy;
-        private MetroFramework.Controls.MetroCheckBox chkProcessInOrderDesc;
+        private MetroFramework.Controls.MetroComboBox cbxFileListOrderBy;
+        private MetroFramework.Controls.MetroCheckBox chkFileListOrderDesc;
         private MetroFramework.Controls.MetroPanel panelOnCompletion;
         private MetroFramework.Controls.MetroCheckBox chkOnCompletion;
         private MetroFramework.Controls.MetroPanel panelIconSleep;
@@ -1128,7 +1125,7 @@
         private MetroFramework.Controls.MetroProgressSpinner progressTotalFiles;
         private MetroFramework.Controls.MetroPanel panelIconClose;
         private MetroFramework.Controls.MetroLabel lblStatusTimeRemainingText;
-        private System.Windows.Forms.NotifyIcon systemTrayIcon;
+        private System.Windows.Forms.NotifyIcon notifyIcon;
         private MetroFramework.Controls.MetroContextMenu contextMenu;
         private System.Windows.Forms.ToolStripMenuItem menuItemStatus;
         private System.Windows.Forms.ToolStripSeparator menuItemSeparator1;
@@ -1136,5 +1133,6 @@
         private System.Windows.Forms.ToolStripSeparator menuItemSeparator2;
         private System.Windows.Forms.ToolStripMenuItem menuItemExit;
         private MetroFramework.Controls.MetroCheckBox chkMinimizeToTrayOnClose;
+        private MetroFramework.Controls.MetroLabel metroLabel1;
     }
 }

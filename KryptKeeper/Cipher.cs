@@ -32,7 +32,7 @@ namespace KryptKeeper
                 validateFilesForDecryption(options);
             _TotalFilesTotal = options.Files.Count;
             _TotalPayloadTotal = Utils.GetTotalBytes(options.Files);
-            _status.StartCollection(options);
+            _status.StartRateCollection(options);
             _BackgroundWorker.RunWorkerAsync(options);
         }
 
@@ -125,7 +125,7 @@ namespace KryptKeeper
                 {
                     if (aes == null)
                     {
-                        _status.WriteLine("*** Error: Failed to create AES object!");
+                        _status.Error(@"Failed to create AES object!");
                         return;
                     }
                     var transformer = createCryptoTransform(path, options, aes);
@@ -173,7 +173,7 @@ namespace KryptKeeper
                 var buffer = new byte[VERSION_CHUNK_SIZE];
                 fStream.Read(buffer, 0, buffer.Length); // Read last n bytes of file
                 int i = VERSION_CHUNK_SIZE - 1;
-                for (; i >= 0; i--)
+                for (; i > 0; i--)
                 {
                     var versionMarkerSniffer = (char) buffer[i - 1] + "" + (char) buffer[i];
                     if (!versionMarkerSniffer.Equals("V:")) continue;
@@ -254,10 +254,9 @@ namespace KryptKeeper
                     throw new CryptographicException("Error extracting IV from: " + path);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                _status.WriteLine("There was a problem extracting the IV from: " + path);
-                _status.WriteLine("* Error: " + ex.Message);
+                _status.Error("There was a problem extracting the IV from: " + path);
                 return new byte[0];
             }
         }
@@ -274,14 +273,13 @@ namespace KryptKeeper
                         var read = bReader.ReadBytes(SALT_SIZE);
                         if (read.Length > 0)
                             return read;
-                        throw new CryptographicException("There was a problem extracting the salt from: " + path);
+                        throw new Exception(path);
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                _status.WriteLine("There was a problem extracting the salt from: " + path);
-                _status.WriteLine("* Error: " + ex.Message);
+                _status.Error("There was a problem extracting the salt from: " + path, showPopup: true);
                 return new byte[0];
             }
         }
@@ -353,8 +351,8 @@ namespace KryptKeeper
             var footer = new Footer();
             if (!footer.TryExtract(workingPath))
             {
-                _status.WriteLine("*** Error: Unable to get decrypted file information from " + path);
-                _status.WriteLine("* File possibly corrupt: " + workingPath);
+                _status.Error("*** Error: Unable to get decrypted file information from " + path);
+                _status.Error("File possibly corrupt: " + workingPath, showPopup: true);
                 return string.Empty;
             }
             var originalPath = workingPath.Replace(Path.GetFileName(workingPath), footer.Name)
@@ -369,8 +367,8 @@ namespace KryptKeeper
             }
             else
             {
-                _status.WriteLine("* Error decrypting file: " + path);
-                _status.WriteLine("* File possibly corrupt: " + originalPath);
+                _status.Error("Unable to decrypt " + path, showPopup: true);
+                _status.Error("File possibly corrupt: " + originalPath);
                 return string.Empty;
             }
             return originalPath;
@@ -388,21 +386,21 @@ namespace KryptKeeper
                 case "CryptographicException":
                     if (ex.Message.Equals("The input data is not a complete block.") ||
                         ex.Message.Equals("Padding is invalid and cannot be removed."))
-                        _status.WriteLine("*** Failed to decrypt file: " + path);
+                        _status.Error("Failed to decrypt file: " + path);
                     else
-                        _status.WriteLine("*** Cryptographic exception: " + msgWhenUnhandled);
+                        _status.Error("Cryptographic exception: " + msgWhenUnhandled);
                     break;
 
                 case "ArgumentException":
-                    _status.WriteLine("*** Failed to decrypt file: " + path);
+                    _status.Error("Failed to decrypt file: " + path);
                     break;
 
                 case "UnauthorizedAccessException":
-                    _status.WriteLine("*** Unauthorized access: " + ex.Message);
+                    _status.Error("Unauthorized access: " + ex.Message);
                     break;
 
                 default:
-                    _status.WriteLine("*** UNHANDLED EXCEPTION: " + msgWhenUnhandled);
+                    _status.Error("UNHANDLED EXCEPTION: " + msgWhenUnhandled, showPopup: true);
                     _status.WriteLine("Attempting to preserve temporary file: " + workingPath);
                     preserveTempFile = true;
                     break;

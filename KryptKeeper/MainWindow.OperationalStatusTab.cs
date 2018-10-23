@@ -28,13 +28,13 @@ namespace KryptKeeper
 
         private void finishOperations(bool cancelled = false)
         {
-            _status.WriteLine("Operation finished. ");
+            _status.WriteLine("Operation finished.", showPopup: true);
             disableButtonsDuringOperation(false);
             updateProgress();
             lblStatusTopText.Text = cancelled ? "Some" : "All" + " files processed";
             lblJobInformation.Text = "";
             _fileList.Reset();
-            _status.StopCollection();
+            _status.StopRateCollection();
         }
 
         private void chkOnCompletion_CheckedChanged(object sender, EventArgs e)

@@ -9,6 +9,7 @@ namespace KryptKeeper
 {
     public partial class MainWindow
     {
+        private const int BCRYPT_SALT_ROUNDS = 5;
         private readonly int[] DEFAULT_COLUMN_WIDTHS = {274, 86, 315};
 
         #region File Processing Tab Form Events
@@ -34,12 +35,7 @@ namespace KryptKeeper
             removeSelectedFiles();
         }
 
-        private void chkProcessInOrder_CheckedChanged(object sender, EventArgs e)
-        {
-            sortFileList();
-        }
-
-        private void cbxProcessOrderBy_SelectedIndexChanged(object sender, EventArgs e)
+        private void cbxFileListOrderBySelectedIndexChanged(object sender, EventArgs e)
         {
             sortFileList();
         }
@@ -62,19 +58,22 @@ namespace KryptKeeper
         }
         #endregion
 
-        // TODO REMOVE DEBUG SIGNATURE AND FUNCTIONS
-        private void buildFileList(bool DEBUG = false)
+        private void buildFileList()
         {
             if (!validateKeySettings()) return;
-            var newFileList = DEBUG ? new FileList(Directory.GetFiles(@"D:\shu\Downloads\").Select(x => new FileData(x)).ToList(), datagridFileList)
-                              : new FileList(Utils.GetFilesFromDialog(), datagridFileList);
+            var newFileList = new FileList(Utils.GetFilesFromDialog(), datagridFileList);
             if (newFileList.Count <= 0) return;
             _fileList = newFileList;
-            if (chkProcessInOrder.Checked)
-                sortFileList();
+            refreshFileList();
+            focusTab(MainTabs.Files);
+        }
+
+        private void refreshFileList()
+        {
+            //_fileList.RemoveDuplicates();
+            sortFileList();
             enableProcessButtons(datagridFileList.RowCount > 0);
             updateFileListStats();
-            focusTab(MainTabs.Files);
         }
 
         private void updateFileListStats()
@@ -147,11 +146,11 @@ namespace KryptKeeper
             }
             catch (FileNotFoundException ex)
             {
-                _status.WriteLine("* Error: Unable to find file: " + ex.Message);
+                _status.Error("Unable to find file: " + ex.Message);
             }
             catch (FileLoadException ex)
             {
-                _status.WriteLine("* Error: File is either empty or too large (>=4GB): " + ex.Message);
+                _status.Error("File is either empty or too large (>=4GB): " + ex.Message);
             }
         }
 
@@ -159,8 +158,7 @@ namespace KryptKeeper
         {
             btnSelectFiles.Enabled = btnAddFiles.Enabled = btnRemoveSelectedFiles.Enabled =
                 btnEncrypt.Enabled = btnDecrypt.Enabled = btnSelectFilesFromStatusTab.Enabled = 
-                chkProcessInOrder.Enabled = cbxProcessOrderBy.Enabled = chkProcessInOrderDesc.Enabled =
-                !disable;
+                cbxFileListOrderBy.Enabled = chkFileListOrderDesc.Enabled = !disable;
             btnCancelOperation.Enabled = disable;
         }
 
@@ -176,7 +174,7 @@ namespace KryptKeeper
         private CipherOptions generateOptions(Cipher.Mode cipherMode)
         {
             var key = getKey();
-            var salt = Utils.GetBytes(BCrypt.GenerateSalt(5));
+            var salt = Utils.GetBytes(BCrypt.GenerateSalt(BCRYPT_SALT_ROUNDS));
             var options = new CipherOptions
             {
                 Mode = cipherMode,
@@ -211,7 +209,7 @@ namespace KryptKeeper
         private void sortFileList()
         {
             if (_fileList.Count <= 0) return;
-            sortFiles((Cipher.ProcessOrder)cbxProcessOrderBy.SelectedIndex, chkProcessInOrderDesc.Checked);
+            sortFiles((Cipher.ProcessOrder)cbxFileListOrderBy.SelectedIndex, chkFileListOrderDesc.Checked);
         }
 
         private void sortFiles(Cipher.ProcessOrder processOrder, bool descending = false)

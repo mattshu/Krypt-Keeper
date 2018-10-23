@@ -23,9 +23,8 @@ namespace KryptKeeper
             _main.MaskFileInformation = settings.encryptionMaskFileName || settings.encryptionMaskFileDate;
             _main.MaskFileName = settings.encryptionMaskFileName;
             _main.MaskFileDate = settings.encryptionMaskFileDate;
-            _main.ProcessInOrder = settings.processInOrder;
-            _main.ProcessInOrderBy = settings.processInOrderBy;
-            _main.ProcessInOrderDesc = settings.processInOrderDesc;
+            _main.FileListOrderBy = settings.processInOrderBy;
+            _main.FileListOrderDesc = settings.processInOrderDesc;
             _main.RemoveAfterEncryption = settings.removeAfterEncryption;
             _main.RemoveAfterDecryption = settings.removeAfterDecryption;
             _main.RememberSettings = settings.rememberSettings;
@@ -40,8 +39,7 @@ namespace KryptKeeper
             settings.encryptionMaskFileDate = _main.MaskFileInformation && _main.MaskFileDate;
             settings.removeAfterDecryption = _main.RemoveAfterDecryption;
             settings.removeAfterEncryption = _main.RemoveAfterEncryption;
-            settings.processInOrder = _main.ProcessInOrder;
-            settings.processInOrderBy = _main.ProcessInOrderBy;
+            settings.processInOrderBy = _main.FileListOrderBy;
             settings.rememberSettings = true; // always true in case user exits with saving
             settings.confirmOnExit = _main.ConfirmOnExit;
             settings.Save();

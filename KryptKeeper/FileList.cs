@@ -19,16 +19,38 @@ namespace KryptKeeper
         private List<FileData> _fileList;
         private readonly DataGridView _dataGridView;
 
-        public FileList(List<FileData> fileList, DataGridView dataGridView)
+        public FileList(DataGridView dataGridView)
         {
-            _fileList = fileList;
+            if (_fileList == null) _fileList = new List<FileData>();
             _dataGridView = dataGridView;
             UpdateDataSource();
+        }
+
+        public FileList(string[] list, DataGridView dataGridView) : this(dataGridView)
+        {
+            if (list.Length <= 0) _fileList = new List<FileData>();
+            _fileList = list.Select(x => new FileData(x)).ToList();
+        }
+
+        public FileList(List<FileData> fileList, DataGridView dataGridView) : this(dataGridView)
+        {
+            _fileList = fileList;
         }
 
         public void Add(FileData file)
         {
             _fileList.Add(file);
+        }
+
+        public void Remove(FileData file)
+        {
+            _fileList.Remove(file);
+        }
+
+        public void RemoveDuplicates()
+        {
+            if (_fileList == null) return;
+            _fileList = new HashSet<FileData>(_fileList).ToList();
         }
 
         public void Clear()

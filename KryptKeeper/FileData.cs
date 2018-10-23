@@ -12,6 +12,7 @@ namespace KryptKeeper
 
         public FileData(string filePath)
         {
+            if (!File.Exists(filePath)) return;
             var fileInfo = new FileInfo(filePath);
             Name = fileInfo.Name;
             Size = fileInfo.Length.BytesToSizeString(limitToKB: true);

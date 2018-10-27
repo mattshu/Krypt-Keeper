@@ -1,11 +1,7 @@
 ﻿/* 
     TODO * MAJOR *
-        - IMPERATIVE: * REMOVE HARDCODED KEY FILE *
+        - Un-pause production of Krypt Keeper
         - Add Windows context menu options
-    TODO * MINOR *
-        - Tooltips on completion or error if app is minimized to tray
-        - If planning on storing keys, ensure key storage security
-        - Always work toward single responsibility principle
 */
 using KryptKeeper.Properties;
 using System;

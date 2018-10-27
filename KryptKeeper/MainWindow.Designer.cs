@@ -116,7 +116,7 @@
             this.tabMain.ItemSize = new System.Drawing.Size(300, 50);
             this.tabMain.Location = new System.Drawing.Point(20, 60);
             this.tabMain.Name = "tabMain";
-            this.tabMain.SelectedIndex = 1;
+            this.tabMain.SelectedIndex = 0;
             this.tabMain.Size = new System.Drawing.Size(746, 391);
             this.tabMain.Style = MetroFramework.MetroColorStyle.Green;
             this.tabMain.TabIndex = 0;
@@ -232,8 +232,7 @@
             this.txtCipherKey.CustomButton.UseSelectable = true;
             this.txtCipherKey.CustomButton.Visible = false;
             this.txtCipherKey.FontSize = MetroFramework.MetroTextBoxSize.Medium;
-            this.txtCipherKey.Lines = new string[] {
-        "D:\\shu\\Pictures\\New Bitmap Image.bmp"};
+            this.txtCipherKey.Lines = new string[0];
             this.txtCipherKey.Location = new System.Drawing.Point(293, 130);
             this.txtCipherKey.MaxLength = 32767;
             this.txtCipherKey.Name = "txtCipherKey";
@@ -247,7 +246,6 @@
             this.txtCipherKey.ShortcutsEnabled = true;
             this.txtCipherKey.Size = new System.Drawing.Size(192, 23);
             this.txtCipherKey.TabIndex = 4;
-            this.txtCipherKey.Text = "D:\\shu\\Pictures\\New Bitmap Image.bmp";
             this.txtCipherKey.Theme = MetroFramework.MetroThemeStyle.Dark;
             this.txtCipherKey.UseSelectable = true;
             this.txtCipherKey.WaterMark = "You must browse for a key file...";

@@ -1,6 +1,5 @@
 ﻿/* 
     TODO * MAJOR *
-        - Un-pause production of Krypt Keeper
         - Add Windows context menu options
 */
 using KryptKeeper.Properties;
@@ -252,7 +251,7 @@ namespace KryptKeeper
         private bool confirmOnExit()
         {
             if (chkConfirmOnExit.Checked)
-                return MessageBox.Show(Resources.ExitApplicationMsg, Resources.ExitApplicationTitle,
+                return MetroMessageBox.Show(this, Resources.ExitApplicationMsg, Resources.ExitApplicationTitle,
                            MessageBoxButtons.OKCancel,
                            MessageBoxIcon.Question) == DialogResult.OK;
             return true;

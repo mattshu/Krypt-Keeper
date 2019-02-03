@@ -115,7 +115,7 @@ namespace KryptKeeper
                 {
                     workingPath = Utils.PadFileNameIfExists(path.ReplaceLastOccurrence(FILE_EXTENSION, WORKING_FILE_EXTENSION));
                     var version = trimVersionFromFile(path);
-                    // TODO Handle different versions ({0.0} = old version)
+                    // TODO Support for different versions ({0.0} = old version)
                 }
                 else if (options.Mode == Mode.Encrypt)
                     workingPath = Utils.PadFileNameIfExists(getEncryptionWorkingPath(path, options));

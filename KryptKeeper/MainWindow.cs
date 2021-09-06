@@ -3,11 +3,10 @@
         - Add Windows context menu options
 */
 using KryptKeeper.Properties;
-using System;
-using System.Diagnostics;
-using System.Windows.Forms;
 using MetroFramework;
 using MetroFramework.Controls;
+using System;
+using System.Windows.Forms;
 
 namespace KryptKeeper
 {
@@ -26,13 +25,14 @@ namespace KryptKeeper
 
         private Status _status;
         private Options _options;
-        private bool _settingsNeedConfirmed = true;
         private bool _forceExit;
         private FileList _fileList;
 
         public MainWindow()
         {
+            // Default initailization call
             InitializeComponent();
+            // Build private file list
             _fileList = new FileList(datagridFileList);
         }
 
@@ -183,7 +183,7 @@ namespace KryptKeeper
         private void mainWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
             e.Cancel = false; // Reset previous cancellation
-            var unexpectedExit = e.CloseReason == CloseReason.TaskManagerClosing || 
+            var unexpectedExit = e.CloseReason == CloseReason.TaskManagerClosing ||
                                  e.CloseReason == CloseReason.WindowsShutDown;
             if (!unexpectedExit && MinimizeToTrayOnClose)
             {
@@ -227,7 +227,8 @@ namespace KryptKeeper
             backgroundWorker.CancelAsync();
         }
 
-        private void mainWindow_FormClosed(object sender, FormClosedEventArgs e) {
+        private void mainWindow_FormClosed(object sender, FormClosedEventArgs e)
+        {
             if (chkRememberSettings.Checked)
                 _options.Save();
             else
@@ -268,7 +269,7 @@ namespace KryptKeeper
         {
             sortFileList();
         }
-        
+
         public void AddFile(string file)
         {
             restoreWindow();

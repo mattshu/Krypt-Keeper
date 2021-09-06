@@ -47,14 +47,12 @@ namespace KryptKeeper
 
         private void btnEncrypt_Click(object sender, EventArgs e)
         {
-            if (confirmSettings())
-                processFiles(Cipher.Mode.Encrypt);
+            processFiles(Cipher.Mode.Encrypt);
         }
 
         private void btnDecrypt_Click(object sender, EventArgs e)
         {
-            if (confirmSettings())
-                processFiles(Cipher.Mode.Decrypt);
+            processFiles(Cipher.Mode.Decrypt);
         }
         #endregion
 
@@ -70,7 +68,6 @@ namespace KryptKeeper
 
         private void refreshFileList()
         {
-            //_fileList.RemoveDuplicates();
             sortFileList();
             enableProcessButtons(datagridFileList.RowCount > 0);
             updateFileListStats();
@@ -217,17 +214,6 @@ namespace KryptKeeper
             var fileListComparer = new FileListComparer(processOrder, descending);
             _fileList.Sort(fileListComparer);
             _fileList.UpdateDataSource();
-        }
-
-        private bool confirmSettings()
-        {
-            if (!_settingsNeedConfirmed) return true;
-            var confirmSettingsDialog = new ConfirmSettingsDialog();
-            var confirmSettingsResult = confirmSettingsDialog.ShowDialog();
-            _settingsNeedConfirmed = confirmSettingsDialog.ShowAgain;
-            if (confirmSettingsResult != DialogResult.No) return true;
-            tabMain.SelectTab(1);
-            return false;
         }
 
     }

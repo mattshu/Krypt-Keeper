@@ -97,12 +97,6 @@
     <Compile Include="ConfirmStopWhileBusy.Designer.cs">
       <DependentUpon>ConfirmStopWhileBusy.cs</DependentUpon>
     </Compile>
-    <Compile Include="ConfirmSettingsDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ConfirmSettingsDialog.Designer.cs">
-      <DependentUpon>ConfirmSettingsDialog.cs</DependentUpon>
-    </Compile>
     <Compile Include="FileData.cs" />
     <Compile Include="FileList.cs" />
     <Compile Include="FileListComparer.cs" />
@@ -138,9 +132,6 @@
     <Compile Include="ThirdPartyTools\BCrypt.cs" />
     <EmbeddedResource Include="ConfirmStopWhileBusy.resx">
       <DependentUpon>ConfirmStopWhileBusy.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ConfirmSettingsDialog.resx">
-      <DependentUpon>ConfirmSettingsDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainWindow.resx">
       <DependentUpon>MainWindow.cs</DependentUpon>
